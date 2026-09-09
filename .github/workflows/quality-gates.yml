@@ -19,12 +19,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+          run_install: false
       - name: Install
-        run: npm install
+        run: pnpm install --no-frozen-lockfile
       - name: Typecheck
-        run: npm run typecheck
+        run: pnpm typecheck
       - name: Test
-        run: npm test
+        run: pnpm test
       - name: Build
-        run: npm run build
+        run: pnpm build
