@@ -25,5 +25,7 @@ jobs:
         run: npm run typecheck
       - name: Test
         run: npm test
-      - name: Build
+      - name: Platform Build
         run: npm run build
+      - name: Web Build
+        run: npm run build --workspace=@emeriona-global/web
