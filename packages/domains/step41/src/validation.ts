@@ -1,0 +1,7 @@
+import { PricingContext, TaxContext, PriceDefinition, TaxRule } from './types';
+const SECRET = /(password|passwd|token|secret|private.?key|api.?key|access.?token|refresh.?token|card.?number|cvv)/i;
+function clean(s:string){ if(!s || SECRET.test(s)) throw new Error('Invalid or secret-like material.'); }
+export function validatePricingContext(c: PricingContext){ clean(c.offeringId); clean(c.currency); clean(c.at); if(c.tenantId) clean(c.tenantId); if(c.customerAccountId) clean(c.customerAccountId); if(c.quantity!==undefined && (!Number.isFinite(c.quantity)||c.quantity<=0)) throw new Error('quantity must be positive'); }
+export function validateTaxContext(c: TaxContext){ clean(c.offeringId); clean(c.currency); clean(c.at); if(c.tenantId) clean(c.tenantId); if(c.customerAccountId) clean(c.customerAccountId); }
+export function validatePrice(p: PriceDefinition){ clean(p.id); clean(p.offeringId); if(!Number.isFinite(p.amount.amount)||p.amount.amount<0) throw new Error('Invalid price amount'); if(!/^v\d+$/.test(p.version)) throw new Error('Invalid policy version'); }
+export function validateTaxRule(r: TaxRule){ clean(r.id); clean(r.code); if(!Number.isInteger(r.priority)||r.priority<0) throw new Error('Invalid priority'); if(!r.components.length) throw new Error('Tax rule requires components'); for(const x of r.components){ if(!Number.isFinite(x.value)||x.value<0) throw new Error('Invalid tax component'); } }
