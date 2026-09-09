@@ -1,0 +1,3 @@
+import type { RegionalContext, RegionalPolicy } from './types';
+export function validateRegionalContext(c: RegionalContext): void { if (!/^[-A-Za-z0-9_]+(?:[-A-Za-z0-9_]+)*$/.test(c.locale)) throw new Error('Invalid locale'); if (!/^[-A-Za-z0-9_\/]+$/.test(c.timeZone)) throw new Error('Invalid time zone'); if (c.currency && !/^[A-Z]{3}$/.test(c.currency)) throw new Error('Invalid currency'); }
+export function validateRegionalPolicy(p: RegionalPolicy): void { if (!p.id || !p.version || !p.defaultLocale || !p.fallbackLocale) throw new Error('Invalid regional policy'); if (p.allowedRegions?.some(x => !x || x.length > 32)) throw new Error('Invalid allowed region'); if (p.blockedRegions?.some(x => !x || x.length > 32)) throw new Error('Invalid blocked region'); }

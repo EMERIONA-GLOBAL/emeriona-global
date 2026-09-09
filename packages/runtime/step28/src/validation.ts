@@ -1,0 +1,3 @@
+import { ConfigDefinition } from './types';
+export function validateConfigValue(def:ConfigDefinition, value:unknown):void { if(def.secret) throw new Error('SECRET_VALUES_MUST_REMAIN_OUTSIDE_CORE_CONFIGURATION'); const ok = def.valueType==='STRING' ? typeof value==='string' : def.valueType==='NUMBER' ? typeof value==='number' && Number.isFinite(value) : def.valueType==='BOOLEAN' ? typeof value==='boolean' : value!==undefined; if(!ok) throw new Error(`INVALID_VALUE_TYPE:${def.key}`); }
+export function assertSafeKey(key:string):void { if(!/^[A-Z][A-Z0-9_.-]{1,127}$/.test(key)) throw new Error('INVALID_CONFIGURATION_KEY'); }

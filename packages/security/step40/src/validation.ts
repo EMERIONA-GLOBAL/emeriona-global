@@ -1,0 +1,4 @@
+import { ConsentCaptureRequest, ConsentPurpose } from './types';
+const secretPattern = /(password|passwd|token|secret|private.?key|api.?key|credential)/i;
+export function validatePurpose(p: ConsentPurpose): void { if (!p.id || !p.name || !p.version.match(/^v\d+$/)) throw new Error('Invalid consent purpose'); }
+export function validateCapture(r: ConsentCaptureRequest): void { if (!r.context.subjectId || !r.purposeId || !r.action || !r.source) throw new Error('Invalid consent capture request'); if (r.policyVersion && !/^v\d+$/.test(r.policyVersion)) throw new Error('Invalid policy version'); if (r.metadata && Object.keys(r.metadata).some(k => secretPattern.test(k))) throw new Error('Secret-like metadata is not allowed'); if (r.expiresAt && Number.isNaN(Date.parse(r.expiresAt))) throw new Error('Invalid expiry timestamp'); }

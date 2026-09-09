@@ -1,0 +1,4 @@
+import type { AccessRequest } from './types';
+const FORBIDDEN_KEYS = ['password', 'passwd', 'token', 'accessToken', 'refreshToken', 'secret', 'apiKey', 'privateKey', 'cardNumber', 'cvv', 'cvc'];
+export function validateAccessRequest(request: AccessRequest): void { if (!request.requestId.trim() || !request.action.trim()) throw new Error('requestId and action are required'); if (!request.subject.subjectId.trim()) throw new Error('subjectId is required'); if (!request.resource.resourceId.trim()) throw new Error('resourceId is required'); scanKeys(request); }
+function scanKeys(value: unknown): void { if (Array.isArray(value)) { for (const item of value) scanKeys(item); return; } if (!value || typeof value !== 'object') return; for (const [key, nested] of Object.entries(value as Record<string, unknown>)) { if (FORBIDDEN_KEYS.includes(key)) throw new Error(`Sensitive field is not permitted: ${key}`); scanKeys(nested); } }

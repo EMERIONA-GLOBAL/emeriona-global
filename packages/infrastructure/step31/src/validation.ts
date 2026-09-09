@@ -1,0 +1,6 @@
+import { HealthCheck, ReliabilityMetric, OperationalError, OperationalAlert } from './types';
+const safeId = /^[A-Za-z0-9._:-]{1,160}$/;
+export function validateHealthCheck(v: HealthCheck): string[] { const e:string[]=[]; if(!safeId.test(v.id))e.push('invalid check id'); if(!v.name.trim())e.push('name required'); if(!v.observedAt)e.push('observedAt required'); if(v.latencyMs!==undefined && (v.latencyMs<0||!Number.isFinite(v.latencyMs)))e.push('invalid latency'); return e; }
+export function validateMetric(v: ReliabilityMetric): string[] { const e:string[]=[]; if(!v.name.trim())e.push('metric name required'); if(!Number.isFinite(v.value))e.push('metric value must be finite'); if(!v.unit.trim())e.push('unit required'); return e; }
+export function validateError(v: OperationalError): string[] { const e:string[]=[]; if(!safeId.test(v.id))e.push('invalid error id'); if(!v.code.trim())e.push('error code required'); if(!v.message.trim())e.push('message required'); return e; }
+export function validateAlert(v: OperationalAlert): string[] { const e:string[]=[]; if(!safeId.test(v.id))e.push('invalid alert id'); if(!v.title.trim())e.push('title required'); if(!v.source.trim())e.push('source required'); return e; }
