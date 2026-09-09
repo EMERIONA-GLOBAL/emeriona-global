@@ -1,141 +1,64 @@
-import type { CommissionRule, ReferralEvent, Affiliate, Commission, CommissionStatus } from "./types";
+export type ISODateTime = string;
+export type Identifier = string;
 
-export type { CommissionRule, ReferralEvent, Affiliate, Commission, CommissionStatus } from "./types";
+export type ReferralStatus = 'DRAFT'|'ACTIVE'|'PAUSED'|'CONVERTED'|'EXPIRED'|'CANCELLED';
+export type ReferralKind = 'CUSTOMER_REFERRAL'|'PARTNER_REFERRAL'|'AFFILIATE'|'CAMPAIGN'|'CUSTOM';
+export type CommissionStatus = 'PENDING'|'APPROVED'|'PROCESSING'|'EARNED'|'REVERSED'|'CANCELLED';
+export type ReferralEvent = 'CLICKED'|'REGISTERED'|'QUALIFIED'|'CONVERTED'|'REFUNDED'|'CHARGEBACK';
 
-export interface ReferralAffiliateCommissionRepository {
-  getAffiliate(affiliateId: string): Promise<Affiliate | null>;
-  getCommissionRule(ruleId: string): Promise<CommissionRule | null>;
-  recordReferralEvent(event: ReferralEvent): Promise<void>;
-  createCommission(commission: Commission): Promise<void>;
-  getCommission(commissionId: string): Promise<Commission | null>;
-  updateCommissionStatus(commissionId: string, status: CommissionStatus): Promise<void>;
+export interface Money { amount:number; currency:string; }
+export interface ReferralCode { code:string; programId:Identifier; ownerId:Identifier; status:'ACTIVE'|'PAUSED'|'EXPIRED'; expiresAt?:ISODateTime; }
+export interface ReferralContext { tenantId:Identifier; actorId?:Identifier; correlationId?:Identifier; locale?:string; region?:string; }
+export interface ReferralRecord {
+  id:Identifier; programId:Identifier; tenantId:Identifier; kind:ReferralKind; ownerId:Identifier;
+  referredPartyId?:Identifier; code?:string; status:ReferralStatus; event?:ReferralEvent;
+  sourceReference?:Identifier; orderReference?:Identifier; subscriptionReference?:Identifier;
+  createdAt:ISODateTime; updatedAt:ISODateTime; expiresAt?:ISODateTime;
+}
+export interface CommissionRecord {
+  id:Identifier; referralId:Identifier; beneficiaryId:Identifier; amount:Money;
+  status:CommissionStatus; basisReference?:Identifier; settlementReference?:Identifier;
+  payoutReference?:Identifier; ledgerReference?:Identifier; createdAt:ISODateTime; updatedAt:ISODateTime;
+}
+export interface ReferralProgram { id:Identifier; tenantId:Identifier; name:string; active:boolean; defaultCommission?:Money; }
+export type ReferralResult<T> = { ok:true; value:T } | { ok:false; code:string; message:string };
+
+export interface ReferralRepository { create(r:ReferralRecord):Promise<ReferralRecord>; get(id:Identifier):Promise<ReferralRecord|undefined>; update(r:ReferralRecord):Promise<ReferralRecord>; }
+export interface CommissionRepository { create(r:CommissionRecord):Promise<CommissionRecord>; get(id:Identifier):Promise<CommissionRecord|undefined>; update(r:CommissionRecord):Promise<CommissionRecord>; }
+export interface ReferralProgramPort { getProgram(ctx:ReferralContext, id:Identifier):Promise<ReferralProgram|undefined>; }
+export interface ReferralEligibilityPort { check(ctx:ReferralContext, referral:ReferralRecord):Promise<{eligible:boolean; reason?:string}>; }
+export interface CommissionCalculationPort { calculate(ctx:ReferralContext, referral:ReferralRecord):Promise<Money>; }
+export interface ApprovalPort { approve(ctx:ReferralContext, commissionId:Identifier):Promise<void>; }
+export interface SettlementReferencePort { link(ctx:ReferralContext, commissionId:Identifier, settlementId:Identifier):Promise<void>; }
+export interface PayoutReferencePort { link(ctx:ReferralContext, commissionId:Identifier, payoutId:Identifier):Promise<void>; }
+export interface LedgerReferencePort { link(ctx:ReferralContext, commissionId:Identifier, ledgerId:Identifier):Promise<void>; }
+export interface AuditPort { record(ctx:ReferralContext, action:string, entityId:Identifier):Promise<void>; }
+export interface TelemetryPort { metric(name:string, value:number, tags?:Record<string,string>):void; }
+export interface ActivationPolicy { enabled(ctx:ReferralContext, feature:string):Promise<boolean>; }
+
+const forbidden = /(?:password|passwd|secret|private[_ -]?key|api[_ -]?key|access[_ -]?token|refresh[_ -]?token|cvv|cvc|pan|card[_ -]?number)/i;
+export function validateReferralInput(input:unknown):ReferralResult<true> {
+  if (JSON.stringify(input ?? '').match(forbidden)) return {ok:false,code:'SENSITIVE_DATA',message:'Sensitive credential/payment data is not accepted.'};
+  return {ok:true,value:true};
 }
 
-export interface ReferralAffiliateCommissionService {
-  registerReferralEvent(event: ReferralEvent): Promise<void>;
-  calculateCommission(input: CalculateCommissionInput): Promise<CommissionCalculationResult>;
-  approveCommission(commissionId: string): Promise<void>;
-  rejectCommission(commissionId: string): Promise<void>;
+export function canTransitionReferral(from:ReferralStatus,to:ReferralStatus):boolean {
+  const map:Record<ReferralStatus,ReferralStatus[]>={DRAFT:['ACTIVE','CANCELLED'],ACTIVE:['PAUSED','CONVERTED','EXPIRED','CANCELLED'],PAUSED:['ACTIVE','CANCELLED'],CONVERTED:['CANCELLED'],EXPIRED:[],CANCELLED:[]};
+  return map[from].includes(to);
+}
+export function canTransitionCommission(from:CommissionStatus,to:CommissionStatus):boolean {
+  const map:Record<CommissionStatus,CommissionStatus[]>={PENDING:['APPROVED','CANCELLED','REVERSED'],APPROVED:['PROCESSING','CANCELLED','REVERSED'],PROCESSING:['EARNED','CANCELLED','REVERSED'],EARNED:['REVERSED'],REVERSED:[],CANCELLED:[]};
+  return map[from].includes(to);
 }
 
-export interface CalculateCommissionInput {
-  affiliateId: string;
-  referralEventId: string;
-  orderId: string;
-  orderAmount: number;
-  currency: string;
-  occurredAt: string;
+export async function qualifyReferral(ctx:ReferralContext, referral:ReferralRecord, deps:{programs:ReferralProgramPort; eligibility:ReferralEligibilityPort; audit:AuditPort; telemetry:TelemetryPort; activation:ActivationPolicy}):Promise<ReferralResult<ReferralRecord>> {
+  if (!(await deps.activation.enabled(ctx,'referrals'))) return {ok:false,code:'FEATURE_DISABLED',message:'Referral feature is not active for this tenant.'};
+  const valid=validateReferralInput(referral); if(!valid.ok) return valid;
+  const program=await deps.programs.getProgram(ctx,referral.programId); if(!program?.active) return {ok:false,code:'PROGRAM_INACTIVE',message:'Referral program is not active.'};
+  const check=await deps.eligibility.check(ctx,referral); if(!check.eligible) return {ok:false,code:'NOT_ELIGIBLE',message:check.reason ?? 'Referral is not eligible.'};
+  const next={...referral,status:'CONVERTED' as ReferralStatus,event:'QUALIFIED' as ReferralEvent,updatedAt:new Date().toISOString()};
+  await deps.audit.record(ctx,'REFERRAL_QUALIFIED',referral.id); deps.telemetry.metric('referral.qualified',1,{tenantId:ctx.tenantId,programId:referral.programId});
+  return {ok:true,value:next};
 }
 
-export interface CommissionCalculationResult {
-  commissionId: string;
-  affiliateId: string;
-  referralEventId: string;
-  orderId: string;
-  amount: number;
-  currency: string;
-  ruleId: string;
-  calculatedAt: string;
-}
-
-export class ReferralAffiliateCommissionDomainError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ReferralAffiliateCommissionDomainError";
-  }
-}
-
-export class ReferralAffiliateCommissionServiceImpl implements ReferralAffiliateCommissionService {
-  constructor(private readonly repository: ReferralAffiliateCommissionRepository) {}
-
-  async registerReferralEvent(event: ReferralEvent): Promise<void> {
-    if (!event.id || !event.affiliateId || !event.occurredAt) {
-      throw new ReferralAffiliateCommissionDomainError("Invalid referral event");
-    }
-
-    const affiliate = await this.repository.getAffiliate(event.affiliateId);
-    if (!affiliate || affiliate.status !== "active") {
-      throw new ReferralAffiliateCommissionDomainError("Affiliate is not active");
-    }
-
-    await this.repository.recordReferralEvent(event);
-  }
-
-  async calculateCommission(input: CalculateCommissionInput): Promise<CommissionCalculationResult> {
-    if (input.orderAmount < 0) {
-      throw new ReferralAffiliateCommissionDomainError("Order amount cannot be negative");
-    }
-
-    const affiliate = await this.repository.getAffiliate(input.affiliateId);
-    if (!affiliate || affiliate.status !== "active") {
-      throw new ReferralAffiliateCommissionDomainError("Affiliate is not active");
-    }
-
-    const rule = await this.repository.getCommissionRule(affiliate.commissionRuleId);
-    if (!rule || !rule.active) {
-      throw new ReferralAffiliateCommissionDomainError("Commission rule is not active");
-    }
-
-    const amount = calculateCommissionAmount(input.orderAmount, rule);
-    const commissionId = createCommissionId();
-    const calculatedAt = new Date().toISOString();
-
-    const commission: Commission = {
-      id: commissionId,
-      affiliateId: input.affiliateId,
-      referralEventId: input.referralEventId,
-      orderId: input.orderId,
-      amount,
-      currency: input.currency,
-      ruleId: rule.id,
-      status: "pending",
-      calculatedAt,
-    };
-
-    await this.repository.createCommission(commission);
-
-    return {
-      commissionId,
-      affiliateId: input.affiliateId,
-      referralEventId: input.referralEventId,
-      orderId: input.orderId,
-      amount,
-      currency: input.currency,
-      ruleId: rule.id,
-      calculatedAt,
-    };
-  }
-
-  async approveCommission(commissionId: string): Promise<void> {
-    const commission = await this.repository.getCommission(commissionId);
-    if (!commission) {
-      throw new ReferralAffiliateCommissionDomainError("Commission not found");
-    }
-    if (commission.status !== "pending") {
-      throw new ReferralAffiliateCommissionDomainError("Commission is not pending");
-    }
-    await this.repository.updateCommissionStatus(commissionId, "approved");
-  }
-
-  async rejectCommission(commissionId: string): Promise<void> {
-    const commission = await this.repository.getCommission(commissionId);
-    if (!commission) {
-      throw new ReferralAffiliateCommissionDomainError("Commission not found");
-    }
-    if (commission.status !== "pending") {
-      throw new ReferralAffiliateCommissionDomainError("Commission is not pending");
-    }
-    await this.repository.updateCommissionStatus(commissionId, "rejected");
-  }
-}
-
-function calculateCommissionAmount(orderAmount: number, rule: CommissionRule): number {
-  if (rule.type === "percentage") {
-    return Math.round(orderAmount * (rule.value / 100) * 100) / 100;
-  }
-  return Math.min(rule.value, orderAmount);
-}
-
-function createCommissionId(): string {
-  return `commission_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-}
+export function describeBoundary():string { return 'Referral/Affiliate owns attribution and commission lifecycle; Commerce owns orders, Payment owns payment state, Settlement owns reconciliation, Payout owns disbursement, Ledger owns accounting, Loyalty owns rewards.'; }
