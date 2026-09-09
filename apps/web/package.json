@@ -1,0 +1,7 @@
+{
+  "name": "@emeriona-global/web",
+  "private": true,
+  "version": "0.1.0",
+  "description": "EMERIONA GLOBAL institutional web experience",
+  "type": "module"
+}
