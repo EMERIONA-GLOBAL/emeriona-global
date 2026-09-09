@@ -1,0 +1,3 @@
+import { DecisionStatus, ExecutionDecision, ReliabilityContext } from './types';
+export function decideReliability(context: ReliabilityContext, attempt: number, maxAttempts: number, failed: boolean): ExecutionDecision { if (!failed) return { workflowInstanceId: context.workflowInstanceId, status: 'CONTINUE' }; if (attempt < maxAttempts) return { workflowInstanceId: context.workflowInstanceId, status: 'RETRY', nextAttempt: attempt + 1 }; return { workflowInstanceId: context.workflowInstanceId, status: 'COMPENSATE', reason: 'retry limit reached' }; }
+export function isTerminal(status: DecisionStatus): boolean { return status === 'CANCELLED' || status === 'FAILED' || status === 'COMPENSATE'; }

@@ -1,0 +1,5 @@
+import { Tenant, TenantContext, TenantMembership } from './types';
+const ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
+export function validateTenant(tenant: Tenant): void { if (!ID.test(tenant.id)) throw new Error('Invalid tenant id'); if (!tenant.name.trim()) throw new Error('Tenant name is required'); if (tenant.parentTenantId && !ID.test(tenant.parentTenantId)) throw new Error('Invalid parent tenant id'); if (tenant.id === tenant.parentTenantId) throw new Error('Tenant cannot be its own parent'); }
+export function validateMembership(membership: TenantMembership): void { for (const value of [membership.id, membership.tenantId, membership.subjectId]) { if (!ID.test(value)) throw new Error('Invalid membership identifier'); } if (membership.roles.length === 0) throw new Error('Membership must contain at least one role'); }
+export function assertTenantContext(context: TenantContext): void { if (!ID.test(context.tenantId)) throw new Error('Invalid tenant context'); if (context.subjectId && !ID.test(context.subjectId)) throw new Error('Invalid subject id'); }

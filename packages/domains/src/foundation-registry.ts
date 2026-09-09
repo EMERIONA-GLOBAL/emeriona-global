@@ -58,9 +58,9 @@ export const FOUNDATION_REGISTRY: FoundationRegistration[] = [
   { step: 60, owner: 'domains', canonical: true, dependsOn: [59] },
   { step: 61, owner: 'domains', canonical: true, dependsOn: [60] },
   { step: 62, owner: 'domains', canonical: true, dependsOn: [61] },
-  { step: 63, owner: 'application', canonical: true, dependsOn: [62] },
-  { step: 64, owner: 'application', canonical: true, dependsOn: [63] },
-  { step: 65, owner: 'application', canonical: true, dependsOn: [64] }
+  { step: 63, owner: 'quality', canonical: true, dependsOn: [62] },
+  { step: 64, owner: 'quality', canonical: true, dependsOn: [63] },
+  { step: 65, owner: 'quality', canonical: true, dependsOn: [64] }
 ];
 
 export function validateFoundationRegistry(): true {
@@ -68,5 +68,7 @@ export function validateFoundationRegistry(): true {
   if (new Set(steps).size !== steps.length || steps.length !== 53) throw new Error('Invalid foundation registry');
   const step34 = FOUNDATION_REGISTRY.find(x => x.step === 34);
   if (!step34 || step34.canonical || !step34.dependsOn.includes(33)) throw new Error('F-001 regression');
+  const governanceSteps = FOUNDATION_REGISTRY.filter(x => x.step >= 63 && x.step <= 65);
+  if (governanceSteps.length !== 3 || governanceSteps.some(x => x.owner !== 'quality')) throw new Error('Governance ownership regression');
   return true;
 }

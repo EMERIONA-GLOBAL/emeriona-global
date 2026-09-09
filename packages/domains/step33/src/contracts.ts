@@ -1,0 +1,10 @@
+import { CompensationRecord, StepExecution, WorkflowDefinition, WorkflowInstance, WorkflowSignal } from './types';
+export interface WorkflowRepository { saveDefinition(definition: WorkflowDefinition): Promise<void>; getDefinition(id: string, version?: string): Promise<WorkflowDefinition | null>; saveInstance(instance: WorkflowInstance): Promise<void>; getInstance(id: string): Promise<WorkflowInstance | null>; updateStatus(id: string, status: WorkflowInstance['status']): Promise<void>; }
+export interface StepExecutionRepository { save(execution: StepExecution): Promise<void>; get(id: string): Promise<StepExecution | null>; list(workflowInstanceId: string): Promise<StepExecution[]>; }
+export interface WorkflowEnginePort { start(definition: WorkflowDefinition, input?: unknown, context?: { tenantId?: string; correlationId?: string }): Promise<WorkflowInstance>; pause(instanceId: string): Promise<void>; resume(instanceId: string): Promise<void>; cancel(instanceId: string): Promise<void>; signal(signal: WorkflowSignal): Promise<void>; }
+export interface WorkflowActionPort { execute(action: string, input: unknown, context: { workflowInstanceId: string; stepId: string }): Promise<unknown>; compensate?(action: string, input: unknown, context: { workflowInstanceId: string; stepId: string }): Promise<void>; }
+export interface WorkflowLockPort { acquire(instanceId: string): Promise<boolean>; release(instanceId: string): Promise<void>; }
+export interface CompensationPort { record(record: CompensationRecord): Promise<void>; execute(record: CompensationRecord): Promise<void>; }
+export interface WorkflowAuditPort { record(event: { action: string; workflowInstanceId: string; stepId?: string; status: string; correlationId?: string; details?: Record<string, unknown> }): Promise<void>; }
+export interface WorkflowTelemetryPort { metric(name: string, value: number, dimensions?: Record<string,string>): Promise<void>; error(error: Error, context?: Record<string,string>): Promise<void>; }
+export interface WorkflowActivationPolicy { isEnabled(workflowName: string, tenantId?: string): Promise<boolean>; }

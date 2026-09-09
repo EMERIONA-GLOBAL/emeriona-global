@@ -1,0 +1,2 @@
+export const RELIABILITY_FLOW = ['Signal Collection', 'Normalization', 'Health Evaluation', 'Threshold Evaluation', 'Alert Decision', 'Recovery Tracking', 'Operational Snapshot'] as const;
+export function deriveStatus(statuses: Array<'HEALTHY'|'DEGRADED'|'UNAVAILABLE'|'UNKNOWN'>) { if (statuses.includes('UNAVAILABLE')) return 'UNAVAILABLE'; if (statuses.includes('DEGRADED')) return 'DEGRADED'; if (statuses.length && statuses.every(s => s === 'HEALTHY')) return 'HEALTHY'; return 'UNKNOWN'; }
