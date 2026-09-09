@@ -1,0 +1,13 @@
+export type TenantId=string & {readonly __brand:'TenantId'};
+export type CorrelationId=string & {readonly __brand:'CorrelationId'};
+export type UseCaseId=string & {readonly __brand:'UseCaseId'};
+export interface UseCaseContext{tenantId:TenantId;correlationId:CorrelationId;actorId?:string;requestId?:string;locale?:string;timezone?:string;metadata?:Record<string,unknown>}
+export interface UseCaseRequest<T>{useCaseId:UseCaseId;context:UseCaseContext;input:T;idempotencyKey?:string}
+export interface UseCaseResponse<T>{useCaseId:UseCaseId;correlationId:CorrelationId;output:T}
+export interface UseCaseHandler<T,R>{handle(request:UseCaseRequest<T>):Promise<UseCaseResponse<R>>}
+export interface UseCaseBus{register<T,R>(id:UseCaseId,handler:UseCaseHandler<T,R>):void;execute<T,R>(request:UseCaseRequest<T>):Promise<UseCaseResponse<R>>}
+const SENSITIVE=/(password|secret|private[_ -]?key|access[_ -]?token|refresh[_ -]?token|api[_ -]?key|authorization|bearer|cvv|cvc|pan|card[_ -]?number)/i;
+export function validateMetadata(value:unknown):void{if(value===null||typeof value!=='object')return;if(Array.isArray(value)){value.forEach(validateMetadata);return;}for(const [k,v] of Object.entries(value as Record<string,unknown>)){if(SENSITIVE.test(k))throw new Error(`Sensitive metadata key is not allowed: ${k}`);validateMetadata(v);}}
+export function validateRequest<T>(request:UseCaseRequest<T>):void{if(!request.useCaseId?.trim())throw new Error('useCaseId is required');if(!request.context.tenantId?.trim())throw new Error('tenantId is required');if(!request.context.correlationId?.trim())throw new Error('correlationId is required');validateMetadata(request.context.metadata);validateMetadata(request.input);if(request.idempotencyKey!==undefined&&!request.idempotencyKey.trim())throw new Error('idempotencyKey cannot be empty');}
+export class DefaultUseCaseBus implements UseCaseBus{private readonly handlers=new Map<string,UseCaseHandler<unknown,unknown>>();register<T,R>(id:UseCaseId,handler:UseCaseHandler<T,R>):void{if(this.handlers.has(id))throw new Error(`Use case already registered: ${id}`);this.handlers.set(id,handler as UseCaseHandler<unknown,unknown>);}async execute<T,R>(request:UseCaseRequest<T>):Promise<UseCaseResponse<R>>{validateRequest(request);const handler=this.handlers.get(request.useCaseId);if(!handler)throw new Error(`Use case handler not found: ${request.useCaseId}`);return handler.handle(request) as Promise<UseCaseResponse<R>>;}}
+export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'1.0.0',status:'FOUNDATION',providerNeutral:true} as const;

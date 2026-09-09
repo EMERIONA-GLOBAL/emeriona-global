@@ -1,0 +1,21 @@
+{
+  "name": "@emeriona-global/platform",
+  "private": true,
+  "version": "0.1.0",
+  "description": "EMERIONA GLOBAL platform monorepo foundation",
+  "packageManager": "npm@11",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "packages/*/*"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --test",
+    "build": "npm run typecheck",
+    "quality": "npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}
