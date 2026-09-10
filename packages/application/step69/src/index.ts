@@ -3,24 +3,141 @@ export type CorrelationId = string & { readonly __brand: 'CorrelationId' };
 export type TenantId = string & { readonly __brand: 'TenantId' };
 export type EntityId = string & { readonly __brand: 'EntityId' };
 export type Version = string & { readonly __brand: 'Version' };
+
 export type Metadata = Record<string, unknown>;
-export interface UseCaseContext { tenantId: TenantId; correlationId: CorrelationId; actorId?: EntityId; requestId?: string; locale?: string; timezone?: string; metadata?: Metadata; }
-export interface UseCaseRequest<TInput> { useCaseId: UseCaseId; context: UseCaseContext; input: TInput; idempotencyKey?: string; }
-export interface UseCaseResponse<TOutput> { useCaseId: UseCaseId; correlationId: CorrelationId; output: TOutput; }
-export interface UseCaseError { code: string; message: string; retryable: boolean; details?: Metadata; }
-export interface UseCase<TInput, TOutput> { readonly id: UseCaseId; execute(request: UseCaseRequest<TInput>): Promise<UseCaseResponse<TOutput>>; }
-export interface UseCaseHandler<TInput, TOutput> { handle(request: UseCaseRequest<TInput>): Promise<UseCaseResponse<TOutput>>; }
-export interface UseCaseBus { register<TInput, TOutput>(id: UseCaseId, handler: UseCaseHandler<TInput, TOutput>): void; execute<TInput, TOutput>(request: UseCaseRequest<TInput>): Promise<UseCaseResponse<TOutput>>; }
-export interface TransactionPort { run<T>(work: () => Promise<T>): Promise<T>; }
-export interface AuthorizationPort { authorize(context: UseCaseContext, useCaseId: UseCaseId): Promise<boolean>; }
-export interface IdempotencyPort { acquire(key: string, context: UseCaseContext): Promise<boolean>; getResult<T>(key: string, context: UseCaseContext): Promise<UseCaseResponse<T> | undefined>; storeResult<T>(key: string, context: UseCaseContext, response: UseCaseResponse<T>): Promise<void>; }
-export interface UseCaseValidationPort { validate<TInput>(request: UseCaseRequest<TInput>): Promise<void>; }
-export interface UseCaseAuditPort { record(event: { useCaseId: UseCaseId; correlationId: CorrelationId; outcome: 'STARTED' | 'SUCCEEDED' | 'FAILED'; metadata?: Metadata }): Promise<void>; }
-export interface UseCaseTelemetryPort { record(event: { useCaseId: UseCaseId; correlationId: CorrelationId; durationMs: number; outcome: 'SUCCEEDED' | 'FAILED' }): Promise<void>; }
-export interface ApplicationPipeline { validate<TInput>(request: UseCaseRequest<TInput>): Promise<void>; authorize<TInput>(request: UseCaseRequest<TInput>): Promise<void>; idempotency<TOutput, TInput>(request: UseCaseRequest<TInput>, execute: () => Promise<UseCaseResponse<TOutput>>): Promise<UseCaseResponse<TOutput>>; transaction<T>(work: () => Promise<T>): Promise<T>; }
-const SENSITIVE = [/password/i, /secret/i, /private[ _-]?key/i, /access[ _-]?token/i, /refresh[ _-]?token/i, /api[ _-]?key/i, /authorization/i, /bearer/i, /cvv/i, /cvc/i, /pan/i, /card[ _-]?number/i];
-export function validateMetadata(value: unknown, path = 'metadata'): void { if (value === null || typeof value !== 'object') return; if (Array.isArray(value)) { value.forEach((v, i) => validateMetadata(v, `${path}[${i}]`)); return; } for (const [key, child] of Object.entries(value as Record<string, unknown>)) { if (SENSITIVE.some((pattern) => pattern.test(key))) throw new Error(`Sensitive metadata key is not allowed: ${path}.${key}`); validateMetadata(child, `${path}.${key}`); } }
-export function validateContext(context: UseCaseContext): void { if (!context.tenantId?.trim()) throw new Error('tenantId is required'); if (!context.correlationId?.trim()) throw new Error('correlationId is required'); validateMetadata(context.metadata); }
-export function validateRequest<T>(request: UseCaseRequest<T>): void { if (!request.useCaseId?.trim()) throw new Error('useCaseId is required'); validateContext(request.context); validateMetadata(request.input); if (request.idempotencyKey !== undefined && !request.idempotencyKey.trim()) throw new Error('idempotencyKey cannot be empty'); }
-export class DefaultUseCaseBus implements UseCaseBus { private readonly handlers = new Map<string, UseCaseHandler<unknown, unknown>>(); register<TInput, TOutput>(id: UseCaseId, handler: UseCaseHandler<TInput, TOutput>): void { if (this.handlers.has(id)) throw new Error(`Use case already registered: ${id}`); this.handlers.set(id, handler as UseCaseHandler<unknown, unknown>); } async execute<TInput, TOutput>(request: UseCaseRequest<TInput>): Promise<UseCaseResponse<TOutput>> { validateRequest(request); const handler = this.handlers.get(request.useCaseId); if (!handler) throw new Error(`Use case handler not found: ${request.useCaseId}`); return handler.handle(request) as Promise<UseCaseResponse<TOutput>>; } }
-export const STEP_69 = { name:'Application Layer & Use-Case Orchestration Foundation', version:'1.0.0' as Version, status:'FOUNDATION', providerNeutral:true, flow:'User/API → Application Use Case → Domain → Ports → Infrastructure → Result → Audit/Telemetry', ownership:['application use-case contracts','use-case orchestration','application context','validation and authorization boundaries','idempotency boundary','transaction boundary','application audit and telemetry hooks','use-case dispatch'], exclusions:['domain business rules','customer identity source of truth','payment/accounting source of truth','analytics source of truth','audit source of truth','concrete infrastructure/provider implementations'] as const };
+
+export interface UseCaseContext {
+  tenantId: TenantId;
+  correlationId: CorrelationId;
+  actorId?: EntityId;
+  requestId?: string;
+  locale?: string;
+  timezone?: string;
+  metadata?: Metadata;
+}
+
+export interface UseCaseRequest<TInput> {
+  useCaseId: UseCaseId;
+  context: UseCaseContext;
+  input: TInput;
+  idempotencyKey?: string;
+}
+
+export interface UseCaseResponse<TOutput> {
+  useCaseId: UseCaseId;
+  correlationId: CorrelationId;
+  output: TOutput;
+}
+
+export interface UseCaseError {
+  code: string;
+  message: string;
+  retryable: boolean;
+  details?: Metadata;
+}
+
+export interface UseCase<TInput, TOutput> {
+  readonly id: UseCaseId;
+  execute(request: UseCaseRequest<TInput>): Promise<UseCaseResponse<TOutput>>;
+}
+
+export interface UseCaseHandler<TInput, TOutput> {
+  handle(request: UseCaseRequest<TInput>): Promise<UseCaseResponse<TOutput>>;
+}
+
+export interface UseCaseBus {
+  register<TInput, TOutput>(id: UseCaseId, handler: UseCaseHandler<TInput, TOutput>): void;
+  execute<TInput, TOutput>(request: UseCaseRequest<TInput>): Promise<UseCaseResponse<TOutput>>;
+}
+
+export interface TransactionPort {
+  run<T>(work: () => Promise<T>): Promise<T>;
+}
+
+export interface AuthorizationPort {
+  authorize(context: UseCaseContext, useCaseId: UseCaseId): Promise<boolean>;
+}
+
+export interface IdempotencyPort {
+  acquire(key: string, context: UseCaseContext): Promise<boolean>;
+  getResult<T>(key: string, context: UseCaseContext): Promise<UseCaseResponse<T> | undefined>;
+  storeResult<T>(key: string, context: UseCaseContext, response: UseCaseResponse<T>): Promise<void>;
+}
+
+export interface UseCaseValidationPort {
+  validate<TInput>(request: UseCaseRequest<TInput>): Promise<void>;
+}
+
+export interface UseCaseAuditPort {
+  record(event: { useCaseId: UseCaseId; correlationId: CorrelationId; outcome: 'STARTED' | 'SUCCEEDED' | 'FAILED'; metadata?: Metadata }): Promise<void>;
+}
+
+export interface UseCaseTelemetryPort {
+  record(event: { useCaseId: UseCaseId; correlationId: CorrelationId; durationMs: number; outcome: 'SUCCEEDED' | 'FAILED' }): Promise<void>;
+}
+
+export interface ApplicationPipeline {
+  validate<TInput>(request: UseCaseRequest<TInput>): Promise<void>;
+  authorize<TInput>(request: UseCaseRequest<TInput>): Promise<void>;
+  idempotency<TOutput, TInput>(request: UseCaseRequest<TInput>, execute: () => Promise<UseCaseResponse<TOutput>>): Promise<UseCaseResponse<TOutput>>;
+  transaction<T>(work: () => Promise<T>): Promise<T>;
+}
+
+const SENSITIVE = [
+  /password/i, /secret/i, /private[ _-]?key/i, /access[ _-]?token/i,
+  /refresh[ _-]?token/i, /api[ _-]?key/i, /authorization/i, /bearer/i,
+  /cvv/i, /cvc/i, /pan/i, /card[ _-]?number/i,
+];
+
+export function validateMetadata(value: unknown, path = 'metadata'): void {
+  if (value === null || typeof value !== 'object') return;
+  if (Array.isArray(value)) { value.forEach((v, i) => validateMetadata(v, `${path}[${i}]`)); return; }
+  for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+    if (SENSITIVE.some((pattern) => pattern.test(key))) throw new Error(`Sensitive metadata key is not allowed: ${path}.${key}`);
+    validateMetadata(child, `${path}.${key}`);
+  }
+}
+
+export function validateContext(context: UseCaseContext): void {
+  if (!context.tenantId?.trim()) throw new Error('tenantId is required');
+  if (!context.correlationId?.trim()) throw new Error('correlationId is required');
+  validateMetadata(context.metadata);
+}
+
+export function validateRequest<T>(request: UseCaseRequest<T>): void {
+  if (!request.useCaseId?.trim()) throw new Error('useCaseId is required');
+  validateContext(request.context);
+  validateMetadata(request.input);
+  if (request.idempotencyKey !== undefined && !request.idempotencyKey.trim()) throw new Error('idempotencyKey cannot be empty');
+}
+
+export class DefaultUseCaseBus implements UseCaseBus {
+  private readonly handlers = new Map<string, UseCaseHandler<unknown, unknown>>();
+  register<TInput, TOutput>(id: UseCaseId, handler: UseCaseHandler<TInput, TOutput>): void {
+    if (this.handlers.has(id)) throw new Error(`Use case already registered: ${id}`);
+    this.handlers.set(id, handler as UseCaseHandler<unknown, unknown>);
+  }
+  async execute<TInput, TOutput>(request: UseCaseRequest<TInput>): Promise<UseCaseResponse<TOutput>> {
+    validateRequest(request);
+    const handler = this.handlers.get(request.useCaseId);
+    if (!handler) throw new Error(`Use case handler not found: ${request.useCaseId}`);
+    return handler.handle(request) as Promise<UseCaseResponse<TOutput>>;
+  }
+}
+
+export const STEP_69 = {
+  name: 'Application Layer & Use-Case Orchestration Foundation',
+  version: '1.0.0' as Version,
+  status: 'FOUNDATION',
+  providerNeutral: true,
+  flow: 'User/API → Application Use Case → Domain → Ports → Infrastructure → Result → Audit/Telemetry',
+  ownership: [
+    'application use-case contracts', 'use-case orchestration', 'application context',
+    'validation and authorization boundaries', 'idempotency boundary', 'transaction boundary',
+    'application audit and telemetry hooks', 'use-case dispatch'
+  ],
+  exclusions: [
+    'domain business rules', 'customer identity source of truth', 'payment/accounting source of truth',
+    'analytics source of truth', 'audit source of truth', 'concrete infrastructure/provider implementations'
+  ] as const,
+};
