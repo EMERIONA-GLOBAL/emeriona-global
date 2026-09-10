@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "emeriona-global-web",
+  "name": "emerionaglobal",
   "compatibility_date": "2026-09-10",
   "assets": {
     "directory": "./apps/web"
