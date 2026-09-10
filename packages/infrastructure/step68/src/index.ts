@@ -10,6 +10,7 @@ export interface AdapterHealth { adapterId: string; status: HealthStatus; checke
 export interface AdapterOperation<TInput,TOutput> { context: IntegrationContext; operation: string; input: TInput; }
 export interface AdapterResult<T> { ok: boolean; value?: T; error?: IntegrationError; }
 export interface IntegrationError { code: string; message: string; retryable: boolean; providerNeutral: boolean; details?: Record<string, unknown>; }
+
 export interface InfrastructureAdapterPort<TInput,TOutput> { execute(operation: AdapterOperation<TInput,TOutput>): Promise<AdapterResult<TOutput>>; health(context: IntegrationContext): Promise<AdapterHealth>; }
 export interface AdapterRegistryPort { register(registration: AdapterRegistration): Promise<void>; get(adapterId: string): Promise<AdapterRegistration|undefined>; list(kind?: AdapterKind): Promise<AdapterRegistration[]>; }
 export interface AdapterFactoryPort { create<TInput,TOutput>(registration: AdapterRegistration): InfrastructureAdapterPort<TInput,TOutput>; }
@@ -20,7 +21,22 @@ export interface IntegrationAuditPort { record(event: { adapterId: string; opera
 export interface IntegrationTelemetryPort { metric(name: string, value: number, tags?: Record<string,string>): void; }
 
 const SENSITIVE = /(password|secret|private.?key|access.?token|refresh.?token|api.?key|authorization|bearer|cvv|cvc|pan|card.?number)/i;
-export function validateMetadata(metadata?: Record<string, unknown>): void { if (!metadata) return; for (const key of Object.keys(metadata)) if (SENSITIVE.test(key)) throw new Error(`Sensitive metadata key is not permitted: ${key}`); }
-export function validateContext(context: IntegrationContext): void { if (!context.tenantId || !context.correlationId) throw new Error('tenantId and correlationId are required'); }
-export function validateRegistration(reg: AdapterRegistration): void { if (!reg.adapterId || !reg.portName || !reg.metadata.name || !reg.metadata.version) throw new Error('Invalid adapter registration'); validateMetadata(reg.metadata.metadata); if (reg.metadata.provider && SENSITIVE.test(reg.metadata.provider)) throw new Error('Invalid provider metadata'); }
-export const STEP_68 = { name:'Infrastructure & Integration Adapter Foundation', version:'1.0.0', status:'FOUNDATION', providerNeutral:true, flow:'Domain Port → Adapter Registry → Infrastructure Adapter → External Provider/System → Normalized Result → Audit/Telemetry', ownership:['adapter registry','adapter lifecycle','port-to-adapter binding','health boundaries','retry policy contracts','integration security/audit/telemetry boundaries'], exclusions:['business-domain ownership','customer identity source of truth','payment/accounting source of truth','analytics source of truth','audit source of truth','provider credentials and secrets'] } as const;
+export function validateMetadata(metadata?: Record<string, unknown>): void {
+  if (!metadata) return;
+  for (const key of Object.keys(metadata)) if (SENSITIVE.test(key)) throw new Error(`Sensitive metadata key is not permitted: ${key}`);
+}
+export function validateContext(context: IntegrationContext): void {
+  if (!context.tenantId || !context.correlationId) throw new Error('tenantId and correlationId are required');
+}
+export function validateRegistration(reg: AdapterRegistration): void {
+  if (!reg.adapterId || !reg.portName || !reg.metadata.name || !reg.metadata.version) throw new Error('Invalid adapter registration');
+  validateMetadata(reg.metadata.metadata);
+  if (reg.metadata.provider && SENSITIVE.test(reg.metadata.provider)) throw new Error('Invalid provider metadata');
+}
+
+export const STEP_68 = {
+  name:'Infrastructure & Integration Adapter Foundation', version:'1.0.0', status:'FOUNDATION', providerNeutral:true,
+  flow:'Domain Port → Adapter Registry → Infrastructure Adapter → External Provider/System → Normalized Result → Audit/Telemetry',
+  ownership:['adapter registry','adapter lifecycle','port-to-adapter binding','health boundaries','retry policy contracts','integration security/audit/telemetry boundaries'],
+  exclusions:['business-domain ownership','customer identity source of truth','payment/accounting source of truth','analytics source of truth','audit source of truth','provider credentials and secrets']
+} as const;
