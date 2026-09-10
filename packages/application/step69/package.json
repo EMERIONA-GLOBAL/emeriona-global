@@ -1,0 +1,1 @@
+{"name":"@emeriona-global/application-use-case-step69","version":"1.0.0","private":true,"scripts":{"typecheck":"tsc --noEmit --strict --target ES2022 --module CommonJS --skipLibCheck src/index.ts"},"devDependencies":{"typescript":"^5.8.3"}}
