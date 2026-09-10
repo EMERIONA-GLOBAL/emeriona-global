@@ -20,7 +20,7 @@ export interface SecurityGatePort { validate(context:PipelineContext):Promise<Qu
 export interface BoundaryGatePort { validate(context:PipelineContext):Promise<QualityFinding[]>; }
 export interface ArtifactIntegrityPort { verify(artifact:ArtifactRecord):Promise<boolean>; }
 export interface DeploymentGatePort { evaluate(request:DeploymentRequest):Promise<DeploymentDecision>; }
-export interface AuditPort { record(event:{type:string;pipelineId:string;correlationId:string;metadata?:Metadata}):Promise<void>; }
+export interface AuditPort { record(event:{type:string; pipelineId:string; correlationId:string; metadata?:Metadata}):Promise<void>; }
 export interface TelemetryPort { metric(name:string,value:number,tags?:Metadata):Promise<void>; }
 export interface STEP_74_METADATA { readonly name:'CI/CD & Quality Gates Foundation'; readonly version:'1.0.0'; readonly flow:'Commit → Validate → Build → Test → Security → Architecture/Boundary → Artifact Integrity → Deployment Decision → Audit/Telemetry'; readonly providerNeutral:true; }
 export const STEP_74:STEP_74_METADATA={name:'CI/CD & Quality Gates Foundation',version:'1.0.0',flow:'Commit → Validate → Build → Test → Security → Architecture/Boundary → Artifact Integrity → Deployment Decision → Audit/Telemetry',providerNeutral:true};
