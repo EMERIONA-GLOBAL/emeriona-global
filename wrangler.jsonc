@@ -2,6 +2,14 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "emeriona-global",
   "compatibility_date": "2026-09-10",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "emeriona-global-db",
+      "database_id": "7109ca59-08bd-4330-9b99-37fce16b6203",
+      "migrations_dir": "./database/migrations"
+    }
+  ],
   "assets": {
     "directory": "./apps/web"
   }
