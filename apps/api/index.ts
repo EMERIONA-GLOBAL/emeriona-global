@@ -31,6 +31,10 @@ function requestId(request: Request): string {
   return request.headers.get("x-request-id")?.trim() || crypto.randomUUID();
 }
 
+function validCurrency(value: string | null): value is string {
+  return value !== null && /^[A-Z]{3}$/.test(value.trim());
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -43,18 +47,16 @@ export default {
       return env.ASSETS.fetch(request);
     }
 
-    if (request.method !== "POST") {
-      return json({ error: "method_not_allowed" }, 405);
-    }
+    if (request.method !== "POST") return json({ error: "method_not_allowed" }, 405);
 
     const useCaseId = ROUTES[url.pathname];
     if (!useCaseId) return json({ error: "not_found" }, 404);
 
     const tenantId = request.headers.get("x-tenant-id")?.trim();
     const actorId = request.headers.get("x-actor-id")?.trim();
-    if (!tenantId || !actorId) {
-      return json({ error: "tenant_and_actor_context_required" }, 400);
-    }
+    const currency = request.headers.get("x-currency");
+    if (!tenantId || !actorId) return json({ error: "tenant_and_actor_context_required" }, 400);
+    if (!validCurrency(currency)) return json({ error: "valid_currency_required" }, 400);
 
     let input: unknown;
     try {
@@ -65,11 +67,10 @@ export default {
 
     const correlationId = request.headers.get("x-correlation-id")?.trim() || crypto.randomUUID();
     const idempotencyKey = request.headers.get("idempotency-key")?.trim() || undefined;
-    const currency = request.headers.get("x-currency")?.trim() || "USD";
 
     const foundation = createFoundationRuntime(env.DB, {
       tenantId,
-      currency,
+      currency: currency.trim(),
       authorize: async (requestedUseCase) => requestedUseCase === useCaseId && actorId.length > 0,
     });
 
