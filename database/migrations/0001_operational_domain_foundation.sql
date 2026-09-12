@@ -35,6 +35,7 @@ CREATE INDEX IF NOT EXISTS idx_partners_tenant ON partners(tenant_id);
 
 CREATE TABLE IF NOT EXISTS catalogs (
   id TEXT PRIMARY KEY,
+  tenant_id TEXT NOT NULL REFERENCES tenants(id),
   owner_id TEXT NOT NULL,
   partner_id TEXT REFERENCES partners(id),
   name TEXT NOT NULL,
@@ -42,6 +43,7 @@ CREATE TABLE IF NOT EXISTS catalogs (
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+CREATE INDEX IF NOT EXISTS idx_catalogs_tenant ON catalogs(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_catalogs_partner ON catalogs(partner_id);
 
 CREATE TABLE IF NOT EXISTS products (
