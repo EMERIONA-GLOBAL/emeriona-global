@@ -6,11 +6,15 @@ import type {
 } from "../../../domains/src/index.js";
 import type { D1DatabaseLike } from "../d1.js";
 
-async function one<T extends Record<string, unknown>>(db: D1DatabaseLike, sql: string, values: readonly unknown[]): Promise<T | null> {
+/**
+ * Read the first D1 row without imposing a structural Record constraint on domain entities.
+ * Domain contracts stay intentionally explicit and do not need index signatures.
+ */
+async function one<T>(db: D1DatabaseLike, sql: string, values: readonly unknown[]): Promise<T | null> {
   const statement = db.prepare(sql);
   const bound = values.length ? statement.bind(...values) : statement;
-  const result = await bound.all<T>();
-  return result.results[0] ?? null;
+  const result = await bound.all<T & Record<string, unknown>>();
+  return (result.results[0] as T | undefined) ?? null;
 }
 
 /** Repositories are tenant-scoped explicitly; tenant isolation is never inferred from entity IDs. */
@@ -77,4 +81,4 @@ export class D1OrderRepository implements OrderRepositoryPortV1 {
   }
 }
 
-export const D1_DOMAIN_REPOSITORIES_VERSION = "1.0.1" as const;
+export const D1_DOMAIN_REPOSITORIES_VERSION = "1.0.2" as const;
