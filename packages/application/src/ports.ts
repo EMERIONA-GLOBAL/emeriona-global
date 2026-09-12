@@ -1,4 +1,4 @@
-import type { EntityRecord, EntityRepository } from "../../domains/src/repositories.js";
+import type { EntityRecord, EntityRepository } from "../../domains/src/index.js";
 import type { UseCaseContext, UseCaseId, UseCaseResponse } from "./index.js";
 
 /** Application-facing repository boundary; implementations remain outside Application. */
