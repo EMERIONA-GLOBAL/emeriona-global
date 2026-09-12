@@ -9,4 +9,6 @@ export { PersistenceEntityRepository, PERSISTENCE_REPOSITORY_VERSION } from './r
 export type { PersistenceEntityMapper } from './repositories/persistence-repository.js';
 export { D1CustomerRepository, D1ProductRepository, D1ServiceRepository, D1PartnerRepository, D1CartRepository, D1OrderRepository, D1_DOMAIN_REPOSITORIES_VERSION } from './repositories/domain-repositories.js';
 export { PolicyAuthorizationAdapter, InMemoryIdempotencyAdapter, NoopAuditAdapter, NoopTelemetryAdapter, APPLICATION_INFRASTRUCTURE_ADAPTERS_VERSION } from './adapters/application-ports.js';
-export const STEP_68={name:'Infrastructure & Integration Adapter Foundation',version:'1.1.0',status:'EXECUTABLE',providerNeutral:true} as const;
+export { createFoundationRuntime, executeFoundationUseCase, INFRASTRUCTURE_COMPOSITION_VERSION } from './composition.js';
+export type { FoundationCompositionOptions, FoundationRuntime } from './composition.js';
+export const STEP_68={name:'Infrastructure & Integration Adapter Foundation',version:'1.2.0',status:'EXECUTABLE_COMPOSITION',providerNeutral:true} as const;
