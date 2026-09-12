@@ -1,6 +1,6 @@
 import type { EntityId, Result } from "../../../core/src/index.js";
 import { fail, ok } from "../../../core/src/index.js";
-import type { EntityRecord, EntityRepository } from "../../../domains/src/repositories.js";
+import type { EntityRecord, EntityRepository } from "../../../domains/src/index.js";
 import type { PersistenceExecutor } from "../../../core/src/index.js";
 
 /**
