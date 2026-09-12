@@ -17,7 +17,6 @@ import {
   CreatePartnerHandler,
   CreateProductHandler,
   CreateServiceHandler,
-  DefaultUseCaseBus,
   DefaultUseCaseRuntime,
 } from "../../application/src/index.js";
 import {
@@ -45,7 +44,7 @@ export interface FoundationCompositionOptions {
 
 export interface FoundationRuntime {
   readonly runtime: UseCaseRuntime;
-  readonly bus: DefaultUseCaseBus;
+  readonly execute: <I, O>(request: UseCaseRequest<I>) => Promise<UseCaseResponse<O>>;
 }
 
 function randomId(prefix: string): string {
@@ -89,8 +88,11 @@ export function createFoundationRuntime(
     telemetry: new NoopTelemetryAdapter(),
   });
 
-  const bus = new DefaultUseCaseBus();
-  const register = <I, O>(id: UseCaseId, handler: UseCaseHandler<I, O>) => bus.register(id, handler);
+  const handlers = new Map<string, UseCaseHandler<unknown, unknown>>();
+  const register = <I, O>(id: UseCaseId, handler: UseCaseHandler<I, O>) => {
+    if (handlers.has(id)) throw new Error(`Use case already registered: ${id}`);
+    handlers.set(id, handler as UseCaseHandler<unknown, unknown>);
+  };
 
   register("customer.create" as UseCaseId, new CreateCustomerHandler(customerRepository, ids));
   register("catalog.product.create" as UseCaseId, new CreateProductHandler(productRepository, ids));
@@ -99,15 +101,14 @@ export function createFoundationRuntime(
   register("cart.create" as UseCaseId, new CreateCartHandler(cartRepository, ids));
   register("order.create" as UseCaseId, new CreateOrderHandler(orderRepository, ids));
 
-  return { runtime, bus };
+  return {
+    runtime,
+    execute: async <I, O>(request: UseCaseRequest<I>) => {
+      const handler = handlers.get(request.useCaseId);
+      if (!handler) throw new Error(`Use case handler not found: ${request.useCaseId}`);
+      return runtime.execute(handler as UseCaseHandler<I, O>, request);
+    },
+  };
 }
 
-export async function executeFoundationUseCase<I, O>(
-  runtime: UseCaseRuntime,
-  handler: UseCaseHandler<I, O>,
-  request: UseCaseRequest<I>,
-): Promise<UseCaseResponse<O>> {
-  return runtime.execute(handler, request);
-}
-
-export const INFRASTRUCTURE_COMPOSITION_VERSION = "1.0.1" as const;
+export const INFRASTRUCTURE_COMPOSITION_VERSION = "1.0.2" as const;
