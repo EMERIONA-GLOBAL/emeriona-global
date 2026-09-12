@@ -27,4 +27,6 @@ export function asCorrelationId(value:string):CorrelationId{if(!value.trim())thr
 export function asEventId(value:string):EventId{if(!value.trim())throw new Error("EventId cannot be empty");return value as EventId;}
 export function asVersion(value:string):Version{if(!/^\d+\.\d+\.\d+$/.test(value))throw new Error("Version must be semantic x.y.z");return value as Version;}
 export function validateContext(context:RequestContext):Result<RequestContext>{if(!context.requestId||!context.tenantId)return fail({code:"CORE_CONTEXT_INVALID",message:"requestId and tenantId are required",category:"VALIDATION"});const meta=validateMetadata(context.metadata);return meta.ok?ok(context):meta;}
+export type { PersistenceExecutor, QueryResult, TransactionalPersistence } from "./persistence.js";
+export { PERSISTENCE_CONTRACT_VERSION } from "./persistence.js";
 export const STEP_66={name:"Shared Core & Contracts Integration Foundation",version:"1.0.0",status:"FOUNDATION",providerNeutral:true} as const;
