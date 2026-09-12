@@ -6,7 +6,7 @@ export type { ProductId, ServiceId, CatalogId, CatalogOwnerId, Product, Service,
 export { CATALOG_DOMAIN_VERSION } from "./catalog.js";
 export type { PartnerId, PartnerOfferId, SettlementId, PartnerAccount, PartnerStore, PartnerProduct, PartnerService, PartnerOffer, PartnerSettlement, PartnerAccessPolicy, PartnerRepositoryPort } from "./partner.js";
 export { PARTNER_ECOSYSTEM_DOMAIN_VERSION } from "./partner.js";
-export type { OrderId, CartId, PaymentId, OfferId, DiscountId, Money, PriceQuote, Offer, Discount, Cart, Order, PaymentTransaction, Fulfillment, PricingPort, PromotionPort, CommerceRepositoryPort } from "./commerce.js";
+export type { OrderId, CartId, PaymentId, OfferId, DiscountId, Money, PriceQuote, Offer, Discount, Cart, Order, PaymentTransaction, Fulfillment, Settlement, PricingPort, PromotionPort, CommerceRepositoryPort, FulfillmentPort, SettlementPort } from "./commerce.js";
 export { COMMERCE_DOMAIN_VERSION } from "./commerce.js";
 export type { PaymentIntent, PaymentProviderPort, BillingPort } from "./payments.js";
 export { PAYMENTS_DOMAIN_VERSION } from "./payments.js";
@@ -18,4 +18,4 @@ export type { CustomerRepositoryPortV1, ProductRepositoryPortV1, ServiceReposito
 export { DOMAIN_REPOSITORY_PORTS_VERSION } from "./ports.js";
 
 /** Domain package public boundary. Keep provider-specific infrastructure out of this layer. */
-export const DOMAIN_LAYER_VERSION = "1.2.0" as const;
+export const DOMAIN_LAYER_VERSION = "1.2.1" as const;
