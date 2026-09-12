@@ -12,4 +12,6 @@ export function validateRequest<T>(request:UseCaseRequest<T>):void{if(!request.u
 export class DefaultUseCaseBus implements UseCaseBus{private readonly handlers=new Map<string,UseCaseHandler<unknown,unknown>>();register<T,R>(id:UseCaseId,handler:UseCaseHandler<T,R>):void{if(this.handlers.has(id))throw new Error(`Use case already registered: ${id}`);this.handlers.set(id,handler as UseCaseHandler<unknown,unknown>);}async execute<T,R>(request:UseCaseRequest<T>):Promise<UseCaseResponse<R>>{validateRequest(request);const handler=this.handlers.get(request.useCaseId);if(!handler)throw new Error(`Use case handler not found: ${request.useCaseId}`);return handler.handle(request) as Promise<UseCaseResponse<R>>;}}
 export type { ApplicationRepository, TransactionPort, AuthorizationPort, IdempotencyPort, AuditPort, TelemetryPort } from './ports.js';
 export { APPLICATION_PORTS_VERSION } from './ports.js';
+export type { UseCaseRuntimeDependencies, UseCaseRuntime } from './runtime.js';
+export { DefaultUseCaseRuntime, APPLICATION_RUNTIME_VERSION } from './runtime.js';
 export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'1.0.0',status:'FOUNDATION',providerNeutral:true} as const;
