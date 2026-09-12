@@ -4,11 +4,11 @@
  */
 import type {
   ApplicationIdFactory,
-  DefaultUseCaseRuntime,
   UseCaseRuntime,
   UseCaseHandler,
   UseCaseRequest,
   UseCaseResponse,
+  UseCaseId,
 } from "../../application/src/index.js";
 import {
   CreateCartHandler,
@@ -17,10 +17,9 @@ import {
   CreatePartnerHandler,
   CreateProductHandler,
   CreateServiceHandler,
+  DefaultUseCaseBus,
+  DefaultUseCaseRuntime,
 } from "../../application/src/index.js";
-import { DefaultUseCaseRuntime } from "../../application/src/index.js";
-import { DefaultUseCaseBus } from "../../application/src/index.js";
-import type { UseCaseId } from "../../application/src/index.js";
 import {
   D1CartRepository,
   D1CustomerRepository,
@@ -55,13 +54,13 @@ function randomId(prefix: string): string {
 
 function defaultIds(): ApplicationIdFactory {
   return {
-    customer: () => randomId("cus") as ReturnType<ApplicationIdFactory["customer"]>,
-    product: () => randomId("prd") as ReturnType<ApplicationIdFactory["product"]>,
-    service: () => randomId("srv") as ReturnType<ApplicationIdFactory["service"]>,
-    partner: () => randomId("ptr") as ReturnType<ApplicationIdFactory["partner"]>,
-    cart: () => randomId("crt") as ReturnType<ApplicationIdFactory["cart"]>,
-    order: () => randomId("ord") as ReturnType<ApplicationIdFactory["order"]>,
-    payment: () => randomId("pay") as ReturnType<ApplicationIdFactory["payment"]>,
+    customer: () => randomId("cus") as ApplicationIdFactory["customer"] extends () => infer T ? T : never,
+    product: () => randomId("prd") as ApplicationIdFactory["product"] extends () => infer T ? T : never,
+    service: () => randomId("srv") as ApplicationIdFactory["service"] extends () => infer T ? T : never,
+    partner: () => randomId("ptr") as ApplicationIdFactory["partner"] extends () => infer T ? T : never,
+    cart: () => randomId("crt") as ApplicationIdFactory["cart"] extends () => infer T ? T : never,
+    order: () => randomId("ord") as ApplicationIdFactory["order"] extends () => infer T ? T : never,
+    payment: () => randomId("pay") as ApplicationIdFactory["payment"] extends () => infer T ? T : never,
   };
 }
 
@@ -111,4 +110,4 @@ export async function executeFoundationUseCase<I, O>(
   return runtime.execute(handler, request);
 }
 
-export const INFRASTRUCTURE_COMPOSITION_VERSION = "1.0.0" as const;
+export const INFRASTRUCTURE_COMPOSITION_VERSION = "1.0.1" as const;
