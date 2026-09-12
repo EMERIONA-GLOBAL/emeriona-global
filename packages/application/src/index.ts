@@ -14,4 +14,6 @@ export type { ApplicationRepository, TransactionPort, AuthorizationPort, Idempot
 export { APPLICATION_PORTS_VERSION } from './ports.js';
 export type { UseCaseRuntimeDependencies, UseCaseRuntime } from './runtime.js';
 export { DefaultUseCaseRuntime, APPLICATION_RUNTIME_VERSION } from './runtime.js';
+export type { UseCaseDomain, UseCaseLifecycle, UseCaseContract, UseCaseContractRegistry } from './contracts.js';
+export { USE_CASE_CONTRACTS, DefaultUseCaseContractRegistry, USE_CASE_CONTRACTS_VERSION } from './contracts.js';
 export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'1.0.0',status:'FOUNDATION',providerNeutral:true} as const;
