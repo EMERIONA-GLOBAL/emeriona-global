@@ -1,114 +1,20 @@
-/**
- * Executable composition root for the provider-neutral application foundation.
- * Infrastructure owns wiring; domain/application layers remain provider-neutral.
- */
-import type {
-  ApplicationIdFactory,
-  UseCaseRuntime,
-  UseCaseHandler,
-  UseCaseRequest,
-  UseCaseResponse,
-  UseCaseId,
-} from "../../application/src/index.js";
-import {
-  CreateCartHandler,
-  CreateCustomerHandler,
-  CreateOrderHandler,
-  CreatePartnerHandler,
-  CreateProductHandler,
-  CreateServiceHandler,
-  DefaultUseCaseRuntime,
-} from "../../application/src/index.js";
-import {
-  D1CartRepository,
-  D1CustomerRepository,
-  D1OrderRepository,
-  D1PartnerRepository,
-  D1ProductRepository,
-  D1ServiceRepository,
-} from "./repositories/domain-repositories.js";
-import {
-  InMemoryIdempotencyAdapter,
-  NoopAuditAdapter,
-  NoopTelemetryAdapter,
-  PolicyAuthorizationAdapter,
-} from "./adapters/application-ports.js";
+import type { ApplicationIdFactory, UseCaseRuntime, UseCaseHandler, UseCaseRequest, UseCaseResponse, UseCaseId } from "../../application/src/index.js";
+import { CreateCartHandler, CreateCustomerHandler, CreateOrderHandler, CreatePartnerHandler, CreateProductHandler, CreateServiceHandler, DefaultUseCaseRuntime } from "../../application/src/index.js";
+import { D1CartRepository, D1CustomerRepository, D1OrderRepository, D1PartnerRepository, D1ProductRepository, D1ServiceRepository } from "./repositories/domain-repositories.js";
+import { D1IdempotencyAdapter, D1AuditAdapter } from "./adapters/d1-runtime.js";
+import { NoopTelemetryAdapter, PolicyAuthorizationAdapter } from "./adapters/application-ports.js";
 import type { D1DatabaseLike } from "./d1.js";
-
-export interface FoundationCompositionOptions {
-  readonly tenantId: string;
-  readonly currency: string;
-  readonly authorize?: (useCaseId: UseCaseId) => Promise<boolean>;
-  readonly ids?: ApplicationIdFactory;
+export interface FoundationCompositionOptions{readonly tenantId:string;readonly currency:string;readonly authorize?:(useCaseId:UseCaseId)=>Promise<boolean>;readonly ids?:ApplicationIdFactory;}
+export interface FoundationRuntime{readonly runtime:UseCaseRuntime;readonly execute:<I,O>(request:UseCaseRequest<I>)=>Promise<UseCaseResponse<O>>;}
+function randomId(prefix:string):string{return `${prefix}_${crypto.randomUUID()}`;}
+function defaultIds():ApplicationIdFactory{return {customer:()=>randomId("cus") as ApplicationIdFactory["customer"] extends()=>infer T?T:never,product:()=>randomId("prd") as ApplicationIdFactory["product"] extends()=>infer T?T:never,service:()=>randomId("srv") as ApplicationIdFactory["service"] extends()=>infer T?T:never,partner:()=>randomId("ptr") as ApplicationIdFactory["partner"] extends()=>infer T?T:never,cart:()=>randomId("crt") as ApplicationIdFactory["cart"] extends()=>infer T?T:never,order:()=>randomId("ord") as ApplicationIdFactory["order"] extends()=>infer T?T:never,payment:()=>randomId("pay") as ApplicationIdFactory["payment"] extends()=>infer T?T:never};}
+export function createFoundationRuntime(db:D1DatabaseLike,options:FoundationCompositionOptions):FoundationRuntime{
+ const ids=options.ids??defaultIds();const tenantId=options.tenantId;
+ const customerRepository=new D1CustomerRepository(db,tenantId),productRepository=new D1ProductRepository(db,tenantId),serviceRepository=new D1ServiceRepository(db,tenantId),partnerRepository=new D1PartnerRepository(db),cartRepository=new D1CartRepository(db,tenantId,options.currency),orderRepository=new D1OrderRepository(db,tenantId);
+ const authorization=new PolicyAuthorizationAdapter(async(_context,useCaseId)=>options.authorize?options.authorize(useCaseId):useCaseId.length>0);
+ const runtime=new DefaultUseCaseRuntime({authorization,idempotency:new D1IdempotencyAdapter(db),audit:new D1AuditAdapter(db,tenantId),telemetry:new NoopTelemetryAdapter()});
+ const handlers=new Map<string,UseCaseHandler<unknown,unknown>>();const register=<I,O>(id:UseCaseId,handler:UseCaseHandler<I,O>)=>{if(handlers.has(id))throw new Error(`Use case already registered: ${id}`);handlers.set(id,handler as UseCaseHandler<unknown,unknown>);};
+ register("customer.create" as UseCaseId,new CreateCustomerHandler(customerRepository,ids));register("catalog.product.create" as UseCaseId,new CreateProductHandler(productRepository,ids));register("catalog.service.create" as UseCaseId,new CreateServiceHandler(serviceRepository,ids));register("partner.create" as UseCaseId,new CreatePartnerHandler(partnerRepository,ids));register("cart.create" as UseCaseId,new CreateCartHandler(cartRepository,ids));register("order.create" as UseCaseId,new CreateOrderHandler(orderRepository,ids));
+ return {runtime,execute:async<I,O>(request:UseCaseRequest<I>)=>{const handler=handlers.get(request.useCaseId);if(!handler)throw new Error(`Use case handler not found: ${request.useCaseId}`);return runtime.execute(handler as UseCaseHandler<I,O>,request);}};
 }
-
-export interface FoundationRuntime {
-  readonly runtime: UseCaseRuntime;
-  readonly execute: <I, O>(request: UseCaseRequest<I>) => Promise<UseCaseResponse<O>>;
-}
-
-function randomId(prefix: string): string {
-  return `${prefix}_${crypto.randomUUID()}`;
-}
-
-function defaultIds(): ApplicationIdFactory {
-  return {
-    customer: () => randomId("cus") as ApplicationIdFactory["customer"] extends () => infer T ? T : never,
-    product: () => randomId("prd") as ApplicationIdFactory["product"] extends () => infer T ? T : never,
-    service: () => randomId("srv") as ApplicationIdFactory["service"] extends () => infer T ? T : never,
-    partner: () => randomId("ptr") as ApplicationIdFactory["partner"] extends () => infer T ? T : never,
-    cart: () => randomId("crt") as ApplicationIdFactory["cart"] extends () => infer T ? T : never,
-    order: () => randomId("ord") as ApplicationIdFactory["order"] extends () => infer T ? T : never,
-    payment: () => randomId("pay") as ApplicationIdFactory["payment"] extends () => infer T ? T : never,
-  };
-}
-
-export function createFoundationRuntime(
-  db: D1DatabaseLike,
-  options: FoundationCompositionOptions,
-): FoundationRuntime {
-  const ids = options.ids ?? defaultIds();
-  const tenantId = options.tenantId;
-
-  const customerRepository = new D1CustomerRepository(db, tenantId);
-  const productRepository = new D1ProductRepository(db, tenantId);
-  const serviceRepository = new D1ServiceRepository(db, tenantId);
-  const partnerRepository = new D1PartnerRepository(db);
-  const cartRepository = new D1CartRepository(db, tenantId, options.currency);
-  const orderRepository = new D1OrderRepository(db, tenantId);
-
-  const authorization = new PolicyAuthorizationAdapter(async (_context, useCaseId) => {
-    return options.authorize ? options.authorize(useCaseId) : useCaseId.length > 0;
-  });
-
-  const runtime = new DefaultUseCaseRuntime({
-    authorization,
-    idempotency: new InMemoryIdempotencyAdapter(),
-    audit: new NoopAuditAdapter(),
-    telemetry: new NoopTelemetryAdapter(),
-  });
-
-  const handlers = new Map<string, UseCaseHandler<unknown, unknown>>();
-  const register = <I, O>(id: UseCaseId, handler: UseCaseHandler<I, O>) => {
-    if (handlers.has(id)) throw new Error(`Use case already registered: ${id}`);
-    handlers.set(id, handler as UseCaseHandler<unknown, unknown>);
-  };
-
-  register("customer.create" as UseCaseId, new CreateCustomerHandler(customerRepository, ids));
-  register("catalog.product.create" as UseCaseId, new CreateProductHandler(productRepository, ids));
-  register("catalog.service.create" as UseCaseId, new CreateServiceHandler(serviceRepository, ids));
-  register("partner.create" as UseCaseId, new CreatePartnerHandler(partnerRepository, ids));
-  register("cart.create" as UseCaseId, new CreateCartHandler(cartRepository, ids));
-  register("order.create" as UseCaseId, new CreateOrderHandler(orderRepository, ids));
-
-  return {
-    runtime,
-    execute: async <I, O>(request: UseCaseRequest<I>) => {
-      const handler = handlers.get(request.useCaseId);
-      if (!handler) throw new Error(`Use case handler not found: ${request.useCaseId}`);
-      return runtime.execute(handler as UseCaseHandler<I, O>, request);
-    },
-  };
-}
-
-export const INFRASTRUCTURE_COMPOSITION_VERSION = "1.0.2" as const;
+export const INFRASTRUCTURE_COMPOSITION_VERSION="1.1.0" as const;
