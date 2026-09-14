@@ -1,24 +1,16 @@
 import { WorkflowEntrypoint, WorkflowStep } from "cloudflare:workers";
 import type { WorkflowEvent } from "cloudflare:workers";
+import {
+  EMERIONA_CORE_WORKFLOW,
+  validateWorkflowExecutionContext,
+} from "../../packages/runtime/src/index.js";
+import type {
+  WorkflowExecutionContext,
+  WorkflowExecutionResult,
+} from "../../packages/runtime/src/index.js";
 
-export interface EmerionaWorkflowPayload {
-  tenantId: string;
-  requestId?: string;
-  correlationId?: string;
-  actorId?: string;
-  operation: string;
-  version?: string;
-  metadata?: Record<string, string>;
-}
-
-export interface EmerionaWorkflowResult {
-  workflow: "emeriona-core-workflow";
-  status: "ACCEPTED";
-  instanceId: string;
-  operation: string;
-  tenantId: string;
-  correlationId?: string;
-}
+export type EmerionaWorkflowPayload = WorkflowExecutionContext;
+export type EmerionaWorkflowResult = WorkflowExecutionResult;
 
 export class EmerionaCoreWorkflow extends WorkflowEntrypoint<Env, EmerionaWorkflowPayload> {
   async run(
@@ -26,19 +18,12 @@ export class EmerionaCoreWorkflow extends WorkflowEntrypoint<Env, EmerionaWorkfl
     step: WorkflowStep,
   ): Promise<EmerionaWorkflowResult> {
     const context = await step.do("validate execution context", async () => {
-      if (!event.payload.tenantId || !event.payload.operation) {
-        throw new Error("workflow_context_required");
-      }
-
-      return {
-        tenantId: event.payload.tenantId,
-        operation: event.payload.operation,
-        correlationId: event.payload.correlationId,
-      };
+      validateWorkflowExecutionContext(event.payload);
+      return event.payload;
     });
 
     return {
-      workflow: "emeriona-core-workflow",
+      workflow: EMERIONA_CORE_WORKFLOW.name,
       status: "ACCEPTED",
       instanceId: event.instanceId,
       operation: context.operation,
