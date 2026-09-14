@@ -11,6 +11,13 @@
       "migrations_dir": "./database/migrations"
     }
   ],
+  "workflows": [
+    {
+      "binding": "EMERIONA_CORE_WORKFLOW",
+      "name": "emeriona-core-workflow",
+      "class_name": "EmerionaCoreWorkflow"
+    }
+  ],
   "assets": {
     "directory": "./apps/web"
   }
