@@ -16,7 +16,7 @@
     "quality": "npm run typecheck && npm test && npm run build"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260912.0",
+    "@cloudflare/workers-types": "^5.20260914.1",
     "typescript": "^5.9.2"
   }
 }
