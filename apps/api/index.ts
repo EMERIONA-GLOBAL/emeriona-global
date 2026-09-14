@@ -10,6 +10,9 @@ import {
   validateRuntimeHttpPolicy,
   RUNTIME_HTTP_VERSION,
 } from "../../packages/runtime/src/index.js";
+import { EmerionaCoreWorkflow } from "./workflows.js";
+
+export { EmerionaCoreWorkflow } from "./workflows.js";
 
 interface AssetsBinding { fetch(request: Request): Promise<Response> }
 interface Env { DB: D1DatabaseLike; ASSETS: AssetsBinding }
@@ -53,6 +56,7 @@ export default {
         layer: "api-runtime",
         apiVersion: API_VERSION,
         runtimeVersion: RUNTIME_HTTP_VERSION,
+        workflow: "emeriona-core-workflow",
       });
     }
 
@@ -75,7 +79,7 @@ export default {
       return errorResponse(
         "invalid_runtime_context",
         error instanceof Error ? error.message : "Invalid runtime context",
-      400,
+        400,
       );
     }
 
@@ -126,6 +130,7 @@ export default {
           transport: "cloudflare-worker",
           runtimeVersion: RUNTIME_HTTP_VERSION,
           apiVersion: API_VERSION,
+          workflow: "emeriona-core-workflow",
         },
       },
       input,
