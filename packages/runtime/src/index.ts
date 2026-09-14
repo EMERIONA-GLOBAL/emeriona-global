@@ -12,4 +12,6 @@ export { DEFAULT_RUNTIME_POLICY, createRuntimeHttpContext, validateRuntimeHttpPo
 export type { RuntimeHttpContext, RuntimeHttpRequest } from './http.js';
 export { API_VERSION, API_ROUTES, createApiError, hasApiPath, resolveApiRoute } from './gateway.js';
 export type { ApiErrorBody, ApiErrorCode, ApiErrorEnvelope, ApiMethod, ApiRouteDefinition, ApiRouteKind, ApiRouteMatch } from './gateway.js';
+export { EMERIONA_CORE_WORKFLOW, validateWorkflowExecutionContext } from './workflow.js';
+export type { WorkflowExecutionContract, WorkflowExecutionContext, WorkflowExecutionResult, WorkflowExecutionStatus } from './workflow.js';
 export const STEP_73={name:'Runtime Configuration & Environment Foundation',version:'1.1.0',status:'OPERATIONAL_HTTP_BOUNDARY',providerNeutral:true} as const;
