@@ -1,0 +1,71 @@
+name: EMERIONA GLOBAL E2 Cloudflare Verification
+
+on:
+  push:
+    branches: ['architecture/e2-api-gateway']
+
+permissions:
+  contents: read
+
+jobs:
+  verify-cloudflare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verify Workflow resource registration
+        run: npx wrangler workflows list --json
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Describe EMERIONA core Workflow
+        run: npx wrangler workflows describe emeriona-core-workflow
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Trigger verification Workflow instance
+        id: trigger
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx wrangler workflows trigger emeriona-core-workflow '{"tenantId":"e2-verification","operation":"e2.workflow.verification","correlationId":"e2-verification"}' --json | tee /tmp/workflow-trigger.json
+          jq -e '.id' /tmp/workflow-trigger.json > /tmp/workflow-instance-id
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Verify Workflow instance completion
+        shell: bash
+        run: |
+          set -euo pipefail
+          INSTANCE_ID="$(cat /tmp/workflow-instance-id)"
+          for attempt in $(seq 1 12); do
+            echo "Verification attempt ${attempt}/12"
+            npx wrangler workflows instances describe emeriona-core-workflow "$INSTANCE_ID" --json | tee /tmp/workflow-instance.json
+            STATUS="$(jq -r '.status // empty' /tmp/workflow-instance.json)"
+            echo "Workflow status: ${STATUS}"
+            case "$STATUS" in
+              complete)
+                jq -e '.status == "complete"' /tmp/workflow-instance.json >/dev/null
+                exit 0
+                ;;
+              errored|terminated|rollingBack)
+                cat /tmp/workflow-instance.json
+                exit 1
+                ;;
+            esac
+            sleep 5
+          done
+          cat /tmp/workflow-instance.json
+          exit 1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
