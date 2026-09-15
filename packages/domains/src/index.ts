@@ -16,6 +16,8 @@ export type { EntityId, MoneyValue, PercentageValue, TenantScope, ResourceScope 
 export { money, percentage, DOMAIN_VALUE_OBJECTS_VERSION } from "./value-objects.js";
 export type { CustomerRepositoryPortV1, ProductRepositoryPortV1, ServiceRepositoryPortV1, PartnerRepositoryPortV1, PartnerCatalogRepositoryPortV1, CartRepositoryPortV1, OrderRepositoryPortV1, UnitOfWorkPort } from "./ports.js";
 export { DOMAIN_REPOSITORY_PORTS_VERSION } from "./ports.js";
+export type { CommerceUseCaseId } from "./commerce-foundation.js";
+export { COMMERCE_FOUNDATION_VERSION, COMMERCE_USE_CASE_IDS, assertMoney, assertSameCurrency, assertOrderTotal, assertPaymentMatchesOrder, assertCheckoutableCart, assertFulfillmentAllowed, COMMERCE_LIFECYCLE } from "./commerce-foundation.js";
 
 /** Domain package public boundary. Keep provider-specific infrastructure out of this layer. */
-export const DOMAIN_LAYER_VERSION = "1.2.1" as const;
+export const DOMAIN_LAYER_VERSION = "1.3.0" as const;
