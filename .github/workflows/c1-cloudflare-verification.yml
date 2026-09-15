@@ -70,3 +70,5 @@ jobs:
             'https://emeriona-global.emerionaglobal.workers.dev/api/v1/products')"
           test "$status" = "405"
           grep -q 'method_not_allowed' /tmp/c1-response.json
+
+# Verification trigger: keep this workflow executable on the C1 branch.
