@@ -1,0 +1,112 @@
+name: EMERIONA GLOBAL C3 Cloudflare Verification
+
+on:
+  push:
+    branches:
+      - 'architecture/c3-payments-revenue'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-c3-payments:
+    name: Verify C3 production payment intent and revenue flow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm install --no-audit --no-fund
+      - name: Apply D1 migrations
+        run: npx wrangler d1 migrations apply emeriona-global-db --remote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy Worker
+        run: npx wrangler deploy --config wrangler.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Verify production health and readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health | tee /tmp/health.json
+          grep -q '"status":"ok"' /tmp/health.json
+          curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health/ready | tee /tmp/ready.json
+          grep -q '"status":"ready"' /tmp/ready.json
+          grep -q '"database":{"status":"ok"' /tmp/ready.json
+      - name: Verify C3 schema
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx wrangler d1 execute emeriona-global-db --remote --command="SELECT name FROM sqlite_master WHERE type='table' AND name IN ('payment_intents','payment_events','revenue_entries','invoices') ORDER BY name;" | tee /tmp/c3-schema.txt
+          for table in payment_intents payment_events revenue_entries invoices; do grep -q "$table" /tmp/c3-schema.txt; done
+      - name: Seed isolated C3 smoke order
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          TENANT_ID="c3-smoke-${GITHUB_RUN_ID}"
+          CUSTOMER_ID="c3-customer-${GITHUB_RUN_ID}"
+          ORDER_ID="c3-order-${GITHUB_RUN_ID}"
+          npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${TENANT_ID}','C3 Production Payment Smoke ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO customers (id,tenant_id,display_name,status) VALUES ('${CUSTOMER_ID}','${TENANT_ID}','C3 Payment Customer','ACTIVE'); INSERT INTO orders (id,tenant_id,customer_id,status,total_amount,currency) VALUES ('${ORDER_ID}','${TENANT_ID}','${CUSTOMER_ID}','PENDING',50,'USD');"
+          echo "TENANT_ID=${TENANT_ID}" >> "$GITHUB_ENV"
+          echo "CUSTOMER_ID=${CUSTOMER_ID}" >> "$GITHUB_ENV"
+          echo "ORDER_ID=${ORDER_ID}" >> "$GITHUB_ENV"
+      - name: Create production payment intent
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://emeriona-global.emerionaglobal.workers.dev'
+          COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H 'x-actor-id: c3-smoke-actor' -H 'x-currency: USD' -H 'content-type: application/json')
+          KEY="c3-payment-${GITHUB_RUN_ID}"
+          curl -fsS "${COMMON[@]}" -H "idempotency-key: ${KEY}" -X POST "$BASE/api/v1/payment-intents" -d "{\"orderId\":\"${ORDER_ID}\",\"amount\":{\"amount\":50,\"currency\":\"USD\"}}" | tee /tmp/payment.json
+          PAYMENT_ID=$(jq -r '.data.id' /tmp/payment.json)
+          STATUS=$(jq -r '.data.status' /tmp/payment.json)
+          AMOUNT=$(jq -r '.data.amount.amount' /tmp/payment.json)
+          test -n "$PAYMENT_ID" && test "$PAYMENT_ID" != null
+          test "$STATUS" = 'CREATED'
+          test "$AMOUNT" = '50'
+          echo "PAYMENT_ID=${PAYMENT_ID}" >> "$GITHUB_ENV"
+          echo "PAYMENT_KEY=${KEY}" >> "$GITHUB_ENV"
+      - name: Verify payment intent idempotency
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://emeriona-global.emerionaglobal.workers.dev'
+          COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H 'x-actor-id: c3-smoke-actor' -H 'x-currency: USD' -H 'content-type: application/json')
+          curl -fsS "${COMMON[@]}" -H "idempotency-key: ${PAYMENT_KEY}" -X POST "$BASE/api/v1/payment-intents" -d "{\"orderId\":\"${ORDER_ID}\",\"amount\":{\"amount\":50,\"currency\":\"USD\"}}" | tee /tmp/payment-repeat.json
+          REPEAT_ID=$(jq -r '.data.id' /tmp/payment-repeat.json)
+          test "$REPEAT_ID" = "$PAYMENT_ID"
+      - name: Verify persisted payment, event, revenue and audit evidence
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          SQL="SELECT (SELECT count(*) FROM payment_intents WHERE id='${PAYMENT_ID}' AND tenant_id='${TENANT_ID}' AND order_id='${ORDER_ID}' AND status='CREATED' AND amount=50 AND currency='USD') AS payment_ok, (SELECT count(*) FROM payment_events WHERE payment_intent_id='${PAYMENT_ID}' AND tenant_id='${TENANT_ID}' AND to_status='CREATED') AS event_ok, (SELECT count(*) FROM revenue_entries WHERE payment_intent_id='${PAYMENT_ID}' AND tenant_id='${TENANT_ID}' AND order_id='${ORDER_ID}' AND amount=50 AND status='PENDING') AS revenue_ok, (SELECT count(*) FROM idempotency_records WHERE tenant_id='${TENANT_ID}' AND idempotency_key='${PAYMENT_KEY}' AND status='COMPLETED') AS idempotency_ok, (SELECT count(*) FROM audit_events WHERE tenant_id='${TENANT_ID}' AND use_case_id='payment.intent.create' AND outcome='SUCCEEDED') AS audit_ok;"
+          npx wrangler d1 execute emeriona-global-db --remote --command="$SQL" | tee /tmp/c3-persistence.txt
+          grep -q 'payment_ok.*1' /tmp/c3-persistence.txt
+          grep -q 'event_ok.*1' /tmp/c3-persistence.txt
+          grep -q 'revenue_ok.*1' /tmp/c3-persistence.txt
+          grep -q 'idempotency_ok.*1' /tmp/c3-persistence.txt
+          grep -q 'audit_ok.*1' /tmp/c3-persistence.txt
+      - name: Verify payment route protection
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(curl -sS -o /tmp/c3-get.json -w '%{http_code}' 'https://emeriona-global.emerionaglobal.workers.dev/api/v1/payment-intents')"
+          test "$status" = '405'
+          grep -q 'method_not_allowed' /tmp/c3-get.json
