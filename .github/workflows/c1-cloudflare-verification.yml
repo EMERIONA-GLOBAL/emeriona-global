@@ -51,9 +51,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx wrangler d1 execute emeriona-global-db --remote --command="SELECT version FROM d1_migrations ORDER BY id;" | tee /tmp/migrations.txt
-          grep -q '0000_data_layer_foundation.sql' /tmp/migrations.txt
-          grep -q '0001_operational_domain_foundation.sql' /tmp/migrations.txt
+          npx wrangler d1 execute emeriona-global-db --remote --command="SELECT * FROM d1_migrations ORDER BY id;" | tee /tmp/migrations.txt
+          grep -q '0000_data_layer_foundation' /tmp/migrations.txt
+          grep -q '0001_operational_domain_foundation' /tmp/migrations.txt
           npx wrangler d1 execute emeriona-global-db --remote --command="SELECT name FROM sqlite_master WHERE type='table' AND name IN ('tenants','customers','partners','catalogs','products','services','carts','cart_items','orders','order_items','payment_intents','invoices','fulfillments','settlements','idempotency_records','audit_events') ORDER BY name;" | tee /tmp/commerce-schema.txt
           for table in tenants customers partners catalogs products services carts cart_items orders order_items payment_intents invoices fulfillments settlements idempotency_records audit_events; do
             grep -q "$table" /tmp/commerce-schema.txt
