@@ -1,0 +1,120 @@
+name: EMERIONA GLOBAL C2 Cloudflare Verification
+
+on:
+  push:
+    branches:
+      - 'architecture/c2-commerce-operations'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-c2-commerce:
+    name: Verify C2 production commerce flow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install
+        run: npm install --no-audit --no-fund
+
+      - name: Deploy Worker
+        run: npx wrangler deploy --config wrangler.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Verify production health and readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health | tee /tmp/health.json
+          grep -q '"status":"ok"' /tmp/health.json
+          curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health/ready | tee /tmp/ready.json
+          grep -q '"status":"ready"' /tmp/ready.json
+          grep -q '"database":{"status":"ok"' /tmp/ready.json
+
+      - name: Verify D1 schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx wrangler d1 execute emeriona-global-db --remote --command="SELECT name FROM sqlite_master WHERE type='table' AND name IN ('tenants','customers','products','services','carts','cart_items','orders','order_items','idempotency_records','audit_events') ORDER BY name;" | tee /tmp/schema.txt
+          for table in tenants customers products services carts cart_items orders order_items idempotency_records audit_events; do grep -q "$table" /tmp/schema.txt; done
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Seed isolated C2 smoke tenant
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          TENANT_ID="c2-smoke-${GITHUB_RUN_ID}"
+          npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${TENANT_ID}','C2 Production Smoke ${GITHUB_RUN_ID}','ACTIVE');"
+          echo "TENANT_ID=${TENANT_ID}" >> "$GITHUB_ENV"
+
+      - name: Execute customer → product → cart → item → checkout flow
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://emeriona-global.emerionaglobal.workers.dev'
+          ACTOR='c2-smoke-actor'
+          COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "x-actor-id: ${ACTOR}" -H 'x-currency: USD' -H 'content-type: application/json')
+
+          curl -fsS "${COMMON[@]}" -H 'idempotency-key: c2-customer-'"${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/customers" -d '{"displayName":"C2 Smoke Customer"}' | tee /tmp/customer.json
+          CUSTOMER_ID=$(jq -r '.data.id' /tmp/customer.json)
+          test -n "$CUSTOMER_ID" && test "$CUSTOMER_ID" != null
+
+          curl -fsS "${COMMON[@]}" -H 'idempotency-key: c2-product-'"${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/products" -d '{"ownerId":"c2-smoke-owner","name":"C2 Smoke Product"}' | tee /tmp/product.json
+          PRODUCT_ID=$(jq -r '.data.id' /tmp/product.json)
+          test -n "$PRODUCT_ID" && test "$PRODUCT_ID" != null
+
+          curl -fsS "${COMMON[@]}" -H 'idempotency-key: c2-cart-'"${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/carts" -d "{\"customerId\":\"${CUSTOMER_ID}\"}" | tee /tmp/cart.json
+          CART_ID=$(jq -r '.data.id' /tmp/cart.json)
+          test -n "$CART_ID" && test "$CART_ID" != null
+
+          curl -fsS "${COMMON[@]}" -H 'idempotency-key: c2-item-'"${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/cart-items" -d "{\"cartId\":\"${CART_ID}\",\"productId\":\"${PRODUCT_ID}\",\"quantity\":2,\"unitAmount\":{\"amount\":25,\"currency\":\"USD\"}}" | tee /tmp/cart-item.json
+          CART_ITEM_ID=$(jq -r '.data.id' /tmp/cart-item.json)
+          test -n "$CART_ITEM_ID" && test "$CART_ITEM_ID" != null
+
+          curl -fsS "${COMMON[@]}" -H 'idempotency-key: c2-checkout-'"${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/checkout" -d "{\"cartId\":\"${CART_ID}\"}" | tee /tmp/checkout.json
+          ORDER_ID=$(jq -r '.data.orderId' /tmp/checkout.json)
+          TOTAL=$(jq -r '.data.total.amount' /tmp/checkout.json)
+          test -n "$ORDER_ID" && test "$ORDER_ID" != null
+          test "$TOTAL" = '50'
+          echo "CUSTOMER_ID=${CUSTOMER_ID}" >> "$GITHUB_ENV"
+          echo "PRODUCT_ID=${PRODUCT_ID}" >> "$GITHUB_ENV"
+          echo "CART_ID=${CART_ID}" >> "$GITHUB_ENV"
+          echo "ORDER_ID=${ORDER_ID}" >> "$GITHUB_ENV"
+
+      - name: Verify persisted order, cart state, idempotency and audit trail
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          SQL="SELECT (SELECT count(*) FROM orders WHERE id='${ORDER_ID}' AND tenant_id='${TENANT_ID}' AND total_amount=50 AND status='PENDING') AS order_ok, (SELECT count(*) FROM order_items WHERE order_id='${ORDER_ID}') AS items_ok, (SELECT count(*) FROM carts WHERE id='${CART_ID}' AND tenant_id='${TENANT_ID}' AND status='CHECKED_OUT') AS cart_ok, (SELECT count(*) FROM idempotency_records WHERE tenant_id='${TENANT_ID}' AND status='COMPLETED') AS idempotency_ok, (SELECT count(*) FROM audit_events WHERE tenant_id='${TENANT_ID}' AND outcome='SUCCEEDED') AS audit_ok;"
+          npx wrangler d1 execute emeriona-global-db --remote --command="$SQL" | tee /tmp/c2-persistence.txt
+          grep -q 'order_ok.*1' /tmp/c2-persistence.txt
+          grep -q 'items_ok.*1' /tmp/c2-persistence.txt
+          grep -q 'cart_ok.*1' /tmp/c2-persistence.txt
+          grep -q 'idempotency_ok.*5' /tmp/c2-persistence.txt
+          grep -q 'audit_ok.*5' /tmp/c2-persistence.txt
+
+      - name: Verify unsupported GET remains protected
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(curl -sS -o /tmp/c2-get.json -w '%{http_code}' 'https://emeriona-global.emerionaglobal.workers.dev/api/v1/checkout')"
+          test "$status" = '405'
+          grep -q 'method_not_allowed' /tmp/c2-get.json
