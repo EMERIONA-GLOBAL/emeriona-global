@@ -1,0 +1,76 @@
+name: EMERIONA GLOBAL C1 Cloudflare Verification
+
+on:
+  push:
+    branches:
+      - 'architecture/c1-commerce-core'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-c1-cloudflare:
+    name: Verify C1 runtime and D1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install
+        run: npm install --no-audit --no-fund
+
+      - name: Deploy Worker
+        run: npx wrangler deploy --config wrangler.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Verify production health
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health | tee /tmp/health.json
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"service":"emeriona-global"' /tmp/health.json
+
+      - name: Verify production readiness and D1
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health/ready | tee /tmp/ready.json
+          grep -q '"status":"ready"' /tmp/ready.json
+          grep -q '"database":{"status":"ok"' /tmp/ready.json
+
+      - name: Verify D1 migrations and commerce schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx wrangler d1 execute emeriona-global-db --remote --command="SELECT version FROM d1_migrations ORDER BY id;" | tee /tmp/migrations.txt
+          grep -q '0000_data_layer_foundation.sql' /tmp/migrations.txt
+          grep -q '0001_operational_domain_foundation.sql' /tmp/migrations.txt
+          npx wrangler d1 execute emeriona-global-db --remote --command="SELECT name FROM sqlite_master WHERE type='table' AND name IN ('tenants','customers','partners','catalogs','products','services','carts','cart_items','orders','order_items','payment_intents','invoices','fulfillments','settlements','idempotency_records','audit_events') ORDER BY name;" | tee /tmp/commerce-schema.txt
+          for table in tenants customers partners catalogs products services carts cart_items orders order_items payment_intents invoices fulfillments settlements idempotency_records audit_events; do
+            grep -q "$table" /tmp/commerce-schema.txt
+          done
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Verify C1 commercial boundary rejects incomplete context
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$(curl -sS -o /tmp/c1-response.json -w '%{http_code}' -X POST \
+            'https://emeriona-global.emerionaglobal.workers.dev/api/v1/products' \
+            -H 'content-type: application/json' \
+            -H 'x-currency: USD' \
+            -H 'x-actor-id: c1-verification' \
+            -d '{"ownerId":"c1-verification","name":"C1 boundary probe"}')"
+          test "$status" = "400"
+          grep -q 'tenant_and_actor_context_required' /tmp/c1-response.json
