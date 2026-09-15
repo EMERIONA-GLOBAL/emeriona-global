@@ -1,0 +1,118 @@
+name: EMERIONA GLOBAL E2 Cloudflare Verification
+
+on:
+  push:
+    branches:
+      - 'architecture/e2-api-gateway'
+      - 'architecture/ha-1-availability'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-cloudflare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Deploy Worker and register Workflow resource
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx wrangler deploy --config wrangler.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Verify production health
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_URL="https://emeriona-global.emerionaglobal.workers.dev"
+          curl -fsS "$BASE_URL/api/health"
+
+      - name: Verify production readiness and D1
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_URL="https://emeriona-global.emerionaglobal.workers.dev"
+          response="$(curl -fsS "$BASE_URL/api/health/ready")"
+          echo "$response"
+          echo "$response" | grep -q '"status":"ready"'
+          echo "$response" | grep -q '"database":{"status":"ok"'
+
+      - name: Verify Workflow resource registration
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx wrangler workflows list --per-page 100 | tee /tmp/workflows-list.txt
+          grep -q 'emeriona-core-workflow' /tmp/workflows-list.txt
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Describe EMERIONA core Workflow
+        run: npx wrangler workflows describe emeriona-core-workflow
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Trigger verification Workflow instance
+        id: trigger
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx wrangler workflows trigger emeriona-core-workflow '{"tenantId":"e2-verification","operation":"e2.workflow.verification","correlationId":"e2-verification"}' | tee /tmp/workflow-trigger.txt
+          INSTANCE_ID="$(grep -Eo 'cf_[0-9a-fA-F-]{20,}' /tmp/workflow-trigger.txt | tail -n 1)"
+          test -n "$INSTANCE_ID"
+          printf '%s\n' "$INSTANCE_ID" > /tmp/workflow-instance-id
+          echo "Workflow instance id: $INSTANCE_ID"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Verify Workflow instance completion
+        shell: bash
+        run: |
+          set -euo pipefail
+          INSTANCE_ID="$(cat /tmp/workflow-instance-id)"
+          for attempt in $(seq 1 12); do
+            echo "Verification attempt ${attempt}/12"
+            set +e
+            npx wrangler workflows instances describe emeriona-core-workflow "$INSTANCE_ID" 2>&1 | tee /tmp/workflow-instance.txt
+            DESCRIBE_STATUS=${PIPESTATUS[0]}
+            set -e
+
+            if grep -qiE 'status[^[:alnum:]]+complete|Status:[[:space:]]*complete' /tmp/workflow-instance.txt; then
+              exit 0
+            fi
+
+            if grep -qiE 'status[^[:alnum:]]+(errored|terminated|rollingBack)|Status:[[:space:]]*(errored|terminated|rollingBack)' /tmp/workflow-instance.txt; then
+              cat /tmp/workflow-instance.txt
+              exit 1
+            fi
+
+            if [ "$DESCRIBE_STATUS" -ne 0 ]; then
+              if grep -qi 'workflows.api.error.instance.not_found' /tmp/workflow-instance.txt; then
+                echo "Workflow instance is not visible yet; retrying."
+                sleep 5
+                continue
+              fi
+              cat /tmp/workflow-instance.txt
+              exit "$DESCRIBE_STATUS"
+            fi
+
+            sleep 5
+          done
+          cat /tmp/workflow-instance.txt
+          exit 1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
