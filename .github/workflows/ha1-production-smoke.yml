@@ -1,0 +1,24 @@
+name: EMERIONA GLOBAL HA-1 Production Smoke
+
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    name: production-smoke
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify production health
+        run: |
+          set -euo pipefail
+          BASE_URL="https://emeriona-global.emerionaglobal.workers.dev"
+          curl -fsS "$BASE_URL/api/health"
+
+      - name: Verify production readiness
+        run: |
+          set -euo pipefail
+          BASE_URL="https://emeriona-global.emerionaglobal.workers.dev"
+          response="$(curl -fsS "$BASE_URL/api/health/ready")"
+          echo "$response"
+          echo "$response" | grep -q '"status":"ready"'
+          echo "$response" | grep -q '"database":{"status":"ok"'
