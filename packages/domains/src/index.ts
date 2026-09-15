@@ -10,6 +10,8 @@ export type { OrderId, CartId, PaymentId, OfferId, DiscountId, Money, PriceQuote
 export { COMMERCE_DOMAIN_VERSION } from "./commerce.js";
 export type { PaymentIntent, PaymentProviderPort, BillingPort } from "./payments.js";
 export { PAYMENTS_DOMAIN_VERSION } from "./payments.js";
+export type { PaymentIntentRecord, RevenueEntry, PaymentUseCaseId, PaymentIntentStatus } from "./payments-foundation.js";
+export { PAYMENTS_FOUNDATION_VERSION, PAYMENT_USE_CASE_IDS, assertPaymentAmountMatchesOrder, assertPaymentTransition, PAYMENT_LIFECYCLE } from "./payments-foundation.js";
 export type { RecommendationId, AgentRunId, Recommendation, SalesAssistantRequest, SalesAssistantResponse, AgentRun, RecommendationPort, SalesAssistantPort, AgentPort, ModelRouterPort } from "./ai.js";
 export { AI_DOMAIN_VERSION } from "./ai.js";
 export type { EntityId, MoneyValue, PercentageValue, TenantScope, ResourceScope } from "./value-objects.js";
@@ -20,4 +22,4 @@ export type { CommerceUseCaseId } from "./commerce-foundation.js";
 export { COMMERCE_FOUNDATION_VERSION, COMMERCE_USE_CASE_IDS, assertMoney, assertSameCurrency, assertOrderTotal, assertPaymentMatchesOrder, assertCheckoutableCart, assertFulfillmentAllowed, COMMERCE_LIFECYCLE } from "./commerce-foundation.js";
 
 /** Domain package public boundary. Keep provider-specific infrastructure out of this layer. */
-export const DOMAIN_LAYER_VERSION = "1.3.0" as const;
+export const DOMAIN_LAYER_VERSION = "1.4.0" as const;
