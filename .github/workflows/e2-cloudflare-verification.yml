@@ -51,7 +51,7 @@ jobs:
         run: |
           set -euo pipefail
           npx wrangler workflows trigger emeriona-core-workflow '{"tenantId":"e2-verification","operation":"e2.workflow.verification","correlationId":"e2-verification"}' | tee /tmp/workflow-trigger.txt
-          INSTANCE_ID="$(grep -Eo '[0-9a-fA-F-]{20,}' /tmp/workflow-trigger.txt | tail -n 1)"
+          INSTANCE_ID="$(grep -Eo 'cf_[0-9a-fA-F-]{20,}' /tmp/workflow-trigger.txt | tail -n 1)"
           test -n "$INSTANCE_ID"
           printf '%s\n' "$INSTANCE_ID" > /tmp/workflow-instance-id
           echo "Workflow instance id: $INSTANCE_ID"
@@ -66,14 +66,30 @@ jobs:
           INSTANCE_ID="$(cat /tmp/workflow-instance-id)"
           for attempt in $(seq 1 12); do
             echo "Verification attempt ${attempt}/12"
-            npx wrangler workflows instances describe emeriona-core-workflow "$INSTANCE_ID" | tee /tmp/workflow-instance.txt
+            set +e
+            npx wrangler workflows instances describe emeriona-core-workflow "$INSTANCE_ID" 2>&1 | tee /tmp/workflow-instance.txt
+            DESCRIBE_STATUS=${PIPESTATUS[0]}
+            set -e
+
             if grep -qiE 'status[^[:alnum:]]+complete|Status:[[:space:]]*complete' /tmp/workflow-instance.txt; then
               exit 0
             fi
+
             if grep -qiE 'status[^[:alnum:]]+(errored|terminated|rollingBack)|Status:[[:space:]]*(errored|terminated|rollingBack)' /tmp/workflow-instance.txt; then
               cat /tmp/workflow-instance.txt
               exit 1
             fi
+
+            if [ "$DESCRIBE_STATUS" -ne 0 ]; then
+              if grep -qi 'workflows.api.error.instance.not_found' /tmp/workflow-instance.txt; then
+                echo "Workflow instance is not visible yet; retrying."
+                sleep 5
+                continue
+              fi
+              cat /tmp/workflow-instance.txt
+              exit "$DESCRIBE_STATUS"
+            fi
+
             sleep 5
           done
           cat /tmp/workflow-instance.txt
