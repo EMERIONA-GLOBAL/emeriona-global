@@ -2,10 +2,16 @@ name: EMERIONA GLOBAL HA-1 Production Smoke
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - EMERIONA GLOBAL E2 Cloudflare Verification
+    types:
+      - completed
 
 jobs:
   smoke:
     name: production-smoke
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Verify production health
