@@ -19,10 +19,7 @@ interface Env { DB: D1DatabaseLike; ASSETS: AssetsBinding }
 function json(data: unknown, status = 200, headers?: HeadersInit): Response {
   return new Response(JSON.stringify(data), {
     status,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      ...headers,
-    },
+    headers: { "content-type": "application/json; charset=utf-8", ...headers },
   });
 }
 
@@ -37,6 +34,12 @@ function errorResponse(
 
 function validCurrency(value: string | null): value is string {
   return value !== null && /^[A-Z]{3}$/.test(value.trim());
+}
+
+async function checkDatabase(db: D1DatabaseLike): Promise<{ status: "ok"; latencyMs: number }> {
+  const started = Date.now();
+  await db.prepare("SELECT 1 AS ok").all<{ ok: number }>();
+  return { status: "ok", latencyMs: Date.now() - started };
 }
 
 export default {
@@ -57,6 +60,33 @@ export default {
         runtimeVersion: RUNTIME_HTTP_VERSION,
         workflow: "emeriona-core-workflow",
       });
+    }
+
+    if (path === "/api/health/ready") {
+      if (request.method !== "GET") return errorResponse("method_not_allowed", "Method not allowed", 405);
+      try {
+        const database = await checkDatabase(env.DB);
+        return json({
+          service: "emeriona-global",
+          status: "ready",
+          dependencies: { database },
+          apiVersion: API_VERSION,
+          runtimeVersion: RUNTIME_HTTP_VERSION,
+        });
+      } catch (error) {
+        return json({
+          service: "emeriona-global",
+          status: "not_ready",
+          dependencies: {
+            database: {
+              status: "error",
+              message: error instanceof Error ? error.message : "Database readiness check failed",
+            },
+          },
+          apiVersion: API_VERSION,
+          runtimeVersion: RUNTIME_HTTP_VERSION,
+        }, 503);
+      }
     }
 
     if (!hasApiPath(path)) return errorResponse("not_found", "API route not found", 404);
@@ -83,10 +113,7 @@ export default {
     }
 
     const actorId = runtimeContext.actorId;
-    const requestContext = {
-      requestId: runtimeContext.requestId,
-      correlationId: runtimeContext.correlationId,
-    };
+    const requestContext = { requestId: runtimeContext.requestId, correlationId: runtimeContext.correlationId };
 
     if (!actorId) {
       return errorResponse(

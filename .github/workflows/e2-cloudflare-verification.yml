@@ -2,7 +2,9 @@ name: EMERIONA GLOBAL E2 Cloudflare Verification
 
 on:
   push:
-    branches: ['architecture/e2-api-gateway']
+    branches:
+      - 'architecture/e2-api-gateway'
+      - 'architecture/ha-1-availability'
   workflow_dispatch:
 
 permissions:
@@ -28,6 +30,23 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Verify production health
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_URL="https://emeriona-global.emerionaglobal.workers.dev"
+          curl -fsS "$BASE_URL/api/health"
+
+      - name: Verify production readiness and D1
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_URL="https://emeriona-global.emerionaglobal.workers.dev"
+          response="$(curl -fsS "$BASE_URL/api/health/ready")"
+          echo "$response"
+          echo "$response" | grep -q '"status":"ready"'
+          echo "$response" | grep -q '"database":{"status":"ok"'
 
       - name: Verify Workflow resource registration
         shell: bash

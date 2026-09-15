@@ -3,22 +3,8 @@
   "name": "emeriona-global",
   "main": "./apps/api/index.ts",
   "compatibility_date": "2026-09-10",
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "emeriona-global-db",
-      "database_id": "7109ca59-08bd-4330-9b99-37fce16b6203",
-      "migrations_dir": "./database/migrations"
-    }
-  ],
-  "workflows": [
-    {
-      "binding": "EMERIONA_CORE_WORKFLOW",
-      "name": "emeriona-core-workflow",
-      "class_name": "EmerionaCoreWorkflow"
-    }
-  ],
-  "assets": {
-    "directory": "./apps/web"
-  }
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "d1_databases": [{ "binding": "DB", "database_name": "emeriona-global-db", "database_id": "7109ca59-08bd-4330-9b99-37fce16b6203", "migrations_dir": "./database/migrations" }],
+  "workflows": [{ "binding": "EMERIONA_CORE_WORKFLOW", "name": "emeriona-core-workflow", "class_name": "EmerionaCoreWorkflow" }],
+  "assets": { "directory": "./apps/web" }
 }
