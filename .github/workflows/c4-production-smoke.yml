@@ -1,0 +1,57 @@
+name: EMERIONA GLOBAL C4 Production Smoke
+on:
+  push:
+    branches:
+      - architecture/c4-billing-settlement
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - name: Apply migration and deploy
+        run: |
+          npx wrangler d1 migrations apply emeriona-global-db --remote
+          npx wrangler deploy --config wrangler.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Seed isolated smoke order
+        run: |
+          T="c4-smoke-${GITHUB_RUN_ID}"; C="c4-customer-${GITHUB_RUN_ID}"; P="c4-partner-${GITHUB_RUN_ID}"; R="c4-product-${GITHUB_RUN_ID}"; O="c4-order-${GITHUB_RUN_ID}"; I="c4-item-${GITHUB_RUN_ID}"
+          npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','C4 Smoke ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO customers (id,tenant_id,display_name,status) VALUES ('${C}','${T}','C4 Customer','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','C4 Partner','VERIFIED'); INSERT INTO products (id,tenant_id,owner_id,name,status) VALUES ('${R}','${T}','${C}','C4 Product','PUBLISHED'); INSERT INTO orders (id,tenant_id,customer_id,status,total_amount,currency) VALUES ('${O}','${T}','${C}','PENDING',50,'USD'); INSERT INTO order_items (id,order_id,product_id,partner_id,quantity,unit_amount,currency) VALUES ('${I}','${O}','${R}','${P}',1,50,'USD');"
+          echo "TENANT_ID=${T}" >> "$GITHUB_ENV"; echo "PARTNER_ID=${P}" >> "$GITHUB_ENV"; echo "ORDER_ID=${O}" >> "$GITHUB_ENV"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Create payment intent
+        run: |
+          KEY="c4-payment-${GITHUB_RUN_ID}"
+          curl -fsS -H "x-tenant-id: ${TENANT_ID}" -H 'x-actor-id: c4-smoke' -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: ${KEY}" -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payment-intents -d "{\"orderId\":\"${ORDER_ID}\",\"amount\":{\"amount\":50,\"currency\":\"USD\"}}" | tee payment.json
+          echo "PAYMENT_ID=$(jq -r '.data.id' payment.json)" >> "$GITHUB_ENV"; echo "PAYMENT_KEY=${KEY}" >> "$GITHUB_ENV"
+      - name: Create invoice and settlement
+        run: |
+          IKEY="c4-invoice-${GITHUB_RUN_ID}"; SKEY="c4-settlement-${GITHUB_RUN_ID}"
+          curl -fsS -H "x-tenant-id: ${TENANT_ID}" -H 'x-actor-id: c4-smoke' -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: ${IKEY}" -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/invoices -d "{\"orderId\":\"${ORDER_ID}\",\"paymentIntentId\":\"${PAYMENT_ID}\",\"amount\":{\"amount\":50,\"currency\":\"USD\"}}" | tee invoice.json
+          curl -fsS -H "x-tenant-id: ${TENANT_ID}" -H 'x-actor-id: c4-smoke' -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: ${SKEY}" -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/settlements -d "{\"orderId\":\"${ORDER_ID}\",\"partnerId\":\"${PARTNER_ID}\",\"grossAmount\":{\"amount\":50,\"currency\":\"USD\"},\"commissionAmount\":{\"amount\":5,\"currency\":\"USD\"},\"netAmount\":{\"amount\":45,\"currency\":\"USD\"}}" | tee settlement.json
+          echo "INVOICE_ID=$(jq -r '.data.id' invoice.json)" >> "$GITHUB_ENV"; echo "SETTLEMENT_ID=$(jq -r '.data.id' settlement.json)" >> "$GITHUB_ENV"; echo "INVOICE_KEY=${IKEY}" >> "$GITHUB_ENV"; echo "SETTLEMENT_KEY=${SKEY}" >> "$GITHUB_ENV"
+      - name: Verify invoice and settlement idempotency
+        run: |
+          curl -fsS -H "x-tenant-id: ${TENANT_ID}" -H 'x-actor-id: c4-smoke' -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: ${INVOICE_KEY}" -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/invoices -d "{\"orderId\":\"${ORDER_ID}\",\"paymentIntentId\":\"${PAYMENT_ID}\",\"amount\":{\"amount\":50,\"currency\":\"USD\"}}" | tee invoice-repeat.json
+          curl -fsS -H "x-tenant-id: ${TENANT_ID}" -H 'x-actor-id: c4-smoke' -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: ${SETTLEMENT_KEY}" -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/settlements -d "{\"orderId\":\"${ORDER_ID}\",\"partnerId\":\"${PARTNER_ID}\",\"grossAmount\":{\"amount\":50,\"currency\":\"USD\"},\"commissionAmount\":{\"amount\":5,\"currency\":\"USD\"},\"netAmount\":{\"amount\":45,\"currency\":\"USD\"}}" | tee settlement-repeat.json
+          test "$(jq -r '.data.id' invoice-repeat.json)" = "${INVOICE_ID}"; test "$(jq -r '.data.id' settlement-repeat.json)" = "${SETTLEMENT_ID}"
+      - name: Verify persisted C4 evidence
+        run: npx wrangler d1 execute emeriona-global-db --remote --command="SELECT (SELECT count(*) FROM invoices WHERE id='${INVOICE_ID}' AND order_id='${ORDER_ID}' AND tenant_id='${TENANT_ID}' AND status='ISSUED') AS invoice_ok,(SELECT count(*) FROM settlements WHERE id='${SETTLEMENT_ID}' AND order_id='${ORDER_ID}' AND tenant_id='${TENANT_ID}' AND status='PENDING') AS settlement_ok,(SELECT count(*) FROM billing_events WHERE invoice_id='${INVOICE_ID}' AND to_status='ISSUED') AS billing_event_ok,(SELECT count(*) FROM settlement_events WHERE settlement_id='${SETTLEMENT_ID}' AND to_status='PENDING') AS settlement_event_ok,(SELECT count(*) FROM revenue_entries WHERE order_id='${ORDER_ID}' AND tenant_id='${TENANT_ID}' AND status='PENDING') AS revenue_ok,(SELECT count(*) FROM idempotency_records WHERE tenant_id='${TENANT_ID}' AND idempotency_key='${INVOICE_KEY}' AND status='COMPLETED') AS invoice_idempotency_ok,(SELECT count(*) FROM idempotency_records WHERE tenant_id='${TENANT_ID}' AND idempotency_key='${SETTLEMENT_KEY}' AND status='COMPLETED') AS settlement_idempotency_ok,(SELECT count(*) FROM audit_events WHERE tenant_id='${TENANT_ID}' AND use_case_id='billing.invoice.create' AND outcome='SUCCEEDED') AS invoice_audit_ok,(SELECT count(*) FROM audit_events WHERE tenant_id='${TENANT_ID}' AND use_case_id='billing.settlement.create' AND outcome='SUCCEEDED') AS settlement_audit_ok;"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Verify C4 route protection
+        run: |
+          test "$(curl -sS -o /tmp/invoice-get.json -w '%{http_code}' https://emeriona-global.emerionaglobal.workers.dev/api/v1/invoices)" = '405'
+          test "$(curl -sS -o /tmp/settlement-get.json -w '%{http_code}' https://emeriona-global.emerionaglobal.workers.dev/api/v1/settlements)" = '405'
