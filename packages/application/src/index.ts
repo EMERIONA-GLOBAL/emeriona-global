@@ -16,7 +16,7 @@ export type { UseCaseRuntimeDependencies, UseCaseRuntime } from './runtime.js';
 export { DefaultUseCaseRuntime, APPLICATION_RUNTIME_VERSION } from './runtime.js';
 export type { UseCaseDomain, UseCaseLifecycle, UseCaseContract, UseCaseContractRegistry } from './contracts.js';
 export { USE_CASE_IDS, USE_CASE_CONTRACTS, DefaultUseCaseContractRegistry, USE_CASE_CONTRACTS_VERSION } from './contracts.js';
-export type { ApplicationIdFactory, CreateProductInput, CreateServiceInput, CreatePartnerInput, CreateCartInput, CreateOrderInput, CreatePaymentInput, RecommendationInput, PartnerCatalogCreateInput } from './capabilities.js';
+export type { ApplicationIdFactory, CreateCustomerInput, CreateProductInput, CreateServiceInput, CreatePartnerInput, CreateCartInput, CreateOrderInput, CreatePaymentInput, RecommendationInput, PartnerCatalogCreateInput } from './capabilities.js';
 export { CreateCustomerHandler, CreateProductHandler, CreateServiceHandler, CreatePartnerHandler, CreatePartnerProductHandler, CreatePartnerServiceHandler, CreateCartHandler, CreateOrderHandler, ResolvePriceHandler, ValidateDiscountHandler, CreatePaymentIntentHandler, GenerateRecommendationHandler, EXECUTABLE_FOUNDATION_USE_CASES, APPLICATION_CAPABILITIES_VERSION } from './capabilities.js';
 export type { CreateInvoiceInput, CreateSettlementInput, BillingPort } from './billing-capabilities.js';
 export { CreateInvoiceHandler, CreateSettlementHandler, BILLING_APPLICATION_VERSION } from './billing-capabilities.js';
