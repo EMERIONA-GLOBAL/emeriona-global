@@ -46,8 +46,8 @@ jobs:
           PRINCIPAL="principal-${GITHUB_RUN_ID}"
           ROLE="role-${GITHUB_RUN_ID}"
           PERMISSION="permission-${GITHUB_RUN_ID}"
-          sqlite_query="INSERT INTO tenants(id,name) VALUES ('$TENANT','HA-1 Verification Tenant'); INSERT INTO auth_principals(id,tenant_id,principal_type,subject_id) VALUES ('$PRINCIPAL','$TENANT','STAFF','subject-$GITHUB_RUN_ID'); INSERT INTO auth_roles(id,tenant_id,name) VALUES ('$ROLE','$TENANT','HA1_VERIFIER'); INSERT INTO auth_permissions(id,tenant_id,permission) VALUES ('$PERMISSION','$TENANT','ha1.verify'); INSERT INTO auth_role_permissions(tenant_id,role_id,permission_id) VALUES ('$TENANT','$ROLE','$PERMISSION'); INSERT INTO auth_principal_roles(tenant_id,principal_id,role_id) VALUES ('$TENANT','$PRINCIPAL','$ROLE'); SELECT 1 AS authorized FROM auth_principal_roles pr JOIN auth_roles r ON r.id=pr.role_id AND r.tenant_id=pr.tenant_id AND r.status='ACTIVE' JOIN auth_role_permissions rp ON rp.role_id=r.id AND rp.tenant_id=r.tenant_id JOIN auth_permissions p ON p.id=rp.permission_id AND p.tenant_id=rp.tenant_id WHERE pr.tenant_id='$TENANT' AND pr.principal_id='$PRINCIPAL' AND p.permission='ha1.verify';"
-          npx wrangler d1 execute emeriona-global-db --remote --command "$sqlite_query" --json | jq -e '.[0].results[-1].authorized == 1'
+          npx wrangler d1 execute emeriona-global-db --remote --command "INSERT INTO tenants(id,name) VALUES ('$TENANT','HA-1 Verification Tenant'); INSERT INTO auth_principals(id,tenant_id,principal_type,subject_id) VALUES ('$PRINCIPAL','$TENANT','STAFF','subject-$GITHUB_RUN_ID'); INSERT INTO auth_roles(id,tenant_id,name) VALUES ('$ROLE','$TENANT','HA1_VERIFIER'); INSERT INTO auth_permissions(id,tenant_id,permission) VALUES ('$PERMISSION','$TENANT','ha1.verify'); INSERT INTO auth_role_permissions(tenant_id,role_id,permission_id) VALUES ('$TENANT','$ROLE','$PERMISSION'); INSERT INTO auth_principal_roles(tenant_id,principal_id,role_id) VALUES ('$TENANT','$PRINCIPAL','$ROLE');"
+          npx wrangler d1 execute emeriona-global-db --remote --command "SELECT COUNT(*) AS authorized FROM auth_principal_roles pr JOIN auth_roles r ON r.id=pr.role_id AND r.tenant_id=pr.tenant_id AND r.status='ACTIVE' JOIN auth_role_permissions rp ON rp.role_id=r.id AND rp.tenant_id=r.tenant_id JOIN auth_permissions p ON p.id=rp.permission_id AND p.tenant_id=rp.tenant_id WHERE pr.tenant_id='$TENANT' AND pr.principal_id='$PRINCIPAL' AND p.permission='ha1.verify'" --json | jq -e '.[0].results[0].authorized == 1'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -55,3 +55,11 @@ jobs:
         run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health | jq -e '.status == "ok" and .service == "emeriona-global"'
       - name: Production Readiness and D1
         run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health/ready | jq -e '.status == "ready" and .dependencies.database.status == "ok"'
+      - name: Cleanup HA-1 verification records
+        if: always()
+        run: |
+          TENANT="ha1-proof-${GITHUB_RUN_ID}"
+          npx wrangler d1 execute emeriona-global-db --remote --command "DELETE FROM auth_principal_roles WHERE tenant_id='$TENANT'; DELETE FROM auth_role_permissions WHERE tenant_id='$TENANT'; DELETE FROM auth_permissions WHERE tenant_id='$TENANT'; DELETE FROM auth_roles WHERE tenant_id='$TENANT'; DELETE FROM auth_sessions WHERE tenant_id='$TENANT'; DELETE FROM auth_credentials WHERE tenant_id='$TENANT'; DELETE FROM auth_identities WHERE tenant_id='$TENANT'; DELETE FROM auth_principals WHERE tenant_id='$TENANT'; DELETE FROM tenants WHERE id='$TENANT';"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
