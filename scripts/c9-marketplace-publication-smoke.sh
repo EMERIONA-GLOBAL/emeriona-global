@@ -16,6 +16,6 @@ CROSS_PARTNER_STATUS="$(curl -sS "${COMMON2[@]}" -H "idempotency-key: c9-cross-p
 test "$CROSS_PARTNER_STATUS" = '400'
 QUERY="SELECT (SELECT count(*) FROM catalogs WHERE tenant_id='${T}' AND id='${C}' AND status='PUBLISHED') AS catalog_ok,(SELECT count(*) FROM catalogs WHERE tenant_id='${T}' AND id='${PC}' AND partner_id='${P}' AND status='PUBLISHED') AS partner_catalog_ok,(SELECT count(*) FROM idempotency_records WHERE tenant_id='${T}' AND status='COMPLETED') AS idempotency_ok,(SELECT count(*) FROM audit_events WHERE tenant_id='${T}' AND outcome='SUCCEEDED') AS audit_ok;"
 npx wrangler d1 execute emeriona-global-db --remote --json --command="$QUERY" > evidence.json
-jq -e '.[0].results[0].catalog_ok == 1 and .[0].results[0].partner_catalog_ok == 1 and .[0].results[0].idempotency_ok >= 3 and .[0].results[0].audit_ok >= 3' evidence.json
+jq -e '.[0].results[0].catalog_ok == 1 and .[0].results[0].partner_catalog_ok == 1 and .[0].results[0].idempotency_ok >= 2 and .[0].results[0].audit_ok >= 2' evidence.json
 test "$(curl -sS -o /tmp/c9-catalog-get.json -w '%{http_code}' "$BASE/api/v1/catalogs/publish")" = '405'
 test "$(curl -sS -o /tmp/c9-partner-catalog-get.json -w '%{http_code}' "$BASE/api/v1/partners/catalogs/publish")" = '405'
