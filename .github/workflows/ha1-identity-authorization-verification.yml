@@ -1,0 +1,67 @@
+name: EMERIONA GLOBAL HA-1 Identity Authorization Verification
+on:
+  push:
+    branches:
+      - architecture/ha1-identity-authorization
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ha1-identity-authorization-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Assert verification head
+        run: test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+      - run: npm install --no-audit --no-fund
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test
+        run: npm test
+      - name: Platform Build
+        run: npm run build
+      - name: Web Build
+        run: npm run build --workspace apps/web
+      - name: Apply HA-1 D1 migration
+        run: npx wrangler d1 migrations apply emeriona-global-db --remote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Verify HA-1 migration evidence
+        run: |
+          npx wrangler d1 execute emeriona-global-db --remote --command "SELECT version FROM schema_migrations WHERE version='0008_identity_authorization_foundation'" --json | jq -e '.[0].results[0].version == "0008_identity_authorization_foundation"'
+          npx wrangler d1 execute emeriona-global-db --remote --command "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('auth_principals','auth_identities','auth_credentials','auth_sessions','auth_roles','auth_permissions','auth_role_permissions','auth_principal_roles') ORDER BY name" --json | jq -e '.[0].results | length == 8'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Seed isolated HA-1 authorization proof
+        run: |
+          TENANT="ha1-proof-${GITHUB_RUN_ID}"
+          PRINCIPAL="principal-${GITHUB_RUN_ID}"
+          ROLE="role-${GITHUB_RUN_ID}"
+          PERMISSION="permission-${GITHUB_RUN_ID}"
+          npx wrangler d1 execute emeriona-global-db --remote --command "INSERT INTO tenants(id,name) VALUES ('$TENANT','HA-1 Verification Tenant'); INSERT INTO auth_principals(id,tenant_id,principal_type,subject_id) VALUES ('$PRINCIPAL','$TENANT','STAFF','subject-$GITHUB_RUN_ID'); INSERT INTO auth_roles(id,tenant_id,name) VALUES ('$ROLE','$TENANT','HA1_VERIFIER'); INSERT INTO auth_permissions(id,tenant_id,permission) VALUES ('$PERMISSION','$TENANT','ha1.verify'); INSERT INTO auth_role_permissions(tenant_id,role_id,permission_id) VALUES ('$TENANT','$ROLE','$PERMISSION'); INSERT INTO auth_principal_roles(tenant_id,principal_id,role_id) VALUES ('$TENANT','$PRINCIPAL','$ROLE');"
+          npx wrangler d1 execute emeriona-global-db --remote --command "SELECT COUNT(*) AS authorized FROM auth_principal_roles pr JOIN auth_roles r ON r.id=pr.role_id AND r.tenant_id=pr.tenant_id AND r.status='ACTIVE' JOIN auth_role_permissions rp ON rp.role_id=r.id AND rp.tenant_id=r.tenant_id JOIN auth_permissions p ON p.id=rp.permission_id AND p.tenant_id=rp.tenant_id WHERE pr.tenant_id='$TENANT' AND pr.principal_id='$PRINCIPAL' AND p.permission='ha1.verify'" --json | jq -e '.[0].results[0].authorized == 1'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Production Health
+        run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health | jq -e '.status == "ok" and .service == "emeriona-global"'
+      - name: Production Readiness and D1
+        run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health/ready | jq -e '.status == "ready" and .dependencies.database.status == "ok"'
+      - name: Cleanup HA-1 verification records
+        if: always()
+        run: |
+          for RUN_ID in "$GITHUB_RUN_ID" "35160192072"; do
+            TENANT="ha1-proof-${RUN_ID}"
+            npx wrangler d1 execute emeriona-global-db --remote --command "DELETE FROM auth_principal_roles WHERE tenant_id='$TENANT'; DELETE FROM auth_role_permissions WHERE tenant_id='$TENANT'; DELETE FROM auth_permissions WHERE tenant_id='$TENANT'; DELETE FROM auth_roles WHERE tenant_id='$TENANT'; DELETE FROM auth_sessions WHERE tenant_id='$TENANT'; DELETE FROM auth_credentials WHERE tenant_id='$TENANT'; DELETE FROM auth_identities WHERE tenant_id='$TENANT'; DELETE FROM auth_principals WHERE tenant_id='$TENANT'; DELETE FROM tenants WHERE id='$TENANT';"
+          done
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

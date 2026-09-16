@@ -36,4 +36,6 @@ export type { PublishCatalogInput, PublishCatalogOutput, CatalogPublicationPort,
 export { PublishCatalogHandler, PublishPartnerCatalogHandler, CATALOG_PUBLICATION_APPLICATION_VERSION } from './catalog-publish-capability.js';
 export type { CreatePartnerOfferInput, UpdatePartnerOfferInput } from './partner-offer-capability.js';
 export { CreatePartnerOfferHandler, UpdatePartnerOfferHandler, PARTNER_OFFERS_APPLICATION_VERSION } from './partner-offer-capability.js';
+export type { AuthPrincipal, AuthIdentity, AuthSession, PrincipalType, AuthPrincipalStatus, AuthIdentityStatus, AuthSessionStatus, IdentityAuthorizationPort } from './identity-authorization.js';
+export { IDENTITY_AUTHORIZATION_APPLICATION_VERSION } from './identity-authorization.js';
 export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'2.0.0',status:'OPERATIONAL_D1_PATH',providerNeutral:true} as const;
