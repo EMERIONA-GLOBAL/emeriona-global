@@ -1,0 +1,30 @@
+name: EMERIONA GLOBAL C8 Cloudflare Verification
+on:
+  push:
+    branches:
+      - architecture/c8-partner-commerce
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-c8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install --no-audit --no-fund
+      - name: Deploy Worker
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Production Health
+        run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health | jq -e '.status == "ok" and .service == "emeriona-global"'
+      - name: Production Readiness and D1
+        run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health/ready | jq -e '.status == "ready" and .dependencies.database.status == "ok"'
+      - name: Partner route protection
+        run: |
+          test "$(curl -sS -o /tmp/c8-partner-verify-get.json -w '%{http_code}' https://emeriona-global.emerionaglobal.workers.dev/api/v1/partners/verify)" = '405'
+          test "$(curl -sS -o /tmp/c8-partner-product-get.json -w '%{http_code}' https://emeriona-global.emerionaglobal.workers.dev/api/v1/partners/products)" = '405'
+          test "$(curl -sS -o /tmp/c8-partner-service-get.json -w '%{http_code}' https://emeriona-global.emerionaglobal.workers.dev/api/v1/partners/services)" = '405'
