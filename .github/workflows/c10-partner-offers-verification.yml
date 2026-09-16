@@ -47,6 +47,7 @@ jobs:
         run: |
           test "$(curl -sS -o /dev/null -w '%{http_code}' https://emeriona-global.emerionaglobal.workers.dev/api/v1/partners/offers)" = '405'
           test "$(curl -sS -o /dev/null -w '%{http_code}' https://emeriona-global.emerionaglobal.workers.dev/api/v1/partners/offers/update)" = '405'
+      # C10 production smoke includes explicit idempotency replay evidence.
       - name: Production partner offer smoke
         run: bash scripts/c10-partner-offers-smoke.sh
         env:
