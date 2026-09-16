@@ -21,6 +21,8 @@ const USE_CASE_ROUTES: ReadonlyArray<ApiRouteDefinition> = [
   { method: 'POST', path: '/api/v1/payment-intents', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'payment.intent.create' as UseCaseId },
   { method: 'POST', path: '/api/v1/invoices', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'billing.invoice.create' as UseCaseId },
   { method: 'POST', path: '/api/v1/settlements', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'billing.settlement.create' as UseCaseId },
+  { method: 'POST', path: '/api/v1/fulfillments', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'fulfillment.create' as UseCaseId },
+  { method: 'POST', path: '/api/v1/fulfillments/progress', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'fulfillment.progress' as UseCaseId },
 ];
 export const API_ROUTES: ReadonlyArray<ApiRouteDefinition> = [{ method: 'GET', path: '/api/health', version: API_VERSION, kind: 'HEALTH' }, ...USE_CASE_ROUTES];
 export function resolveApiRoute(path: string, method: string): ApiRouteMatch | null { const normalizedMethod = method.toUpperCase(); const route = API_ROUTES.find((candidate) => candidate.path === path && candidate.method === normalizedMethod); if (!route) return null; return { route, path, method: normalizedMethod as ApiMethod }; }
