@@ -16,6 +16,8 @@ export type { InvoiceRecord, SettlementRecord, BillingUseCaseId, InvoiceStatus, 
 export { BILLING_FOUNDATION_VERSION, BILLING_USE_CASE_IDS, assertInvoiceAmountMatchesPayment, assertSettlementAmounts, assertSettlementOrderOwnership, BILLING_LIFECYCLE } from "./billing-foundation.js";
 export type { FulfillmentRecord, FulfillmentUseCaseId, FulfillmentStatus } from "./fulfillment-foundation.js";
 export { FULFILLMENT_FOUNDATION_VERSION, FULFILLMENT_USE_CASE_IDS, assertFulfillmentOrder, assertFulfillmentTransition, FULFILLMENT_LIFECYCLE } from "./fulfillment-foundation.js";
+export type { ReturnRequestRecord, RefundRequestRecord, ReturnStatus, RefundRequestStatus } from "./returns-refunds-foundation.js";
+export { RETURNS_REFUNDS_FOUNDATION_VERSION, RETURNS_REFUNDS_USE_CASE_IDS, assertReturnTransition, assertRefundRequestTransition, assertRefundAmount, RETURNS_REFUNDS_LIFECYCLE } from "./returns-refunds-foundation.js";
 export type { RecommendationId, AgentRunId, Recommendation, SalesAssistantRequest, SalesAssistantResponse, AgentRun, RecommendationPort, SalesAssistantPort, AgentPort, ModelRouterPort } from "./ai.js";
 export { AI_DOMAIN_VERSION } from "./ai.js";
 export type { EntityId, MoneyValue, PercentageValue, TenantScope, ResourceScope } from "./value-objects.js";
@@ -24,4 +26,4 @@ export type { CustomerRepositoryPortV1, ProductRepositoryPortV1, ServiceReposito
 export { DOMAIN_REPOSITORY_PORTS_VERSION } from "./ports.js";
 export type { CommerceUseCaseId } from "./commerce-foundation.js";
 export { COMMERCE_FOUNDATION_VERSION, COMMERCE_USE_CASE_IDS, assertMoney, assertSameCurrency, assertOrderTotal, assertPaymentMatchesOrder, assertCheckoutableCart, assertFulfillmentAllowed, COMMERCE_LIFECYCLE } from "./commerce-foundation.js";
-export const DOMAIN_LAYER_VERSION = "1.6.0" as const;
+export const DOMAIN_LAYER_VERSION = "1.7.0" as const;
