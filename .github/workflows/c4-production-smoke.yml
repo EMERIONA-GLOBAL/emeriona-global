@@ -1,0 +1,38 @@
+name: EMERIONA GLOBAL C4 Production Smoke
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - name: Apply migration and deploy
+        run: |
+          npx wrangler d1 migrations apply emeriona-global-db --remote
+          npx wrangler deploy --config wrangler.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Seed smoke order
+        run: npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('c4-manual-smoke','C4 Smoke','ACTIVE'); INSERT INTO customers (id,tenant_id,display_name,status) VALUES ('c4-manual-customer','c4-manual-smoke','C4 Customer','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('c4-manual-partner','c4-manual-smoke','C4 Partner','VERIFIED'); INSERT INTO products (id,tenant_id,owner_id,name,status) VALUES ('c4-manual-product','c4-manual-smoke','c4-manual-customer','C4 Product','PUBLISHED'); INSERT INTO orders (id,tenant_id,customer_id,status,total_amount,currency) VALUES ('c4-manual-order','c4-manual-smoke','c4-manual-customer','PENDING',50,'USD'); INSERT INTO order_items (id,order_id,product_id,partner_id,quantity,unit_amount,currency) VALUES ('c4-manual-item','c4-manual-order','c4-manual-product','c4-manual-partner',1,50,'USD');"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Create payment intent
+        run: curl -fsS -H 'x-tenant-id: c4-manual-smoke' -H 'x-actor-id: c4-smoke' -H 'x-currency: USD' -H 'content-type: application/json' -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payment-intents -d '{"orderId":"c4-manual-order","amount":{"amount":50,"currency":"USD"}}' | tee payment.json
+      - name: Create invoice and settlement
+        run: |
+          PAYMENT_ID=$(jq -r '.data.id' payment.json)
+          curl -fsS -H 'x-tenant-id: c4-manual-smoke' -H 'x-actor-id: c4-smoke' -H 'x-currency: USD' -H 'content-type: application/json' -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/invoices -d "{\"orderId\":\"c4-manual-order\",\"paymentIntentId\":\"$PAYMENT_ID\",\"amount\":{\"amount\":50,\"currency\":\"USD\"}}" | tee invoice.json
+          curl -fsS -H 'x-tenant-id: c4-manual-smoke' -H 'x-actor-id: c4-smoke' -H 'x-currency: USD' -H 'content-type: application/json' -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/settlements -d '{"orderId":"c4-manual-order","partnerId":"c4-manual-partner","grossAmount":{"amount":50,"currency":"USD"},"commissionAmount":{"amount":5,"currency":"USD"},"netAmount":{"amount":45,"currency":"USD"}}' | tee settlement.json
+      - name: Verify persisted C4 evidence
+        run: npx wrangler d1 execute emeriona-global-db --remote --command="SELECT (SELECT count(*) FROM invoices WHERE order_id='c4-manual-order' AND status='ISSUED') AS invoice_ok,(SELECT count(*) FROM settlements WHERE order_id='c4-manual-order' AND status='PENDING') AS settlement_ok,(SELECT count(*) FROM billing_events WHERE invoice_id IN (SELECT id FROM invoices WHERE order_id='c4-manual-order')) AS billing_event_ok,(SELECT count(*) FROM settlement_events WHERE settlement_id IN (SELECT id FROM settlements WHERE order_id='c4-manual-order')) AS settlement_event_ok;"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
