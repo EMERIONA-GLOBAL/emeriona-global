@@ -32,4 +32,6 @@ export type { CartItemInput, CartItemResult, CheckoutResult, OperationalCommerce
 export { AddCartItemHandler, CheckoutHandler, OPERATIONAL_COMMERCE_VERSION } from './operational-commerce.js';
 export type { PricingQuoteInput, PromotionValidationInput } from './pricing-promotions-capabilities.js';
 export { ResolvePricingQuoteHandler, ValidatePromotionHandler, PRICING_PROMOTIONS_APPLICATION_VERSION } from './pricing-promotions-capabilities.js';
-export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'1.8.0',status:'OPERATIONAL_D1_PATH',providerNeutral:true} as const;
+export type { PublishCatalogInput, PublishCatalogOutput, CatalogPublicationPort, PublishPartnerCatalogInput } from './catalog-publish-capability.js';
+export { PublishCatalogHandler, PublishPartnerCatalogHandler, CATALOG_PUBLICATION_APPLICATION_VERSION } from './catalog-publish-capability.js';
+export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'1.9.0',status:'OPERATIONAL_D1_PATH',providerNeutral:true} as const;
