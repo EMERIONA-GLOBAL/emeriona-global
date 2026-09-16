@@ -5,7 +5,7 @@ on:
       - architecture/c11-partner-intelligence
   pull_request:
     branches:
-      - architecture/c11-partner-intelligence
+      - main
   workflow_dispatch:
 permissions:
   contents: read
