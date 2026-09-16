@@ -5,7 +5,11 @@ T="c11-smoke-${GITHUB_RUN_ID}"; T2="c11-isolation-${GITHUB_RUN_ID}"; P="c11-part
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','C11 Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','C11 Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','C11 Partner','VERIFIED');"
 COMMON=(-H "x-tenant-id: ${T}" -H 'x-actor-id: c11-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
 for endpoint in analytics performance impact; do
-  curl -fsS "${COMMON[@]}" -X POST "$BASE/api/v1/partners/${endpoint}" -d "{\"partnerId\":\"${P}\"}" > "${endpoint}.json"
+  STATUS="$(curl -sS "${COMMON[@]}" -X POST "$BASE/api/v1/partners/${endpoint}" -d "{\"partnerId\":\"${P}\"}" -o "${endpoint}.json" -w '%{http_code}')"
+  printf 'C11 %s HTTP %s\n' "$endpoint" "$STATUS"
+  cat "${endpoint}.json"
+  printf '\n'
+  test "$STATUS" = '200'
   jq -e --arg p "$P" '.data.partnerId == $p' "${endpoint}.json"
 done
 jq -e '.data.products == 0 and .data.services == 0 and .data.orders == 0' analytics.json
