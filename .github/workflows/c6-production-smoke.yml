@@ -1,0 +1,21 @@
+name: EMERIONA GLOBAL C6 Production Smoke
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - architecture/c6-returns-refunds
+permissions:
+  contents: read
+jobs:
+  smoke-c6:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install --no-audit --no-fund
+      - name: Run C6 production smoke
+        run: bash scripts/c6-returns-refunds-smoke.sh
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
