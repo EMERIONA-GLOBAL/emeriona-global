@@ -27,6 +27,8 @@ const USE_CASE_ROUTES: ReadonlyArray<ApiRouteDefinition> = [
   { method: 'POST', path: '/api/v1/returns/progress', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'return.progress' as UseCaseId },
   { method: 'POST', path: '/api/v1/refund-requests', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'refund.request.create' as UseCaseId },
   { method: 'POST', path: '/api/v1/refund-requests/progress', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'refund.request.progress' as UseCaseId },
+  { method: 'POST', path: '/api/v1/pricing/quote', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'pricing.quote' as UseCaseId },
+  { method: 'POST', path: '/api/v1/promotions/discounts/validate', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'promotion.discount.validate' as UseCaseId },
 ];
 export const API_ROUTES: ReadonlyArray<ApiRouteDefinition> = [{ method: 'GET', path: '/api/health', version: API_VERSION, kind: 'HEALTH' }, ...USE_CASE_ROUTES];
 export function resolveApiRoute(path: string, method: string): ApiRouteMatch | null { const normalizedMethod = method.toUpperCase(); const route = API_ROUTES.find((candidate) => candidate.path === path && candidate.method === normalizedMethod); if (!route) return null; return { route, path, method: normalizedMethod as ApiMethod }; }
