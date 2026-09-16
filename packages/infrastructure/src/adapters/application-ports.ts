@@ -45,6 +45,10 @@ export class InMemoryIdempotencyAdapter implements IdempotencyPort {
     this.inFlight.delete(scoped);
     this.results.set(scoped, response);
   }
+
+  async release(key: string, context: UseCaseContext): Promise<void> {
+    this.inFlight.delete(this.key(key, context));
+  }
 }
 
 /** Audit/telemetry adapters are injectable sinks; the default sink is deliberately side-effect free. */
@@ -56,4 +60,4 @@ export class NoopTelemetryAdapter implements TelemetryPort {
   async record(_event: Parameters<TelemetryPort["record"]>[0]): Promise<void> {}
 }
 
-export const APPLICATION_INFRASTRUCTURE_ADAPTERS_VERSION = "1.0.0" as const;
+export const APPLICATION_INFRASTRUCTURE_ADAPTERS_VERSION = "1.0.1" as const;
