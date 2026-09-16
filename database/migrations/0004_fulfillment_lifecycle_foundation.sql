@@ -1,0 +1,11 @@
+PRAGMA foreign_keys = ON;
+ALTER TABLE fulfillments ADD COLUMN fulfillment_reference TEXT;
+ALTER TABLE fulfillments ADD COLUMN started_at TEXT;
+ALTER TABLE fulfillments ADD COLUMN fulfilled_at TEXT;
+ALTER TABLE fulfillments ADD COLUMN cancelled_at TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS uq_fulfillments_tenant_order ON fulfillments(tenant_id,order_id);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_fulfillments_tenant_reference ON fulfillments(tenant_id,fulfillment_reference) WHERE fulfillment_reference IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_fulfillments_tenant_status ON fulfillments(tenant_id,status);
+CREATE TABLE IF NOT EXISTS fulfillment_events (id TEXT PRIMARY KEY,tenant_id TEXT NOT NULL REFERENCES tenants(id),fulfillment_id TEXT NOT NULL REFERENCES fulfillments(id) ON DELETE CASCADE,order_id TEXT NOT NULL REFERENCES orders(id),from_status TEXT,to_status TEXT NOT NULL CHECK (to_status IN ('PENDING','IN_PROGRESS','FULFILLED','CANCELLED')),correlation_id TEXT NOT NULL,idempotency_key TEXT,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE INDEX IF NOT EXISTS idx_fulfillment_events_time ON fulfillment_events(fulfillment_id,created_at);
+INSERT OR IGNORE INTO schema_migrations (version) VALUES ('0004_fulfillment_lifecycle_foundation');
