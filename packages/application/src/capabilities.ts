@@ -31,6 +31,7 @@ export interface CreateCustomerInput { displayName: string; locale?: string; tim
 export interface CreateProductInput { ownerId: string; name: string; }
 export interface CreateServiceInput { ownerId: string; name: string; }
 export interface CreatePartnerInput { legalName: string; tenantId: string; }
+export interface VerifyPartnerInput { partnerId: string; }
 export interface CreateCartInput { customerId: string; }
 export interface CreateOrderInput { customerId: string; total: Money; }
 export interface CreatePaymentInput { orderId: OrderId; amount: Money; }
@@ -75,6 +76,16 @@ export class CreatePartnerHandler implements UseCaseHandler<CreatePartnerInput, 
   async handle(request: UseCaseRequest<CreatePartnerInput>): Promise<UseCaseResponse<PartnerAccount>> {
     const partner: PartnerAccount = { id: this.ids.partner(), legalName: required(request.input.legalName, "legalName"), tenantId: required(request.input.tenantId, "tenantId"), status: "PENDING" };
     return response(request, await this.repository.save(partner));
+  }
+}
+
+export class VerifyPartnerHandler implements UseCaseHandler<VerifyPartnerInput, PartnerAccount> {
+  constructor(private readonly repository: PartnerRepositoryPortV1) {}
+  async handle(request: UseCaseRequest<VerifyPartnerInput>): Promise<UseCaseResponse<PartnerAccount>> {
+    const partnerId = required(request.input.partnerId, "partnerId") as PartnerId;
+    const partner = await this.repository.findById(partnerId);
+    if (!partner || partner.tenantId !== request.context.tenantId) throw new Error("Partner not found for tenant");
+    return response(request, await this.repository.verify(partnerId));
   }
 }
 
@@ -152,6 +163,7 @@ export const EXECUTABLE_FOUNDATION_USE_CASES = {
   createPartner: USE_CASE_IDS.partner.create,
   createPartnerProduct: USE_CASE_IDS.partner.productCreate,
   createPartnerService: USE_CASE_IDS.partner.serviceCreate,
+  verifyPartner: USE_CASE_IDS.partner.verify,
   createCart: USE_CASE_IDS.commerce.cartCreate,
   createOrder: USE_CASE_IDS.commerce.orderCreate,
   resolvePrice: USE_CASE_IDS.pricing.quote,
@@ -160,4 +172,4 @@ export const EXECUTABLE_FOUNDATION_USE_CASES = {
   generateRecommendation: USE_CASE_IDS.ai.recommendation,
 } as const;
 
-export const APPLICATION_CAPABILITIES_VERSION = "1.0.0" as const;
+export const APPLICATION_CAPABILITIES_VERSION = "1.1.0" as const;
