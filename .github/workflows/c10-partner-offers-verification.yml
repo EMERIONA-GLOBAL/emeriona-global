@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - architecture/c10-partner-offers
+      - architecture/c10-hardening
   workflow_dispatch:
 permissions:
   contents: read
@@ -17,6 +18,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Assert verification head
+        run: test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
       - run: npm install --no-audit --no-fund
       - name: Typecheck
         run: npm run typecheck
