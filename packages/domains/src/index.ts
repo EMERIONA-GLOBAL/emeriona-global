@@ -26,4 +26,6 @@ export type { CustomerRepositoryPortV1, ProductRepositoryPortV1, ServiceReposito
 export { DOMAIN_REPOSITORY_PORTS_VERSION } from "./ports.js";
 export type { CommerceUseCaseId } from "./commerce-foundation.js";
 export { COMMERCE_FOUNDATION_VERSION, COMMERCE_USE_CASE_IDS, assertMoney, assertSameCurrency, assertOrderTotal, assertPaymentMatchesOrder, assertCheckoutableCart, assertFulfillmentAllowed, COMMERCE_LIFECYCLE } from "./commerce-foundation.js";
-export const DOMAIN_LAYER_VERSION = "1.7.0" as const;
+export type { PricingQuote, PromotionValidation } from "./pricing-promotions-foundation.js";
+export { PRICING_PROMOTIONS_FOUNDATION_VERSION, assertPricingInvariant } from "./pricing-promotions-foundation.js";
+export const DOMAIN_LAYER_VERSION = "1.8.0" as const;
