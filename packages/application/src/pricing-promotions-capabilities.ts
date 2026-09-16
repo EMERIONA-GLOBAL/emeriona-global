@@ -5,26 +5,25 @@ import type { PricingQuote, PromotionValidation } from "../../domains/src/pricin
 export interface PricingQuoteInput { cartId: string; }
 export interface PromotionValidationInput { cartId: string; discountId: string; }
 
-function required(value: string, field: string): string {
-  if (!value.trim()) throw new Error(`${field} is required`);
-  return value.trim();
-}
-function response<T>(request: UseCaseRequest<unknown>, output: T): UseCaseResponse<T> {
-  return { useCaseId: request.useCaseId, correlationId: request.context.correlationId, output };
-}
+function required(value: string, field: string): string { if (!value.trim()) throw new Error(`${field} is required`); return value.trim(); }
+function response<T>(request: UseCaseRequest<unknown>, output: T): UseCaseResponse<T> { return { useCaseId: request.useCaseId, correlationId: request.context.correlationId, output }; }
 
 export class ResolvePricingQuoteHandler implements UseCaseHandler<PricingQuoteInput, PricingQuote> {
   constructor(private readonly pricing: PricingPort) {}
   async handle(request: UseCaseRequest<PricingQuoteInput>): Promise<UseCaseResponse<PricingQuote>> {
-    return response(request, await this.pricing.quote({ cartId: required(request.input.cartId, "cartId") as never }) as PricingQuote);
+    const cartId=required(request.input.cartId,"cartId");
+    const quote=await this.pricing.quote({cartId:cartId as never});
+    const output:PricingQuote={quoteId:quote.quoteId,cartId,subtotal:quote.subtotal.amount,discount:quote.discount.amount,total:quote.total.amount,currency:quote.total.currency};
+    return response(request,output);
   }
 }
 
 export class ValidatePromotionHandler implements UseCaseHandler<PromotionValidationInput, PromotionValidation> {
   constructor(private readonly promotions: PromotionPort) {}
   async handle(request: UseCaseRequest<PromotionValidationInput>): Promise<UseCaseResponse<PromotionValidation>> {
-    const result = await this.promotions.validateDiscount({ discountId: required(request.input.discountId, "discountId") as never, cartId: required(request.input.cartId, "cartId") as never });
-    return response(request, result as unknown as PromotionValidation);
+    const cartId=required(request.input.cartId,"cartId"); const discountId=required(request.input.discountId,"discountId");
+    const discount=await this.promotions.validateDiscount({discountId:discountId as never,cartId:cartId as never});
+    return response(request,{discountId,cartId,valid:true,discount:discount.value,currency:request.context.metadata?.currency as string ?? "",reason:undefined});
   }
 }
 
