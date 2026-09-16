@@ -1,0 +1,14 @@
+import type { UseCaseHandler, UseCaseRequest, UseCaseResponse } from "./index.js";
+import type { RefundRequestRecord, RefundRequestStatus, ReturnRequestRecord, ReturnStatus } from "../../domains/src/returns-refunds-foundation.js";
+export interface ReturnCreateInput { orderId:string; reason:string; }
+export interface ReturnProgressInput { returnId:string; status:ReturnStatus; }
+export interface RefundRequestCreateInput { orderId:string; paymentId:string; amount:{amount:number;currency:string}; reason:string; }
+export interface RefundRequestProgressInput { refundRequestId:string; status:RefundRequestStatus; }
+export interface ReturnsRefundsPort { createReturn(input:ReturnCreateInput):Promise<ReturnRequestRecord>; progressReturn(input:ReturnProgressInput):Promise<ReturnRequestRecord>; createRefundRequest(input:RefundRequestCreateInput):Promise<RefundRequestRecord>; progressRefundRequest(input:RefundRequestProgressInput):Promise<RefundRequestRecord>; }
+const response=<T>(request:UseCaseRequest<unknown>,output:T):UseCaseResponse<T>=>({useCaseId:request.useCaseId,correlationId:request.context.correlationId,output});
+const required=(value:string,field:string)=>{if(!value?.trim())throw new Error(`${field} is required`);return value.trim();};
+export class CreateReturnHandler implements UseCaseHandler<ReturnCreateInput,ReturnRequestRecord>{constructor(private readonly port:ReturnsRefundsPort){}async handle(request:UseCaseRequest<ReturnCreateInput>){return response(request,await this.port.createReturn({orderId:required(request.input.orderId,"orderId"),reason:required(request.input.reason,"reason")}));}}
+export class ProgressReturnHandler implements UseCaseHandler<ReturnProgressInput,ReturnRequestRecord>{constructor(private readonly port:ReturnsRefundsPort){}async handle(request:UseCaseRequest<ReturnProgressInput>){return response(request,await this.port.progressReturn({returnId:required(request.input.returnId,"returnId"),status:request.input.status}));}}
+export class CreateRefundRequestHandler implements UseCaseHandler<RefundRequestCreateInput,RefundRequestRecord>{constructor(private readonly port:ReturnsRefundsPort){}async handle(request:UseCaseRequest<RefundRequestCreateInput>){return response(request,await this.port.createRefundRequest({orderId:required(request.input.orderId,"orderId"),paymentId:required(request.input.paymentId,"paymentId"),amount:request.input.amount,reason:required(request.input.reason,"reason")}));}}
+export class ProgressRefundRequestHandler implements UseCaseHandler<RefundRequestProgressInput,RefundRequestRecord>{constructor(private readonly port:ReturnsRefundsPort){}async handle(request:UseCaseRequest<RefundRequestProgressInput>){return response(request,await this.port.progressRefundRequest({refundRequestId:required(request.input.refundRequestId,"refundRequestId"),status:request.input.status}));}}
+export const RETURNS_REFUNDS_APPLICATION_VERSION="1.0.0" as const;
