@@ -22,10 +22,10 @@ export type { RecommendationId, AgentRunId, Recommendation, SalesAssistantReques
 export { AI_DOMAIN_VERSION } from "./ai.js";
 export type { EntityId, MoneyValue, PercentageValue, TenantScope, ResourceScope } from "./value-objects.js";
 export { money, percentage, DOMAIN_VALUE_OBJECTS_VERSION } from "./value-objects.js";
-export type { CustomerRepositoryPortV1, ProductRepositoryPortV1, ServiceRepositoryPortV1, PartnerRepositoryPortV1, PartnerCatalogRepositoryPortV1, CartRepositoryPortV1, OrderRepositoryPortV1, UnitOfWorkPort } from "./ports.js";
+export type { CustomerRepositoryPortV1, ProductRepositoryPortV1, ServiceRepositoryPortV1, PartnerRepositoryPortV1, PartnerCatalogRepositoryPortV1, PartnerOfferRepositoryPortV1, CartRepositoryPortV1, OrderRepositoryPortV1, UnitOfWorkPort } from "./ports.js";
 export { DOMAIN_REPOSITORY_PORTS_VERSION } from "./ports.js";
 export type { CommerceUseCaseId } from "./commerce-foundation.js";
 export { COMMERCE_FOUNDATION_VERSION, COMMERCE_USE_CASE_IDS, assertMoney, assertSameCurrency, assertOrderTotal, assertPaymentMatchesOrder, assertCheckoutableCart, assertFulfillmentAllowed, COMMERCE_LIFECYCLE } from "./commerce-foundation.js";
 export type { PricingQuote, PromotionValidation } from "./pricing-promotions-foundation.js";
 export { PRICING_PROMOTIONS_FOUNDATION_VERSION, assertPricingInvariant } from "./pricing-promotions-foundation.js";
-export const DOMAIN_LAYER_VERSION = "1.8.0" as const;
+export const DOMAIN_LAYER_VERSION = "1.9.0" as const;
