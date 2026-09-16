@@ -29,5 +29,5 @@ export { CreateCatalogHandler, CATALOG_APPLICATION_VERSION } from './catalog-cap
 export type { CreateCatalogProductInput } from './catalog-product-capability.js';
 export { CreateCatalogProductHandler, CATALOG_PRODUCT_APPLICATION_VERSION } from './catalog-product-capability.js';
 export type { CartItemInput, CartItemResult, CheckoutResult, OperationalCommercePort } from './operational-commerce.js';
-export { AddCartItemHandler, CheckoutHandler, OPERATIONAL_COMMERCE_VERSION } from './operational-commerce.js";
+export { AddCartItemHandler, CheckoutHandler, OPERATIONAL_COMMERCE_VERSION } from './operational-commerce.js';
 export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'1.6.0',status:'OPERATIONAL_D1_PATH',providerNeutral:true} as const;
