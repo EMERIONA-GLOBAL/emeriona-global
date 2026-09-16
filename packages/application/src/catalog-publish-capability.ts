@@ -1,13 +1,12 @@
-import type { Catalog, CatalogId, Product, ProductId, Service, ServiceId } from "../../domains/src/index.js";
+import type { Catalog, CatalogId } from "../../domains/src/index.js";
 import type { UseCaseHandler, UseCaseRequest, UseCaseResponse } from "./index.js";
 
 export interface PublishCatalogInput { catalogId: CatalogId; }
-export interface PublishCatalogOutput { catalog: Catalog; products: readonly Product[]; services: readonly Service[]; }
+export interface PublishCatalogOutput { catalog: Catalog; publishedAt: string; }
 
 export interface CatalogPublicationPort {
   publishCatalog(catalogId: CatalogId): Promise<PublishCatalogOutput>;
-  publishProduct(productId: ProductId): Promise<Product>;
-  publishService(serviceId: ServiceId): Promise<Service>;
+  publishPartnerCatalog(catalogId: CatalogId, partnerId: string): Promise<PublishCatalogOutput>;
 }
 
 function required(value: string, field: string): string {
@@ -24,16 +23,14 @@ export class PublishCatalogHandler implements UseCaseHandler<PublishCatalogInput
 }
 
 export interface PublishPartnerCatalogInput { catalogId: CatalogId; partnerId: string; }
-export interface PublishPartnerCatalogOutput extends PublishCatalogOutput { partnerId: string; }
 
-export class PublishPartnerCatalogHandler implements UseCaseHandler<PublishPartnerCatalogInput, PublishPartnerCatalogOutput> {
+export class PublishPartnerCatalogHandler implements UseCaseHandler<PublishPartnerCatalogInput, PublishCatalogOutput> {
   constructor(private readonly publication: CatalogPublicationPort) {}
-  async handle(request: UseCaseRequest<PublishPartnerCatalogInput>): Promise<UseCaseResponse<PublishPartnerCatalogOutput>> {
+  async handle(request: UseCaseRequest<PublishPartnerCatalogInput>): Promise<UseCaseResponse<PublishCatalogOutput>> {
     const catalogId = required(request.input.catalogId, "catalogId") as CatalogId;
     const partnerId = required(request.input.partnerId, "partnerId");
-    const output = await this.publication.publishCatalog(catalogId);
-    return { useCaseId: request.useCaseId, correlationId: request.context.correlationId, output: { ...output, partnerId } };
+    return { useCaseId: request.useCaseId, correlationId: request.context.correlationId, output: await this.publication.publishPartnerCatalog(catalogId, partnerId) };
   }
 }
 
-export const CATALOG_PUBLICATION_APPLICATION_VERSION = "1.0.0" as const;
+export const CATALOG_PUBLICATION_APPLICATION_VERSION = "1.0.1" as const;
