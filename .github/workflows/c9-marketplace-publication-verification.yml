@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - architecture/c9-marketplace-publication
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 permissions:
   contents: read
