@@ -16,6 +16,7 @@ export interface IdempotencyPort {
   acquire(key: string, context: UseCaseContext): Promise<boolean>;
   getResult<T>(key: string, context: UseCaseContext): Promise<UseCaseResponse<T> | undefined>;
   storeResult<T>(key: string, context: UseCaseContext, response: UseCaseResponse<T>): Promise<void>;
+  release(key: string, context: UseCaseContext): Promise<void>;
 }
 
 export interface AuditPort {
@@ -36,4 +37,4 @@ export interface TelemetryPort {
   }): Promise<void>;
 }
 
-export const APPLICATION_PORTS_VERSION = "1.0.0" as const;
+export const APPLICATION_PORTS_VERSION = "1.1.0" as const;
