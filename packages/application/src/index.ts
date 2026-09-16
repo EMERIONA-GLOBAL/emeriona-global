@@ -34,4 +34,6 @@ export type { PricingQuoteInput, PromotionValidationInput } from './pricing-prom
 export { ResolvePricingQuoteHandler, ValidatePromotionHandler, PRICING_PROMOTIONS_APPLICATION_VERSION } from './pricing-promotions-capabilities.js';
 export type { PublishCatalogInput, PublishCatalogOutput, CatalogPublicationPort, PublishPartnerCatalogInput } from './catalog-publish-capability.js';
 export { PublishCatalogHandler, PublishPartnerCatalogHandler, CATALOG_PUBLICATION_APPLICATION_VERSION } from './catalog-publish-capability.js';
-export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'1.9.0',status:'OPERATIONAL_D1_PATH',providerNeutral:true} as const;
+export type { CreatePartnerOfferInput, UpdatePartnerOfferInput } from './partner-offer-capability.js';
+export { CreatePartnerOfferHandler, UpdatePartnerOfferHandler, PARTNER_OFFERS_APPLICATION_VERSION } from './partner-offer-capability.js';
+export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'2.0.0',status:'OPERATIONAL_D1_PATH',providerNeutral:true} as const;
