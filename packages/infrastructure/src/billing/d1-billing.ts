@@ -1,0 +1,69 @@
+import type { D1DatabaseLike } from "../d1.js";
+import type { InvoiceRecord, SettlementRecord } from "../../../domains/src/billing-foundation.js";
+import { assertInvoiceAmountMatchesPayment, assertSettlementAmounts } from "../../../domains/src/billing-foundation.js";
+
+async function one<T>(db: D1DatabaseLike, sql: string, values: readonly unknown[]): Promise<T | null> {
+  const statement = db.prepare(sql);
+  const result = await (values.length ? statement.bind(...values) : statement).all<T & Record<string, unknown>>();
+  return (result.results[0] as T | undefined) ?? null;
+}
+
+export interface CreateInvoiceInput { orderId: string; paymentIntentId: string; amount: { amount: number; currency: string }; }
+export interface CreateSettlementInput { orderId: string; partnerId: string; grossAmount: { amount: number; currency: string }; commissionAmount: { amount: number; currency: string }; netAmount: { amount: number; currency: string }; }
+
+export class D1BillingAdapter {
+  constructor(private readonly db: D1DatabaseLike, private readonly tenantId: string, private readonly correlationId: string) {}
+
+  async createInvoice(input: CreateInvoiceInput): Promise<InvoiceRecord> {
+    const payment = await one<{ id: string; order_id: string; amount: number; currency: string; status: string }>(this.db,
+      "SELECT id,order_id,amount,currency,status FROM payment_intents WHERE id=? AND tenant_id=?", [input.paymentIntentId, this.tenantId]);
+    if (!payment) throw new Error("Payment intent not found for tenant");
+    if (payment.order_id !== input.orderId) throw new Error("Invoice order does not match payment intent");
+    if (payment.status === "FAILED" || payment.status === "REFUNDED") throw new Error("Invoice cannot be created from an inactive payment intent");
+    assertInvoiceAmountMatchesPayment(input.amount, { amount: Number(payment.amount), currency: payment.currency });
+
+    const existing = await one<{ id: string; invoice_number: string | null; amount: number; currency: string; status: "ISSUED" | "VOID" }>(this.db,
+      "SELECT id,invoice_number,amount,currency,status FROM invoices WHERE order_id=? AND tenant_id=? LIMIT 1", [input.orderId, this.tenantId]);
+    if (existing) return { id: existing.id, orderId: input.orderId as InvoiceRecord["orderId"], paymentIntentId: input.paymentIntentId as InvoiceRecord["paymentIntentId"], number: existing.invoice_number ?? `INV-${existing.id}`, amount: { amount: Number(existing.amount), currency: existing.currency }, status: existing.status };
+
+    const id = `inv_${crypto.randomUUID()}`;
+    const number = `INV-${new Date().toISOString().slice(0,10).replaceAll("-", "")}-${id.slice(-12).toUpperCase()}`;
+    const eventId = `bev_${crypto.randomUUID()}`;
+    const inserted = await one<{ id: string; invoice_number: string; amount: number; currency: string; status: "ISSUED" | "VOID" }>(this.db,
+      "INSERT INTO invoices (id,tenant_id,order_id,status,amount,currency,invoice_number,payment_intent_id,subtotal_amount,discount_amount,tax_amount,issued_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP) RETURNING id,invoice_number,amount,currency,status",
+      [id, this.tenantId, input.orderId, "ISSUED", input.amount.amount, input.amount.currency, number, input.paymentIntentId, input.amount.amount, 0, 0]);
+    if (!inserted) throw new Error("Invoice persistence returned no row");
+    await this.db.prepare("INSERT INTO billing_events (id,tenant_id,invoice_id,from_status,to_status,correlation_id) VALUES (?,?,?,?,?,?)").bind(eventId, this.tenantId, id, null, "ISSUED", this.correlationId).all();
+    return { id: inserted.id, orderId: input.orderId as InvoiceRecord["orderId"], paymentIntentId: input.paymentIntentId as InvoiceRecord["paymentIntentId"], number: inserted.invoice_number, amount: { amount: Number(inserted.amount), currency: inserted.currency }, status: inserted.status };
+  }
+
+  async createSettlement(input: CreateSettlementInput): Promise<SettlementRecord> {
+    const revenue = await one<{ id: string; order_id: string; amount: number; currency: string; status: string }>(this.db,
+      "SELECT id,order_id,amount,currency,status FROM revenue_entries WHERE order_id=? AND tenant_id=? LIMIT 1", [input.orderId, this.tenantId]);
+    if (!revenue) throw new Error("Revenue entry not found for order");
+    if (revenue.status === "REVERSED") throw new Error("Reversed revenue cannot be settled");
+    assertSettlementAmounts(input.grossAmount, input.commissionAmount, input.netAmount);
+    if (Number(revenue.amount) !== input.grossAmount.amount || revenue.currency !== input.grossAmount.currency) throw new Error("Settlement gross amount does not match revenue");
+
+    const partner = await one<{ id: string }>(this.db, "SELECT id FROM partners WHERE id=? AND tenant_id=?", [input.partnerId, this.tenantId]);
+    if (!partner) throw new Error("Settlement partner not found for tenant");
+    const linked = await one<{ ok: number }>(this.db, "SELECT 1 AS ok FROM order_items WHERE order_id=? AND partner_id=? LIMIT 1", [input.orderId, input.partnerId]);
+    if (!linked) throw new Error("Partner is not associated with order");
+
+    const existing = await one<{ id: string; commission_amount: number; net_amount: number; currency: string; status: SettlementRecord["status"] }>(this.db,
+      "SELECT id,commission_amount,net_amount,currency,status FROM settlements WHERE partner_id=? AND order_id=? AND tenant_id=? LIMIT 1", [input.partnerId, input.orderId, this.tenantId]);
+    if (existing) return { id: existing.id, orderId: input.orderId as SettlementRecord["orderId"], partnerId: input.partnerId, revenueEntryId: revenue.id, grossAmount: { amount: Number(existing.commission_amount) + Number(existing.net_amount), currency: existing.currency }, commissionAmount: { amount: Number(existing.commission_amount), currency: existing.currency }, netAmount: { amount: Number(existing.net_amount), currency: existing.currency }, status: existing.status };
+
+    const id = `stl_${crypto.randomUUID()}`;
+    const eventId = `sev_${crypto.randomUUID()}`;
+    const reference = `STL-${new Date().toISOString().slice(0,10).replaceAll("-", "")}-${id.slice(-12).toUpperCase()}`;
+    const inserted = await one<{ id: string; commission_amount: number; net_amount: number; currency: string; status: SettlementRecord["status"] }>(this.db,
+      "INSERT INTO settlements (id,tenant_id,partner_id,order_id,commission_amount,net_amount,currency,status,revenue_entry_id,settlement_reference) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING id,commission_amount,net_amount,currency,status",
+      [id, this.tenantId, input.partnerId, input.orderId, input.commissionAmount.amount, input.netAmount.amount, input.grossAmount.currency, "PENDING", revenue.id, reference]);
+    if (!inserted) throw new Error("Settlement persistence returned no row");
+    await this.db.prepare("INSERT INTO settlement_events (id,tenant_id,settlement_id,from_status,to_status,correlation_id) VALUES (?,?,?,?,?,?)").bind(eventId, this.tenantId, id, null, "PENDING", this.correlationId).all();
+    return { id: inserted.id, orderId: input.orderId as SettlementRecord["orderId"], partnerId: input.partnerId, revenueEntryId: revenue.id, grossAmount: input.grossAmount, commissionAmount: { amount: Number(inserted.commission_amount), currency: inserted.currency }, netAmount: { amount: Number(inserted.net_amount), currency: inserted.currency }, status: inserted.status };
+  }
+}
+
+export const D1_BILLING_ADAPTER_VERSION = "1.0.0" as const;
