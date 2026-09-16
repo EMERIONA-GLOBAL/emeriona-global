@@ -2,6 +2,7 @@
 set -euo pipefail
 BASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="c11-smoke-${GITHUB_RUN_ID}"; T2="c11-isolation-${GITHUB_RUN_ID}"; P="c11-partner-${GITHUB_RUN_ID}"
+printf 'C11 production diagnostic smoke revision: %s\n' "$GITHUB_SHA"
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','C11 Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','C11 Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','C11 Partner','VERIFIED');"
 COMMON=(-H "x-tenant-id: ${T}" -H 'x-actor-id: c11-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
 for endpoint in analytics performance impact; do
