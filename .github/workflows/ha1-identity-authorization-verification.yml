@@ -58,8 +58,10 @@ jobs:
       - name: Cleanup HA-1 verification records
         if: always()
         run: |
-          TENANT="ha1-proof-${GITHUB_RUN_ID}"
-          npx wrangler d1 execute emeriona-global-db --remote --command "DELETE FROM auth_principal_roles WHERE tenant_id='$TENANT'; DELETE FROM auth_role_permissions WHERE tenant_id='$TENANT'; DELETE FROM auth_permissions WHERE tenant_id='$TENANT'; DELETE FROM auth_roles WHERE tenant_id='$TENANT'; DELETE FROM auth_sessions WHERE tenant_id='$TENANT'; DELETE FROM auth_credentials WHERE tenant_id='$TENANT'; DELETE FROM auth_identities WHERE tenant_id='$TENANT'; DELETE FROM auth_principals WHERE tenant_id='$TENANT'; DELETE FROM tenants WHERE id='$TENANT';"
+          for RUN_ID in "$GITHUB_RUN_ID" "35160192072"; do
+            TENANT="ha1-proof-${RUN_ID}"
+            npx wrangler d1 execute emeriona-global-db --remote --command "DELETE FROM auth_principal_roles WHERE tenant_id='$TENANT'; DELETE FROM auth_role_permissions WHERE tenant_id='$TENANT'; DELETE FROM auth_permissions WHERE tenant_id='$TENANT'; DELETE FROM auth_roles WHERE tenant_id='$TENANT'; DELETE FROM auth_sessions WHERE tenant_id='$TENANT'; DELETE FROM auth_credentials WHERE tenant_id='$TENANT'; DELETE FROM auth_identities WHERE tenant_id='$TENANT'; DELETE FROM auth_principals WHERE tenant_id='$TENANT'; DELETE FROM tenants WHERE id='$TENANT';"
+          done
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
