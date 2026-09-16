@@ -1,0 +1,1 @@
+C10 — Partner Offer Activation Foundation
