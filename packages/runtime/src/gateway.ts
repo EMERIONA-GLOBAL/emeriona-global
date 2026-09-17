@@ -30,6 +30,7 @@ const USE_CASE_ROUTES: ReadonlyArray<ApiRouteDefinition> = [
   { method: 'POST', path: '/api/v1/partners/performance', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'partner.performance.query' as UseCaseId },
   { method: 'POST', path: '/api/v1/partners/impact', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'partner.impact.measure' as UseCaseId },
   { method: 'POST', path: '/api/v1/carts', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'cart.create' as UseCaseId },
+  { method: 'POST', path: '/api/v1/carts/update', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'cart.update' as UseCaseId },
   { method: 'POST', path: '/api/v1/cart-items', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'cart.item.add' as UseCaseId },
   { method: 'POST', path: '/api/v1/checkout', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'checkout.execute' as UseCaseId },
   { method: 'POST', path: '/api/v1/orders', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'order.create' as UseCaseId },
