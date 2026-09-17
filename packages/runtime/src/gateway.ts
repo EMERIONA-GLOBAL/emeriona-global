@@ -17,6 +17,7 @@ const USE_CASE_ROUTES: ReadonlyArray<ApiRouteDefinition> = [
   { method: 'POST', path: '/api/v1/services/update', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'catalog.service.update' as UseCaseId },
   { method: 'POST', path: '/api/v1/catalogs/publish', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'catalog.publish' as UseCaseId },
   { method: 'POST', path: '/api/v1/partners', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'partner.create' as UseCaseId },
+  { method: 'POST', path: '/api/v1/partners/update', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'partner.update' as UseCaseId },
   { method: 'POST', path: '/api/v1/partners/verify', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'partner.verify' as UseCaseId },
   { method: 'POST', path: '/api/v1/partners/products', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'partner.product.create' as UseCaseId },
   { method: 'POST', path: '/api/v1/partners/services', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'partner.service.create' as UseCaseId },
