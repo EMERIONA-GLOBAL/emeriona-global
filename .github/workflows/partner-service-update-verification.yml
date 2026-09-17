@@ -2,7 +2,9 @@ name: Partner Service Update Production Verification
 
 on:
   push:
-    branches: [commercial-partner-service-update]
+    branches:
+      - commercial-partner-service-update
+      - verify/partner-service-update-main
   pull_request:
     branches: [main]
     paths:
@@ -21,10 +23,10 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.number == 33
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout PR head
+      - name: Checkout exact verification head
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.sha }}
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
