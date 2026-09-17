@@ -1,26 +1,28 @@
-name: EMERIONA GLOBAL Quality Gates
-
+name: EMERIONA GLOBAL C11 Partner Intelligence Verification
 on:
   push:
-    branches: [main, 'architecture/**']
+    branches:
+      - architecture/c11-partner-intelligence
   pull_request:
-    branches: [main]
-
+    branches:
+      - main
+  workflow_dispatch:
 permissions:
   contents: read
-
+concurrency:
+  group: c11-partner-intelligence-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  quality:
+  verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - name: Install
-        run: npm install
+          node-version: 22
+      - name: Assert verification head
+        run: test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+      - run: npm install --no-audit --no-fund
       - name: Typecheck
         run: npm run typecheck
       - name: Test
@@ -28,20 +30,7 @@ jobs:
       - name: Platform Build
         run: npm run build
       - name: Web Build
-        run: npm run build --workspace=@emeriona-global/web
-
-  c11-production-verification:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.pull_request.number == 24
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Install
-        run: npm install --no-audit --no-fund
+        run: npm run build --workspace apps/web
       - name: Apply C11 D1 migration
         run: npx wrangler d1 migrations apply emeriona-global-db --remote
         env:
@@ -61,6 +50,11 @@ jobs:
         run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health | jq -e '.status == "ok" and .service == "emeriona-global"'
       - name: Production Readiness and D1
         run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health/ready | jq -e '.status == "ready" and .dependencies.database.status == "ok"'
+      - name: Partner intelligence route protection
+        run: |
+          test "$(curl -sS -o /dev/null -w '%{http_code}' https://emeriona-global.emerionaglobal.workers.dev/api/v1/partners/analytics)" = '405'
+          test "$(curl -sS -o /dev/null -w '%{http_code}' https://emeriona-global.emerionaglobal.workers.dev/api/v1/partners/performance)" = '405'
+          test "$(curl -sS -o /dev/null -w '%{http_code}' https://emeriona-global.emerionaglobal.workers.dev/api/v1/partners/impact)" = '405'
       - name: Production partner intelligence smoke
         run: bash scripts/c11-partner-intelligence-smoke.sh
         env:
