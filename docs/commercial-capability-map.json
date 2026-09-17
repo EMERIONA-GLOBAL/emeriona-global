@@ -1,73 +1,398 @@
 {
   "schemaVersion": "1.0.0",
-  "baselineSha": "da4f4b15e293de9b4d3279a41b7c8323864c288e",
+  "baselineSha": "b5a8b33d9c57fa6f8a631955f3532862ce39b24b",
   "policy": "Preserve every architectural contract; implementation advances lifecycle without deleting capability definitions.",
-  "statusModel": ["CONTRACT","IMPLEMENTED","D1-BACKED","PRODUCTION","VERIFIED","CLOSED"],
+  "statusModel": [
+    "CONTRACT",
+    "IMPLEMENTED",
+    "D1-BACKED",
+    "PRODUCTION",
+    "VERIFIED",
+    "CLOSED"
+  ],
   "auditRule": "A contract is not considered implemented merely because an interface or route exists. Registration, handler, infrastructure adapter, D1 path, and production evidence are assessed separately.",
   "capabilities": [
-    {"id":"identity.authenticate","domain":"IDENTITY","status":"CONTRACT","evidence":"No canonical runtime registration found in current composition."},
-    {"id":"identity.authorize","domain":"IDENTITY","status":"D1-BACKED","evidence":"HA-1 authorization runtime/adapter exists; contract lifecycle remains FOUNDATION."},
-    {"id":"identity.revoke","domain":"IDENTITY","status":"D1-BACKED","evidence":"HA-1 identity authorization infrastructure exists; canonical use-case registration requires explicit verification."},
-    {"id":"customer.create","domain":"CUSTOMER","status":"D1-BACKED","evidence":"CreateCustomerHandler registered with D1CustomerRepository."},
-    {"id":"customer.update","domain":"CUSTOMER","status":"IMPLEMENTED","evidence":"UpdateCustomerHandler and canonical composition registration added; D1 repository path already supports tenant-scoped update. Pending full production verification."},
-    {"id":"catalog.create","domain":"CATALOG","status":"D1-BACKED","evidence":"CreateCatalogHandler registered with D1CatalogRepository."},
-    {"id":"catalog.product.create","domain":"CATALOG","status":"D1-BACKED","evidence":"CreateProductHandler registered with D1ProductRepository."},
-    {"id":"catalog.product.create.bound","domain":"CATALOG","status":"D1-BACKED","evidence":"CreateCatalogProductHandler registered."},
-    {"id":"catalog.product.update","domain":"CATALOG","status":"VERIFIED","evidence":"PR #28 production verification passed with Quality Gates, D1 migration, Worker deployment, health/readiness, and production smoke; merged main SHA 0695744f00c6bf39b95fc2dd79dc6fa52309ac6d."},
-    {"id":"catalog.service.create","domain":"CATALOG","status":"D1-BACKED","evidence":"CreateServiceHandler registered with D1ServiceRepository."},
-    {"id":"catalog.service.update","domain":"CATALOG","status":"VERIFIED","evidence":"PR #29 production verification passed with Quality Gates, D1 migration, Worker deployment, health/readiness, and catalog.service.update production smoke; merged main SHA 1e54ab9986817daca4ef7ed508939c8e6be8dcd4."},
-    {"id":"catalog.publish","domain":"CATALOG","status":"D1-BACKED","evidence":"PublishCatalogHandler registered with D1CatalogPublicationAdapter."},
-    {"id":"partner.create","domain":"PARTNER","status":"D1-BACKED","evidence":"CreatePartnerHandler registered with D1PartnerRepository."},
-    {"id":"partner.update","domain":"PARTNER","status":"VERIFIED","evidence":"PR #30 implemented and verified partner.update through D1, tenant isolation, persistence, idempotency, route protection, health/readiness, Quality Gates, and Cloudflare Worker deployment; merged main SHA d5a0823a4f6346dd13975676814e10e56fe51917 with post-merge main verification passing."},
-    {"id":"partner.onboard","domain":"PARTNER","status":"CONTRACT","evidence":"Contract exists; no onboard handler registration found."},
-    {"id":"partner.verify","domain":"PARTNER","status":"D1-BACKED","evidence":"VerifyPartnerHandler registered."},
-    {"id":"partner.product.create","domain":"PARTNER","status":"D1-BACKED","evidence":"CreatePartnerProductHandler registered."},
-    {"id":"partner.product.update","domain":"PARTNER","status":"VERIFIED","evidence":"PR #31 implemented the canonical partner.product.update handler, D1 tenant+partner scoped persistence, API route, and production smoke; merged main SHA e5f253603cd0665a91f9171a6678eb7b010817d0. Main verification and Cloudflare Worker Build/deployment for the merged SHA passed."},
-    {"id":"partner.service.create","domain":"PARTNER","status":"D1-BACKED","evidence":"CreatePartnerServiceHandler registered."},
-    {"id":"partner.service.update","domain":"PARTNER","status":"VERIFIED","evidence":"PR #33 implemented the canonical partner.service.update handler, tenant+partner-scoped D1 persistence, API route, idempotency and production smoke. Merged main SHA da4f4b15e293de9b4d3279a41b7c8323864c288e; post-merge verification run 35281967993 passed Typecheck, Test, Platform Build, Web Build, D1 migrations, Worker deployment, health/readiness, route protection and production partner.service.update smoke."},
-    {"id":"partner.catalog.publish","domain":"PARTNER","status":"D1-BACKED","evidence":"PublishPartnerCatalogHandler registered."},
-    {"id":"partner.offer.create","domain":"PARTNER","status":"D1-BACKED","evidence":"C10 partner-offers handler/adapter path registered."},
-    {"id":"partner.offer.update","domain":"PARTNER","status":"D1-BACKED","evidence":"C10 partner-offers handler/adapter path registered."},
-    {"id":"partner.analytics.query","domain":"PARTNER","status":"VERIFIED","evidence":"C11 production verification and D1-backed partner intelligence path."},
-    {"id":"partner.performance.query","domain":"PARTNER","status":"VERIFIED","evidence":"C11 production verification and D1-backed partner intelligence path."},
-    {"id":"partner.impact.measure","domain":"PARTNER","status":"VERIFIED","evidence":"C11 production verification and D1-backed partner intelligence path."},
-    {"id":"cart.create","domain":"COMMERCE","status":"D1-BACKED","evidence":"CreateCartHandler registered with D1CartRepository."},
-    {"id":"cart.update","domain":"COMMERCE","status":"IMPLEMENTED","evidence":"UpdateCartHandler is registered against D1CartRepository; full post-merge production verification remains required for promotion."},
-    {"id":"cart.item.add","domain":"COMMERCE","status":"D1-BACKED","evidence":"AddCartItemHandler registered with D1OperationalCommerceAdapter."},
-    {"id":"checkout.execute","domain":"COMMERCE","status":"D1-BACKED","evidence":"CheckoutHandler registered with D1OperationalCommerceAdapter."},
-    {"id":"order.create","domain":"COMMERCE","status":"D1-BACKED","evidence":"CreateOrderHandler registered with D1OrderRepository."},
-    {"id":"order.update","domain":"COMMERCE","status":"CONTRACT","evidence":"Contract exists; no order update handler registration found."},
-    {"id":"fulfillment.execute","domain":"COMMERCE","status":"CONTRACT","evidence":"Contract exists, but implementation is currently registered under non-contract IDs fulfillment.create/progress; canonical alignment is required."},
-    {"id":"pricing.quote","domain":"PRICING","status":"D1-BACKED","evidence":"ResolvePricingQuoteHandler registered with D1PricingPromotionsAdapter."},
-    {"id":"pricing.resolve","domain":"PRICING","status":"CONTRACT","evidence":"No canonical pricing.resolve registration found."},
-    {"id":"offer.create","domain":"PROMOTION","status":"CONTRACT","evidence":"No canonical offer.create registration found; partner.offer.create is distinct."},
-    {"id":"offer.update","domain":"PROMOTION","status":"CONTRACT","evidence":"No canonical offer.update registration found; partner.offer.update is distinct."},
-    {"id":"discount.validate","domain":"PROMOTION","status":"D1-BACKED","evidence":"ValidatePromotionHandler registered with D1PricingPromotionsAdapter."},
-    {"id":"discount.apply","domain":"PROMOTION","status":"CONTRACT","evidence":"No canonical discount.apply registration found."},
-    {"id":"payment.create","domain":"PAYMENT","status":"CONTRACT","evidence":"CreatePaymentIntentHandler exists and is D1-backed, but is registered under payment.intent.create rather than payment.create."},
-    {"id":"payment.authorize","domain":"PAYMENT","status":"CONTRACT","evidence":"No canonical authorization handler registration found."},
-    {"id":"payment.capture","domain":"PAYMENT","status":"CONTRACT","evidence":"No canonical capture handler registration found."},
-    {"id":"payment.refund","domain":"PAYMENT","status":"CONTRACT","evidence":"No canonical refund handler registration found."},
-    {"id":"payment.status","domain":"PAYMENT","status":"CONTRACT","evidence":"No canonical status handler registration found."},
-    {"id":"billing.invoice.create","domain":"BILLING","status":"D1-BACKED","evidence":"CreateInvoiceHandler registered with D1BillingAdapter."},
-    {"id":"billing.query","domain":"BILLING","status":"CONTRACT","evidence":"No canonical billing.query registration found."},
-    {"id":"settlement.calculate","domain":"SETTLEMENT","status":"CONTRACT","evidence":"CreateSettlementHandler exists and is D1-backed, but is registered under settlement.create rather than the canonical contract IDs."},
-    {"id":"settlement.execute","domain":"SETTLEMENT","status":"CONTRACT","evidence":"Canonical settlement.execute registration is absent."},
-    {"id":"search.execute","domain":"SEARCH","status":"CONTRACT","evidence":"No canonical search handler registration found."},
-    {"id":"discovery.execute","domain":"SEARCH","status":"CONTRACT","evidence":"No canonical discovery handler registration found."},
-    {"id":"knowledge.retrieve","domain":"KNOWLEDGE","status":"CONTRACT","evidence":"No canonical knowledge handler registration found."},
-    {"id":"support.case.create","domain":"SUPPORT","status":"CONTRACT","evidence":"No canonical support case handler registration found."},
-    {"id":"recommendation.generate","domain":"AI","status":"D1-BACKED","evidence":"GenerateRecommendationHandler exists; infrastructure/provider path requires separate production verification before promotion."},
-    {"id":"personalization.generate","domain":"AI","status":"CONTRACT","evidence":"No canonical handler registration found."},
-    {"id":"sales.assistant.execute","domain":"AI","status":"CONTRACT","evidence":"No canonical handler registration found."},
-    {"id":"ai.agent.execute","domain":"AI","status":"CONTRACT","evidence":"No canonical handler registration found."},
-    {"id":"ai.model.route","domain":"AI","status":"CONTRACT","evidence":"No canonical handler registration found."},
-    {"id":"campaign.execute","domain":"CAMPAIGN","status":"CONTRACT","evidence":"No canonical handler registration found."},
-    {"id":"notification.send","domain":"NOTIFICATION","status":"CONTRACT","evidence":"No canonical handler registration found."},
-    {"id":"workflow.execute","domain":"WORKFLOW","status":"CONTRACT","evidence":"No canonical handler registration found."},
-    {"id":"analytics.query","domain":"ANALYTICS","status":"CONTRACT","evidence":"Partner analytics is implemented separately; general analytics.query remains unregistered."},
-    {"id":"impact.measure","domain":"IMPACT","status":"CONTRACT","evidence":"Partner impact is implemented separately; general impact.measure remains unregistered."}
+    {
+      "id": "identity.authenticate",
+      "domain": "IDENTITY",
+      "status": "CONTRACT",
+      "evidence": "No canonical runtime registration found in current composition."
+    },
+    {
+      "id": "identity.authorize",
+      "domain": "IDENTITY",
+      "status": "D1-BACKED",
+      "evidence": "HA-1 authorization runtime/adapter exists; contract lifecycle remains FOUNDATION."
+    },
+    {
+      "id": "identity.revoke",
+      "domain": "IDENTITY",
+      "status": "D1-BACKED",
+      "evidence": "HA-1 identity authorization infrastructure exists; canonical use-case registration requires explicit verification."
+    },
+    {
+      "id": "customer.create",
+      "domain": "CUSTOMER",
+      "status": "D1-BACKED",
+      "evidence": "CreateCustomerHandler registered with D1CustomerRepository."
+    },
+    {
+      "id": "customer.update",
+      "domain": "CUSTOMER",
+      "status": "IMPLEMENTED",
+      "evidence": "UpdateCustomerHandler and canonical composition registration added; D1 repository path already supports tenant-scoped update. Pending full production verification."
+    },
+    {
+      "id": "catalog.create",
+      "domain": "CATALOG",
+      "status": "D1-BACKED",
+      "evidence": "CreateCatalogHandler registered with D1CatalogRepository."
+    },
+    {
+      "id": "catalog.product.create",
+      "domain": "CATALOG",
+      "status": "D1-BACKED",
+      "evidence": "CreateProductHandler registered with D1ProductRepository."
+    },
+    {
+      "id": "catalog.product.create.bound",
+      "domain": "CATALOG",
+      "status": "D1-BACKED",
+      "evidence": "CreateCatalogProductHandler registered."
+    },
+    {
+      "id": "catalog.product.update",
+      "domain": "CATALOG",
+      "status": "VERIFIED",
+      "evidence": "PR #28 production verification passed with Quality Gates, D1 migration, Worker deployment, health/readiness, and production smoke; merged main SHA 0695744f00c6bf39b95fc2dd79dc6fa52309ac6d."
+    },
+    {
+      "id": "catalog.service.create",
+      "domain": "CATALOG",
+      "status": "D1-BACKED",
+      "evidence": "CreateServiceHandler registered with D1ServiceRepository."
+    },
+    {
+      "id": "catalog.service.update",
+      "domain": "CATALOG",
+      "status": "VERIFIED",
+      "evidence": "PR #29 production verification passed with Quality Gates, D1 migration, Worker deployment, health/readiness, and catalog.service.update production smoke; merged main SHA 1e54ab9986817daca4ef7ed508939c8e6be8dcd4."
+    },
+    {
+      "id": "catalog.publish",
+      "domain": "CATALOG",
+      "status": "D1-BACKED",
+      "evidence": "PublishCatalogHandler registered with D1CatalogPublicationAdapter."
+    },
+    {
+      "id": "partner.create",
+      "domain": "PARTNER",
+      "status": "D1-BACKED",
+      "evidence": "CreatePartnerHandler registered with D1PartnerRepository."
+    },
+    {
+      "id": "partner.update",
+      "domain": "PARTNER",
+      "status": "VERIFIED",
+      "evidence": "PR #30 implemented and verified partner.update through D1, tenant isolation, persistence, idempotency, route protection, health/readiness, Quality Gates, and Cloudflare Worker deployment; merged main SHA d5a0823a4f6346dd13975676814e10e56fe51917 with post-merge main verification passing."
+    },
+    {
+      "id": "partner.onboard",
+      "domain": "PARTNER",
+      "status": "CONTRACT",
+      "evidence": "Contract exists; no onboard handler registration found."
+    },
+    {
+      "id": "partner.verify",
+      "domain": "PARTNER",
+      "status": "D1-BACKED",
+      "evidence": "VerifyPartnerHandler registered."
+    },
+    {
+      "id": "partner.product.create",
+      "domain": "PARTNER",
+      "status": "D1-BACKED",
+      "evidence": "CreatePartnerProductHandler registered."
+    },
+    {
+      "id": "partner.product.update",
+      "domain": "PARTNER",
+      "status": "VERIFIED",
+      "evidence": "PR #31 implemented the canonical partner.product.update handler, D1 tenant+partner scoped persistence, API route, and production smoke; merged main SHA e5f253603cd0665a91f9171a6678eb7b010817d0. Main verification and Cloudflare Worker Build/deployment for the merged SHA passed."
+    },
+    {
+      "id": "partner.service.create",
+      "domain": "PARTNER",
+      "status": "D1-BACKED",
+      "evidence": "CreatePartnerServiceHandler registered."
+    },
+    {
+      "id": "partner.service.update",
+      "domain": "PARTNER",
+      "status": "VERIFIED",
+      "evidence": "PR #33 implemented the canonical partner.service.update handler, tenant+partner-scoped D1 persistence, API route, idempotency and production smoke. Merged main SHA da4f4b15e293de9b4d3279a41b7c8323864c288e; post-merge verification run 35281967993 passed Typecheck, Test, Platform Build, Web Build, D1 migrations, Worker deployment, health/readiness, route protection and production partner.service.update smoke."
+    },
+    {
+      "id": "partner.catalog.publish",
+      "domain": "PARTNER",
+      "status": "D1-BACKED",
+      "evidence": "PublishPartnerCatalogHandler registered."
+    },
+    {
+      "id": "partner.offer.create",
+      "domain": "PARTNER",
+      "status": "D1-BACKED",
+      "evidence": "C10 partner-offers handler/adapter path registered."
+    },
+    {
+      "id": "partner.offer.update",
+      "domain": "PARTNER",
+      "status": "D1-BACKED",
+      "evidence": "C10 partner-offers handler/adapter path registered."
+    },
+    {
+      "id": "partner.analytics.query",
+      "domain": "PARTNER",
+      "status": "VERIFIED",
+      "evidence": "C11 production verification and D1-backed partner intelligence path."
+    },
+    {
+      "id": "partner.performance.query",
+      "domain": "PARTNER",
+      "status": "VERIFIED",
+      "evidence": "C11 production verification and D1-backed partner intelligence path."
+    },
+    {
+      "id": "partner.impact.measure",
+      "domain": "PARTNER",
+      "status": "VERIFIED",
+      "evidence": "C11 production verification and D1-backed partner intelligence path."
+    },
+    {
+      "id": "cart.create",
+      "domain": "COMMERCE",
+      "status": "D1-BACKED",
+      "evidence": "CreateCartHandler registered with D1CartRepository."
+    },
+    {
+      "id": "cart.update",
+      "domain": "COMMERCE",
+      "status": "VERIFIED",
+      "evidence": "PR #35 added the canonical POST /api/v1/carts/update route without changing the existing UpdateCartHandler/D1CartRepository architecture. PR production verification passed. Post-merge exact Main SHA verification run 35283552200 checked SHA b5a8b33d9c57fa6f8a631955f3532862ce39b24b and passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Worker deployment, health/readiness, route protection, and production cart.update smoke with remote D1 persistence, idempotency and tenant isolation. Cloudflare Worker version ce87e46d-cdc7-46af-b054-59184149bf3e."
+    },
+    {
+      "id": "cart.item.add",
+      "domain": "COMMERCE",
+      "status": "D1-BACKED",
+      "evidence": "AddCartItemHandler registered with D1OperationalCommerceAdapter."
+    },
+    {
+      "id": "checkout.execute",
+      "domain": "COMMERCE",
+      "status": "D1-BACKED",
+      "evidence": "CheckoutHandler registered with D1OperationalCommerceAdapter."
+    },
+    {
+      "id": "order.create",
+      "domain": "COMMERCE",
+      "status": "D1-BACKED",
+      "evidence": "CreateOrderHandler registered with D1OrderRepository."
+    },
+    {
+      "id": "order.update",
+      "domain": "COMMERCE",
+      "status": "CONTRACT",
+      "evidence": "Contract exists; no order update handler registration found."
+    },
+    {
+      "id": "fulfillment.execute",
+      "domain": "COMMERCE",
+      "status": "CONTRACT",
+      "evidence": "Contract exists, but implementation is currently registered under non-contract IDs fulfillment.create/progress; canonical alignment is required."
+    },
+    {
+      "id": "pricing.quote",
+      "domain": "PRICING",
+      "status": "D1-BACKED",
+      "evidence": "ResolvePricingQuoteHandler registered with D1PricingPromotionsAdapter."
+    },
+    {
+      "id": "pricing.resolve",
+      "domain": "PRICING",
+      "status": "CONTRACT",
+      "evidence": "No canonical pricing.resolve registration found."
+    },
+    {
+      "id": "offer.create",
+      "domain": "PROMOTION",
+      "status": "CONTRACT",
+      "evidence": "No canonical offer.create registration found; partner.offer.create is distinct."
+    },
+    {
+      "id": "offer.update",
+      "domain": "PROMOTION",
+      "status": "CONTRACT",
+      "evidence": "No canonical offer.update registration found; partner.offer.update is distinct."
+    },
+    {
+      "id": "discount.validate",
+      "domain": "PROMOTION",
+      "status": "D1-BACKED",
+      "evidence": "ValidatePromotionHandler registered with D1PricingPromotionsAdapter."
+    },
+    {
+      "id": "discount.apply",
+      "domain": "PROMOTION",
+      "status": "CONTRACT",
+      "evidence": "No canonical discount.apply registration found."
+    },
+    {
+      "id": "payment.create",
+      "domain": "PAYMENT",
+      "status": "CONTRACT",
+      "evidence": "CreatePaymentIntentHandler exists and is D1-backed, but is registered under payment.intent.create rather than payment.create."
+    },
+    {
+      "id": "payment.authorize",
+      "domain": "PAYMENT",
+      "status": "CONTRACT",
+      "evidence": "No canonical authorization handler registration found."
+    },
+    {
+      "id": "payment.capture",
+      "domain": "PAYMENT",
+      "status": "CONTRACT",
+      "evidence": "No canonical capture handler registration found."
+    },
+    {
+      "id": "payment.refund",
+      "domain": "PAYMENT",
+      "status": "CONTRACT",
+      "evidence": "No canonical refund handler registration found."
+    },
+    {
+      "id": "payment.status",
+      "domain": "PAYMENT",
+      "status": "CONTRACT",
+      "evidence": "No canonical status handler registration found."
+    },
+    {
+      "id": "billing.invoice.create",
+      "domain": "BILLING",
+      "status": "D1-BACKED",
+      "evidence": "CreateInvoiceHandler registered with D1BillingAdapter."
+    },
+    {
+      "id": "billing.query",
+      "domain": "BILLING",
+      "status": "CONTRACT",
+      "evidence": "No canonical billing.query registration found."
+    },
+    {
+      "id": "settlement.calculate",
+      "domain": "SETTLEMENT",
+      "status": "CONTRACT",
+      "evidence": "CreateSettlementHandler exists and is D1-backed, but is registered under settlement.create rather than the canonical contract IDs."
+    },
+    {
+      "id": "settlement.execute",
+      "domain": "SETTLEMENT",
+      "status": "CONTRACT",
+      "evidence": "Canonical settlement.execute registration is absent."
+    },
+    {
+      "id": "search.execute",
+      "domain": "SEARCH",
+      "status": "CONTRACT",
+      "evidence": "No canonical search handler registration found."
+    },
+    {
+      "id": "discovery.execute",
+      "domain": "SEARCH",
+      "status": "CONTRACT",
+      "evidence": "No canonical discovery handler registration found."
+    },
+    {
+      "id": "knowledge.retrieve",
+      "domain": "KNOWLEDGE",
+      "status": "CONTRACT",
+      "evidence": "No canonical knowledge handler registration found."
+    },
+    {
+      "id": "support.case.create",
+      "domain": "SUPPORT",
+      "status": "CONTRACT",
+      "evidence": "No canonical support case handler registration found."
+    },
+    {
+      "id": "recommendation.generate",
+      "domain": "AI",
+      "status": "D1-BACKED",
+      "evidence": "GenerateRecommendationHandler exists; infrastructure/provider path requires separate production verification before promotion."
+    },
+    {
+      "id": "personalization.generate",
+      "domain": "AI",
+      "status": "CONTRACT",
+      "evidence": "No canonical handler registration found."
+    },
+    {
+      "id": "sales.assistant.execute",
+      "domain": "AI",
+      "status": "CONTRACT",
+      "evidence": "No canonical handler registration found."
+    },
+    {
+      "id": "ai.agent.execute",
+      "domain": "AI",
+      "status": "CONTRACT",
+      "evidence": "No canonical handler registration found."
+    },
+    {
+      "id": "ai.model.route",
+      "domain": "AI",
+      "status": "CONTRACT",
+      "evidence": "No canonical handler registration found."
+    },
+    {
+      "id": "campaign.execute",
+      "domain": "CAMPAIGN",
+      "status": "CONTRACT",
+      "evidence": "No canonical handler registration found."
+    },
+    {
+      "id": "notification.send",
+      "domain": "NOTIFICATION",
+      "status": "CONTRACT",
+      "evidence": "No canonical handler registration found."
+    },
+    {
+      "id": "workflow.execute",
+      "domain": "WORKFLOW",
+      "status": "CONTRACT",
+      "evidence": "No canonical handler registration found."
+    },
+    {
+      "id": "analytics.query",
+      "domain": "ANALYTICS",
+      "status": "CONTRACT",
+      "evidence": "Partner analytics is implemented separately; general analytics.query remains unregistered."
+    },
+    {
+      "id": "impact.measure",
+      "domain": "IMPACT",
+      "status": "CONTRACT",
+      "evidence": "Partner impact is implemented separately; general impact.measure remains unregistered."
+    }
   ],
-  "lastVerified":{"id":"partner.service.update","mergeSha":"da4f4b15e293de9b4d3279a41b7c8323864c288e","verification":"Post-merge verification run 35281967993 passed the complete Main verification path including D1, Cloudflare Worker deployment, health/readiness, route protection and production partner.service.update smoke."},
-  "nextExecution":{"id":"cart.update","reason":"After closing partner.service.update, the current Main composition audit shows cart.update is already registered and implemented against D1CartRepository but remains below VERIFIED status because its required post-merge production evidence is still outstanding.","plan":"Audit existing cart.update implementation and prior verification evidence first; if no stronger existing evidence closes the gap, run the complete D1/Quality Gates/Cloudflare production verification path, then promote only after evidence and post-merge Main verification."}
+  "lastVerified": {
+    "id": "cart.update",
+    "mergeSha": "b5a8b33d9c57fa6f8a631955f3532862ce39b24b",
+    "verification": "Exact Main SHA verification run 35283552200 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and production cart.update smoke path."
+  },
+  "nextExecution": {
+    "id": "cart.item.add",
+    "reason": "cart.update is now VERIFIED. cart.item.add is the next commercial contract in the controlled Commerce sequence and is already D1-backed; it must be audited for real handler, registration, canonical route, production evidence and tenant/idempotency behavior before any new implementation is created.",
+    "plan": "Audit existing cart.item.add implementation and evidence first; implement only the missing production capability path, then run Quality Gates, D1, Cloudflare production verification and Main SHA evidence before promotion."
+  }
 }
