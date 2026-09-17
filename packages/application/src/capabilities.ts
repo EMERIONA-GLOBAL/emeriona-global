@@ -33,6 +33,7 @@ export interface CreateServiceInput { ownerId: string; name: string; }
 export interface CreatePartnerInput { legalName: string; tenantId: string; }
 export interface VerifyPartnerInput { partnerId: string; }
 export interface CreateCartInput { customerId: string; }
+export interface UpdateCartInput { cartId: string; customerId?: string; status?: Cart["status"]; }
 export interface CreateOrderInput { customerId: string; total: Money; }
 export interface CreatePaymentInput { orderId: OrderId; amount: Money; }
 export interface RecommendationInput { subjectId: string; context?: Readonly<Record<string, unknown>>; }
@@ -97,6 +98,19 @@ export class CreateCartHandler implements UseCaseHandler<CreateCartInput, Cart> 
   }
 }
 
+export class UpdateCartHandler implements UseCaseHandler<UpdateCartInput, Cart> {
+  constructor(private readonly repository: CartRepositoryPortV1) {}
+  async handle(request: UseCaseRequest<UpdateCartInput>): Promise<UseCaseResponse<Cart>> {
+    const cartId = required(request.input.cartId, "cartId") as CartId;
+    const existing = await this.repository.findById(cartId);
+    if (!existing) throw new Error("Cart not found for tenant");
+    if (request.input.customerId === undefined && request.input.status === undefined) throw new Error("At least one cart field must be provided");
+    const customerId = request.input.customerId === undefined ? existing.customerId : required(request.input.customerId, "customerId");
+    const updated: Cart = { ...existing, customerId, status: request.input.status ?? existing.status };
+    return response(request, await this.repository.save(updated));
+  }
+}
+
 export class CreateOrderHandler implements UseCaseHandler<CreateOrderInput, Order> {
   constructor(private readonly repository: OrderRepositoryPortV1, private readonly ids: ApplicationIdFactory) {}
   async handle(request: UseCaseRequest<CreateOrderInput>): Promise<UseCaseResponse<Order>> {
@@ -129,6 +143,7 @@ export class CreatePaymentIntentHandler implements UseCaseHandler<CreatePaymentI
     const intent = await this.payments.create({ orderId: request.input.orderId, amount });
     return response(request, { ...intent, id: intent.id || this.ids.payment() });
   }
+
 }
 
 export class GenerateRecommendationHandler implements UseCaseHandler<RecommendationInput, Recommendation> {
@@ -165,6 +180,7 @@ export const EXECUTABLE_FOUNDATION_USE_CASES = {
   createPartnerService: USE_CASE_IDS.partner.serviceCreate,
   verifyPartner: USE_CASE_IDS.partner.verify,
   createCart: USE_CASE_IDS.commerce.cartCreate,
+  updateCart: USE_CASE_IDS.commerce.cartUpdate,
   createOrder: USE_CASE_IDS.commerce.orderCreate,
   resolvePrice: USE_CASE_IDS.pricing.quote,
   validateDiscount: USE_CASE_IDS.promotion.discountValidate,
@@ -172,4 +188,4 @@ export const EXECUTABLE_FOUNDATION_USE_CASES = {
   generateRecommendation: USE_CASE_IDS.ai.recommendation,
 } as const;
 
-export const APPLICATION_CAPABILITIES_VERSION = "1.1.0" as const;
+export const APPLICATION_CAPABILITIES_VERSION = "1.2.0" as const;
