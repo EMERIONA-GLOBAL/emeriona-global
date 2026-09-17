@@ -16,7 +16,7 @@ export class D1PartnerIntelligenceAdapter implements PartnerIntelligencePort {
         (SELECT COUNT(*) FROM offers WHERE tenant_id=? AND partner_id=? AND status='ACTIVE') AS active_offers,
         (SELECT COUNT(DISTINCT oi.order_id) FROM order_items oi JOIN orders o ON o.id=oi.order_id WHERE o.tenant_id=? AND oi.partner_id=?) AS orders,
         COALESCE((SELECT SUM(oi.quantity * oi.unit_amount) FROM order_items oi JOIN orders o ON o.id=oi.order_id WHERE o.tenant_id=? AND oi.partner_id=?),0) AS gross_merchandise_value,
-        (SELECT currency FROM orders o JOIN order_items oi ON oi.order_id=o.id WHERE o.tenant_id=? AND oi.partner_id=? LIMIT 1) AS currency,
+        (SELECT o.currency FROM orders o JOIN order_items oi ON oi.order_id=o.id WHERE o.tenant_id=? AND oi.partner_id=? LIMIT 1) AS currency,
         (SELECT COUNT(*) FROM products WHERE tenant_id=? AND partner_id=? AND status='PUBLISHED') AS published_products,
         (SELECT COUNT(*) FROM services WHERE tenant_id=? AND partner_id=? AND status='PUBLISHED') AS published_services,
         (SELECT COUNT(*) FROM catalogs WHERE tenant_id=? AND partner_id=? AND status='PUBLISHED') AS published_catalogs,
