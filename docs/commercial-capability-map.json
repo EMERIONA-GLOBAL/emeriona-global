@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "baselineSha": "ea2c44fe8c065203fe58df8abe33229b189b5b2f",
+  "baselineSha": "0695744f00c6bf39b95fc2dd79dc6fa52309ac6d",
   "policy": "Preserve every architectural contract; implementation advances lifecycle without deleting capability definitions.",
   "statusModel": ["CONTRACT","IMPLEMENTED","D1-BACKED","PRODUCTION","VERIFIED","CLOSED"],
   "auditRule": "A contract is not considered implemented merely because an interface or route exists. Registration, handler, infrastructure adapter, D1 path, and production evidence are assessed separately.",
@@ -13,9 +13,9 @@
     {"id":"catalog.create","domain":"CATALOG","status":"D1-BACKED","evidence":"CreateCatalogHandler registered with D1CatalogRepository."},
     {"id":"catalog.product.create","domain":"CATALOG","status":"D1-BACKED","evidence":"CreateProductHandler registered with D1ProductRepository."},
     {"id":"catalog.product.create.bound","domain":"CATALOG","status":"D1-BACKED","evidence":"CreateCatalogProductHandler registered."},
-    {"id":"catalog.product.update","domain":"CATALOG","status":"IMPLEMENTED","evidence":"UpdateCatalogProductHandler is registered against the tenant-scoped D1ProductRepository. API exposure and dedicated production smoke verification are being completed before promotion."},
+    {"id":"catalog.product.update","domain":"CATALOG","status":"IMPLEMENTED","evidence":"Production verification completed on PR #28; merge was performed at 0695744f00c6bf39b95fc2dd79dc6fa52309ac6d."},
     {"id":"catalog.service.create","domain":"CATALOG","status":"D1-BACKED","evidence":"CreateServiceHandler registered with D1ServiceRepository."},
-    {"id":"catalog.service.update","domain":"CATALOG","status":"CONTRACT","evidence":"Contract exists; no update handler registration found."},
+    {"id":"catalog.service.update","domain":"CATALOG","status":"IMPLEMENTED","evidence":"UpdateServiceHandler is registered against the tenant-scoped D1ServiceRepository and exposed through the canonical API gateway; dedicated production verification is pending."},
     {"id":"catalog.publish","domain":"CATALOG","status":"D1-BACKED","evidence":"PublishCatalogHandler registered with D1CatalogPublicationAdapter."},
     {"id":"partner.create","domain":"PARTNER","status":"D1-BACKED","evidence":"CreatePartnerHandler registered with D1PartnerRepository."},
     {"id":"partner.update","domain":"PARTNER","status":"CONTRACT","evidence":"Contract exists; no update handler registration found."},
@@ -68,14 +68,6 @@
     {"id":"analytics.query","domain":"ANALYTICS","status":"CONTRACT","evidence":"Partner analytics is implemented separately; general analytics.query remains unregistered."},
     {"id":"impact.measure","domain":"IMPACT","status":"CONTRACT","evidence":"Partner impact is implemented separately; general impact.measure remains unregistered."}
   ],
-  "lastVerified": {
-    "id": "partner.impact.measure",
-    "mergeSha": "615a3d8b6c8f493fdd698ba7bf08335c602f677d",
-    "verification": "C11 production verification and D1-backed partner intelligence path passed."
-  },
-  "nextExecution": {
-    "id": "catalog.product.update",
-    "reason": "The application handler and canonical runtime registration are implemented, but the contract still requires API exposure and dedicated production/D1 smoke evidence before promotion.",
-    "plan": "Expose catalog.product.update through the canonical API gateway, deploy the Worker, execute tenant-isolated D1 production smoke, then promote only after evidence is captured."
-  }
+  "lastVerified": {"id":"catalog.product.update","mergeSha":"0695744f00c6bf39b95fc2dd79dc6fa52309ac6d","verification":"PR #28 Quality Gates plus D1 migration, Worker deployment, health/readiness, and production catalog.product.update smoke passed before merge."},
+  "nextExecution": {"id":"catalog.service.update","reason":"The canonical catalog.service.update contract is the next adjacent catalog lifecycle gap after product update. The service repository already provides the D1 persistence port needed for the real handler.","plan":"Implement and register catalog.service.update, expose it through the API gateway, run Quality Gates and D1/production smoke, then promote only after evidence is captured."}
 }

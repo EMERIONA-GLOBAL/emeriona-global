@@ -30,7 +30,9 @@ export interface ApplicationIdFactory {
 export interface CreateCustomerInput { displayName: string; locale?: string; timezone?: string; }
 export interface UpdateCustomerInput { id: string; displayName?: string; status?: CustomerProfile["status"]; locale?: string; timezone?: string; }
 export interface CreateProductInput { ownerId: string; name: string; }
+export interface UpdateProductInput { productId: string; ownerId?: string; name?: string; }
 export interface CreateServiceInput { ownerId: string; name: string; }
+export interface UpdateServiceInput { serviceId: string; ownerId?: string; name?: string; }
 export interface CreatePartnerInput { legalName: string; tenantId: string; }
 export interface VerifyPartnerInput { partnerId: string; }
 export interface CreateCartInput { customerId: string; }
@@ -63,16 +65,8 @@ export class UpdateCustomerHandler implements UseCaseHandler<UpdateCustomerInput
     const id = required(request.input.id, "id") as CustomerId;
     const existing = await this.repository.findById(id);
     if (!existing) throw new Error("Customer not found for tenant");
-    if (request.input.displayName === undefined && request.input.status === undefined && request.input.locale === undefined && request.input.timezone === undefined) {
-      throw new Error("At least one customer field must be provided");
-    }
-    const updated: CustomerProfile = {
-      ...existing,
-      displayName: request.input.displayName === undefined ? existing.displayName : required(request.input.displayName, "displayName"),
-      status: request.input.status ?? existing.status,
-      locale: request.input.locale === undefined ? existing.locale : request.input.locale,
-      timezone: request.input.timezone === undefined ? existing.timezone : request.input.timezone,
-    };
+    if (request.input.displayName === undefined && request.input.status === undefined && request.input.locale === undefined && request.input.timezone === undefined) throw new Error("At least one customer field must be provided");
+    const updated: CustomerProfile = { ...existing, displayName: request.input.displayName === undefined ? existing.displayName : required(request.input.displayName, "displayName"), status: request.input.status ?? existing.status, locale: request.input.locale === undefined ? existing.locale : request.input.locale, timezone: request.input.timezone === undefined ? existing.timezone : request.input.timezone };
     return response(request, await this.repository.save(updated));
   }
 }
@@ -85,11 +79,35 @@ export class CreateProductHandler implements UseCaseHandler<CreateProductInput, 
   }
 }
 
+export class UpdateProductHandler implements UseCaseHandler<UpdateProductInput, Product> {
+  constructor(private readonly repository: ProductRepositoryPortV1) {}
+  async handle(request: UseCaseRequest<UpdateProductInput>): Promise<UseCaseResponse<Product>> {
+    const productId = required(request.input.productId, "productId") as ProductId;
+    const existing = await this.repository.findById(productId);
+    if (!existing) throw new Error("Product not found for tenant");
+    if (request.input.ownerId === undefined && request.input.name === undefined) throw new Error("At least one product field must be provided");
+    const updated: Product = { ...existing, ownerId: request.input.ownerId === undefined ? existing.ownerId : required(request.input.ownerId, "ownerId") as Product["ownerId"], name: request.input.name === undefined ? existing.name : required(request.input.name, "name") };
+    return response(request, await this.repository.save(updated));
+  }
+}
+
 export class CreateServiceHandler implements UseCaseHandler<CreateServiceInput, Service> {
   constructor(private readonly repository: ServiceRepositoryPortV1, private readonly ids: ApplicationIdFactory) {}
   async handle(request: UseCaseRequest<CreateServiceInput>): Promise<UseCaseResponse<Service>> {
     const service: Service = { id: this.ids.service(), ownerId: required(request.input.ownerId, "ownerId") as Service["ownerId"], name: required(request.input.name, "name"), status: "DRAFT" };
     return response(request, await this.repository.save(service));
+  }
+}
+
+export class UpdateServiceHandler implements UseCaseHandler<UpdateServiceInput, Service> {
+  constructor(private readonly repository: ServiceRepositoryPortV1) {}
+  async handle(request: UseCaseRequest<UpdateServiceInput>): Promise<UseCaseResponse<Service>> {
+    const serviceId = required(request.input.serviceId, "serviceId") as ServiceId;
+    const existing = await this.repository.findById(serviceId);
+    if (!existing) throw new Error("Service not found for tenant");
+    if (request.input.ownerId === undefined && request.input.name === undefined) throw new Error("At least one service field must be provided");
+    const updated: Service = { ...existing, ownerId: request.input.ownerId === undefined ? existing.ownerId : required(request.input.ownerId, "ownerId") as Service["ownerId"], name: request.input.name === undefined ? existing.name : required(request.input.name, "name") };
+    return response(request, await this.repository.save(updated));
   }
 }
 
@@ -142,72 +160,12 @@ export class CreateOrderHandler implements UseCaseHandler<CreateOrderInput, Orde
   }
 }
 
-export class ResolvePriceHandler implements UseCaseHandler<{ cartId: string }, PriceQuote> {
-  constructor(private readonly pricing: PricingPort) {}
-  async handle(request: UseCaseRequest<{ cartId: string }>): Promise<UseCaseResponse<PriceQuote>> {
-    return response(request, await this.pricing.quote({ cartId: required(request.input.cartId, "cartId") as CartId }));
-  }
-}
-
-export class ValidateDiscountHandler implements UseCaseHandler<{ discountId: string; cartId: string }, Discount> {
-  constructor(private readonly promotion: PromotionPort) {}
-  async handle(request: UseCaseRequest<{ discountId: string; cartId: string }>): Promise<UseCaseResponse<Discount>> {
-    return response(request, await this.promotion.validateDiscount({ discountId: required(request.input.discountId, "discountId") as DiscountId, cartId: required(request.input.cartId, "cartId") as CartId }));
-  }
-}
-
-export class CreatePaymentIntentHandler implements UseCaseHandler<CreatePaymentInput, PaymentIntent> {
-  constructor(private readonly payments: PaymentProviderPort, private readonly ids: ApplicationIdFactory) {}
-  async handle(request: UseCaseRequest<CreatePaymentInput>): Promise<UseCaseResponse<PaymentIntent>> {
-    const amount = request.input.amount;
-    if (!Number.isFinite(amount.amount) || amount.amount < 0) throw new Error("Payment amount must be finite and non-negative");
-    const intent = await this.payments.create({ orderId: request.input.orderId, amount });
-    return response(request, { ...intent, id: intent.id || this.ids.payment() });
-  }
-
-}
-
-export class GenerateRecommendationHandler implements UseCaseHandler<RecommendationInput, Recommendation> {
-  constructor(private readonly recommendations: RecommendationPort) {}
-  async handle(request: UseCaseRequest<RecommendationInput>): Promise<UseCaseResponse<Recommendation>> {
-    return response(request, await this.recommendations.generate({ subjectId: required(request.input.subjectId, "subjectId"), context: request.input.context }));
-  }
-}
-
+export class ResolvePriceHandler implements UseCaseHandler<{ cartId: string }, PriceQuote> { constructor(private readonly pricing: PricingPort) {} async handle(request: UseCaseRequest<{ cartId: string }>): Promise<UseCaseResponse<PriceQuote>> { return response(request, await this.pricing.quote({ cartId: required(request.input.cartId, "cartId") as CartId })); } }
+export class ValidateDiscountHandler implements UseCaseHandler<{ discountId: string; cartId: string }, Discount> { constructor(private readonly promotion: PromotionPort) {} async handle(request: UseCaseRequest<{ discountId: string; cartId: string }>): Promise<UseCaseResponse<Discount>> { return response(request, await this.promotion.validateDiscount({ discountId: required(request.input.discountId, "discountId") as DiscountId, cartId: required(request.input.cartId, "cartId") as CartId })); } }
+export class CreatePaymentIntentHandler implements UseCaseHandler<CreatePaymentInput, PaymentIntent> { constructor(private readonly payments: PaymentProviderPort, private readonly ids: ApplicationIdFactory) {} async handle(request: UseCaseRequest<CreatePaymentInput>): Promise<UseCaseResponse<PaymentIntent>> { const amount=request.input.amount; if(!Number.isFinite(amount.amount)||amount.amount<0) throw new Error("Payment amount must be finite and non-negative"); const intent=await this.payments.create({orderId:request.input.orderId,amount}); return response(request,{...intent,id:intent.id||this.ids.payment()}); } }
+export class GenerateRecommendationHandler implements UseCaseHandler<RecommendationInput, Recommendation> { constructor(private readonly recommendations: RecommendationPort) {} async handle(request: UseCaseRequest<RecommendationInput>): Promise<UseCaseResponse<Recommendation>> { return response(request,await this.recommendations.generate({subjectId:required(request.input.subjectId,"subjectId"),context:request.input.context})); } }
 export interface PartnerCatalogCreateInput { partnerId: PartnerId; name: string; ownerId: string; }
-export class CreatePartnerProductHandler implements UseCaseHandler<PartnerCatalogCreateInput, PartnerProduct> {
-  constructor(private readonly repository: PartnerCatalogRepositoryPortV1, private readonly ids: ApplicationIdFactory) {}
-  async handle(request: UseCaseRequest<PartnerCatalogCreateInput>): Promise<UseCaseResponse<PartnerProduct>> {
-    const entity = { id: this.ids.product(), partnerId: request.input.partnerId, ownerId: required(request.input.ownerId, "ownerId"), name: required(request.input.name, "name"), status: "DRAFT" as const } as PartnerProduct;
-    return response(request, await this.repository.saveProduct(entity));
-  }
-}
-
-export class CreatePartnerServiceHandler implements UseCaseHandler<PartnerCatalogCreateInput, PartnerService> {
-  constructor(private readonly repository: PartnerCatalogRepositoryPortV1, private readonly ids: ApplicationIdFactory) {}
-  async handle(request: UseCaseRequest<PartnerCatalogCreateInput>): Promise<UseCaseResponse<PartnerService>> {
-    const entity = { id: this.ids.service(), partnerId: request.input.partnerId, ownerId: required(request.input.ownerId, "ownerId"), name: required(request.input.name, "name"), status: "DRAFT" as const } as PartnerService;
-    return response(request, await this.repository.saveService(entity));
-  }
-}
-
-/** Canonical registration map for the executable foundation. */
-export const EXECUTABLE_FOUNDATION_USE_CASES = {
-  createCustomer: USE_CASE_IDS.customer.create,
-  updateCustomer: USE_CASE_IDS.customer.update,
-  createProduct: USE_CASE_IDS.catalog.productCreate,
-  createService: USE_CASE_IDS.catalog.serviceCreate,
-  createPartner: USE_CASE_IDS.partner.create,
-  createPartnerProduct: USE_CASE_IDS.partner.productCreate,
-  createPartnerService: USE_CASE_IDS.partner.serviceCreate,
-  verifyPartner: USE_CASE_IDS.partner.verify,
-  createCart: USE_CASE_IDS.commerce.cartCreate,
-  updateCart: USE_CASE_IDS.commerce.cartUpdate,
-  createOrder: USE_CASE_IDS.commerce.orderCreate,
-  resolvePrice: USE_CASE_IDS.pricing.quote,
-  validateDiscount: USE_CASE_IDS.promotion.discountValidate,
-  createPaymentIntent: USE_CASE_IDS.payment.create,
-  generateRecommendation: USE_CASE_IDS.ai.recommendation,
-} as const;
-
-export const APPLICATION_CAPABILITIES_VERSION = "1.3.0" as const;
+export class CreatePartnerProductHandler implements UseCaseHandler<PartnerCatalogCreateInput, PartnerProduct> { constructor(private readonly repository: PartnerCatalogRepositoryPortV1, private readonly ids: ApplicationIdFactory) {} async handle(request: UseCaseRequest<PartnerCatalogCreateInput>): Promise<UseCaseResponse<PartnerProduct>> { const entity={id:this.ids.product(),partnerId:request.input.partnerId,ownerId:required(request.input.ownerId,"ownerId"),name:required(request.input.name,"name"),status:"DRAFT" as const} as PartnerProduct; return response(request,await this.repository.saveProduct(entity)); } }
+export class CreatePartnerServiceHandler implements UseCaseHandler<PartnerCatalogCreateInput, PartnerService> { constructor(private readonly repository: PartnerCatalogRepositoryPortV1, private readonly ids: ApplicationIdFactory) {} async handle(request: UseCaseRequest<PartnerCatalogCreateInput>): Promise<UseCaseResponse<PartnerService>> { const entity={id:this.ids.service(),partnerId:request.input.partnerId,ownerId:required(request.input.ownerId,"ownerId"),name:required(request.input.name,"name"),status:"DRAFT" as const} as PartnerService; return response(request,await this.repository.saveService(entity)); } }
+export const EXECUTABLE_FOUNDATION_USE_CASES={createCustomer:USE_CASE_IDS.customer.create,updateCustomer:USE_CASE_IDS.customer.update,createProduct:USE_CASE_IDS.catalog.productCreate,createService:USE_CASE_IDS.catalog.serviceCreate,createPartner:USE_CASE_IDS.partner.create,createPartnerProduct:USE_CASE_IDS.partner.productCreate,createPartnerService:USE_CASE_IDS.partner.serviceCreate,verifyPartner:USE_CASE_IDS.partner.verify,createCart:USE_CASE_IDS.commerce.cartCreate,updateCart:USE_CASE_IDS.commerce.cartUpdate,createOrder:USE_CASE_IDS.commerce.orderCreate,resolvePrice:USE_CASE_IDS.pricing.quote,validateDiscount:USE_CASE_IDS.promotion.discountValidate,createPaymentIntent:USE_CASE_IDS.payment.create,generateRecommendation:USE_CASE_IDS.ai.recommendation} as const;
+export const APPLICATION_CAPABILITIES_VERSION="1.4.0" as const;
