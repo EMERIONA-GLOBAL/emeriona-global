@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "baselineSha": "b5a8b33d9c57fa6f8a631955f3532862ce39b24b",
+  "baselineSha": "f8c06aa3720352e5faa42f0477dde21fda569c91",
   "policy": "Preserve every architectural contract; implementation advances lifecycle without deleting capability definitions.",
   "statusModel": [
     "CONTRACT",
@@ -183,8 +183,8 @@
     {
       "id": "cart.item.add",
       "domain": "COMMERCE",
-      "status": "D1-BACKED",
-      "evidence": "AddCartItemHandler registered with D1OperationalCommerceAdapter."
+      "status": "VERIFIED",
+      "evidence": "PR #37 verified the existing AddCartItemHandler/D1OperationalCommerceAdapter path without rebuilding the architecture. Exact Main SHA verification run 35284789009 checked merge SHA f8c06aa3720352e5faa42f0477dde21fda569c91 and passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Cloudflare Worker deployment, health/readiness, route protection, and production cart.item.add smoke with remote D1 persistence, idempotency and tenant-isolation assertions. Worker version 8eb85cc6-ca08-4d63-b287-fb3d2a5baf61."
     },
     {
       "id": "checkout.execute",
@@ -386,13 +386,13 @@
     }
   ],
   "lastVerified": {
-    "id": "cart.update",
-    "mergeSha": "b5a8b33d9c57fa6f8a631955f3532862ce39b24b",
-    "verification": "Exact Main SHA verification run 35283552200 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and production cart.update smoke path."
+    "id": "cart.item.add",
+    "mergeSha": "f8c06aa3720352e5faa42f0477dde21fda569c91",
+    "verification": "Exact Main SHA verification run 35284789009 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and production cart.item.add smoke path."
   },
   "nextExecution": {
-    "id": "cart.item.add",
-    "reason": "cart.update is now VERIFIED. cart.item.add is the next commercial contract in the controlled Commerce sequence and is already D1-backed; it must be audited for real handler, registration, canonical route, production evidence and tenant/idempotency behavior before any new implementation is created.",
-    "plan": "Audit existing cart.item.add implementation and evidence first; implement only the missing production capability path, then run Quality Gates, D1, Cloudflare production verification and Main SHA evidence before promotion."
+    "id": "checkout.execute",
+    "reason": "cart.item.add is now VERIFIED. checkout.execute is the next Commerce contract and is already D1-backed; audit its actual handler, registration, canonical API exposure, D1 behavior and production evidence before creating any new implementation.",
+    "plan": "Audit checkout.execute first; preserve all existing architecture, implement only missing execution paths, then run Quality Gates, D1, Cloudflare production verification and Exact Main SHA evidence before promotion."
   }
 }
