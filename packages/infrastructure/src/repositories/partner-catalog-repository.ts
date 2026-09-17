@@ -1,4 +1,4 @@
-import type { PartnerCatalogRepositoryPortV1, PartnerId, PartnerProduct, PartnerService, ProductId } from "../../../domains/src/index.js";
+import type { PartnerCatalogRepositoryPortV1, PartnerId, PartnerProduct, PartnerService, ProductId, ServiceId } from "../../../domains/src/index.js";
 import type { D1DatabaseLike } from "../d1.js";
 
 async function one<T>(db: D1DatabaseLike, sql: string, values: readonly unknown[]): Promise<T | null> {
@@ -31,5 +31,12 @@ export class D1PartnerCatalogRepository implements PartnerCatalogRepositoryPortV
     if (!row) throw new Error("Partner service persistence returned no row");
     return { id: row.id as PartnerService["id"], ownerId: String(row.owner_id) as PartnerService["ownerId"], partnerId: row.partner_id as PartnerId, name: String(row.name), status: row.status as PartnerService["status"] };
   }
+  async updateService(id: ServiceId, patch: { ownerId?: string; name?: string; status?: PartnerService["status"] }, partnerId: PartnerId, tenantId: string): Promise<PartnerService> {
+    const existing = await one<Record<string, unknown>>(this.db, "SELECT id,owner_id,partner_id,name,status FROM services WHERE id=? AND tenant_id=? AND partner_id=?", [id, tenantId, partnerId]);
+    if (!existing) throw new Error("Partner service not found for tenant");
+    const row = await one<Record<string, unknown>>(this.db, "UPDATE services SET owner_id=?,name=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND tenant_id=? AND partner_id=? RETURNING id,owner_id,partner_id,name,status", [patch.ownerId ?? existing.owner_id, patch.name ?? existing.name, patch.status ?? existing.status, id, tenantId, partnerId]);
+    if (!row) throw new Error("Partner service update returned no row");
+    return { id: row.id as PartnerService["id"], ownerId: String(row.owner_id) as PartnerService["ownerId"], partnerId: row.partner_id as PartnerId, name: String(row.name), status: row.status as PartnerService["status"] };
+  }
 }
-export const D1_PARTNER_CATALOG_REPOSITORY_VERSION = "1.1.0" as const;
+export const D1_PARTNER_CATALOG_REPOSITORY_VERSION = "1.2.0" as const;
