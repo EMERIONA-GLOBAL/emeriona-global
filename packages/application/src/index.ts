@@ -18,6 +18,8 @@ export type { UseCaseDomain, UseCaseLifecycle, UseCaseContract, UseCaseContractR
 export { USE_CASE_IDS, USE_CASE_CONTRACTS, DefaultUseCaseContractRegistry, USE_CASE_CONTRACTS_VERSION } from './contracts.js';
 export type { ApplicationIdFactory, CreateCustomerInput, UpdateCustomerInput, CreateProductInput, UpdateProductInput, CreateServiceInput, UpdateServiceInput, CreatePartnerInput, UpdatePartnerInput, CreateCartInput, UpdateCartInput, CreateOrderInput, CreatePaymentInput, RecommendationInput, PartnerCatalogCreateInput, PartnerProductUpdateInput, VerifyPartnerInput } from './capabilities.js';
 export { CreateCustomerHandler, UpdateCustomerHandler, CreateProductHandler, UpdateProductHandler, CreateServiceHandler, UpdateServiceHandler, CreatePartnerHandler, UpdatePartnerHandler, VerifyPartnerHandler, CreatePartnerProductHandler, UpdatePartnerProductHandler, CreatePartnerServiceHandler, CreateCartHandler, UpdateCartHandler, CreateOrderHandler, ResolvePriceHandler, ValidateDiscountHandler, CreatePaymentIntentHandler, GenerateRecommendationHandler, EXECUTABLE_FOUNDATION_USE_CASES, APPLICATION_CAPABILITIES_VERSION } from './capabilities.js';
+export type { PartnerServiceUpdateInput } from './partner-service-update-capability.js';
+export { UpdatePartnerServiceHandler, PARTNER_SERVICE_UPDATE_APPLICATION_VERSION } from './partner-service-update-capability.js';
 export type { CreateInvoiceInput, CreateSettlementInput, BillingPort } from './billing-capabilities.js';
 export { CreateInvoiceHandler, CreateSettlementHandler, BILLING_APPLICATION_VERSION } from './billing-capabilities.js';
 export type { FulfillmentInput, FulfillmentProgressInput, FulfillmentPort } from './fulfillment-capabilities.js';
