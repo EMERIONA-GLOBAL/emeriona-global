@@ -34,6 +34,7 @@ export interface UpdateProductInput { productId: string; ownerId?: string; name?
 export interface CreateServiceInput { ownerId: string; name: string; }
 export interface UpdateServiceInput { serviceId: string; ownerId?: string; name?: string; }
 export interface CreatePartnerInput { legalName: string; tenantId: string; }
+export interface UpdatePartnerInput { partnerId: string; legalName?: string; status?: PartnerAccount["status"]; }
 export interface VerifyPartnerInput { partnerId: string; }
 export interface CreateCartInput { customerId: string; }
 export interface UpdateCartInput { cartId: string; customerId?: string; status?: Cart["status"]; }
@@ -119,6 +120,18 @@ export class CreatePartnerHandler implements UseCaseHandler<CreatePartnerInput, 
   }
 }
 
+export class UpdatePartnerHandler implements UseCaseHandler<UpdatePartnerInput, PartnerAccount> {
+  constructor(private readonly repository: PartnerRepositoryPortV1) {}
+  async handle(request: UseCaseRequest<UpdatePartnerInput>): Promise<UseCaseResponse<PartnerAccount>> {
+    const partnerId = required(request.input.partnerId, "partnerId") as PartnerId;
+    const existing = await this.repository.findById(partnerId);
+    if (!existing || existing.tenantId !== request.context.tenantId) throw new Error("Partner not found for tenant");
+    if (request.input.legalName === undefined && request.input.status === undefined) throw new Error("At least one partner field must be provided");
+    const updated: PartnerAccount = { ...existing, legalName: request.input.legalName === undefined ? existing.legalName : required(request.input.legalName, "legalName"), status: request.input.status ?? existing.status };
+    return response(request, await this.repository.save(updated));
+  }
+}
+
 export class VerifyPartnerHandler implements UseCaseHandler<VerifyPartnerInput, PartnerAccount> {
   constructor(private readonly repository: PartnerRepositoryPortV1) {}
   async handle(request: UseCaseRequest<VerifyPartnerInput>): Promise<UseCaseResponse<PartnerAccount>> {
@@ -129,37 +142,9 @@ export class VerifyPartnerHandler implements UseCaseHandler<VerifyPartnerInput, 
   }
 }
 
-export class CreateCartHandler implements UseCaseHandler<CreateCartInput, Cart> {
-  constructor(private readonly repository: CartRepositoryPortV1, private readonly ids: ApplicationIdFactory) {}
-  async handle(request: UseCaseRequest<CreateCartInput>): Promise<UseCaseResponse<Cart>> {
-    const cart: Cart = { id: this.ids.cart(), customerId: required(request.input.customerId, "customerId"), status: "OPEN" };
-    return response(request, await this.repository.save(cart));
-  }
-}
-
-export class UpdateCartHandler implements UseCaseHandler<UpdateCartInput, Cart> {
-  constructor(private readonly repository: CartRepositoryPortV1) {}
-  async handle(request: UseCaseRequest<UpdateCartInput>): Promise<UseCaseResponse<Cart>> {
-    const cartId = required(request.input.cartId, "cartId") as CartId;
-    const existing = await this.repository.findById(cartId);
-    if (!existing) throw new Error("Cart not found for tenant");
-    if (request.input.customerId === undefined && request.input.status === undefined) throw new Error("At least one cart field must be provided");
-    const customerId = request.input.customerId === undefined ? existing.customerId : required(request.input.customerId, "customerId");
-    const updated: Cart = { ...existing, customerId, status: request.input.status ?? existing.status };
-    return response(request, await this.repository.save(updated));
-  }
-}
-
-export class CreateOrderHandler implements UseCaseHandler<CreateOrderInput, Order> {
-  constructor(private readonly repository: OrderRepositoryPortV1, private readonly ids: ApplicationIdFactory) {}
-  async handle(request: UseCaseRequest<CreateOrderInput>): Promise<UseCaseResponse<Order>> {
-    const customerId = required(request.input.customerId, "customerId");
-    if (request.input.total.amount < 0 || !Number.isFinite(request.input.total.amount)) throw new Error("Order total must be finite and non-negative");
-    const order: Order = { id: this.ids.order(), customerId, status: "PENDING", total: request.input.total };
-    return response(request, await this.repository.save(order));
-  }
-}
-
+export class CreateCartHandler implements UseCaseHandler<CreateCartInput, Cart> { constructor(private readonly repository: CartRepositoryPortV1, private readonly ids: ApplicationIdFactory) {} async handle(request: UseCaseRequest<CreateCartInput>): Promise<UseCaseResponse<Cart>> { const cart: Cart = { id: this.ids.cart(), customerId: required(request.input.customerId, "customerId"), status: "OPEN" }; return response(request, await this.repository.save(cart)); } }
+export class UpdateCartHandler implements UseCaseHandler<UpdateCartInput, Cart> { constructor(private readonly repository: CartRepositoryPortV1) {} async handle(request: UseCaseRequest<UpdateCartInput>): Promise<UseCaseResponse<Cart>> { const cartId = required(request.input.cartId, "cartId") as CartId; const existing = await this.repository.findById(cartId); if (!existing) throw new Error("Cart not found for tenant"); if (request.input.customerId === undefined && request.input.status === undefined) throw new Error("At least one cart field must be provided"); const customerId = request.input.customerId === undefined ? existing.customerId : required(request.input.customerId, "customerId"); const updated: Cart = { ...existing, customerId, status: request.input.status ?? existing.status }; return response(request, await this.repository.save(updated)); } }
+export class CreateOrderHandler implements UseCaseHandler<CreateOrderInput, Order> { constructor(private readonly repository: OrderRepositoryPortV1, private readonly ids: ApplicationIdFactory) {} async handle(request: UseCaseRequest<CreateOrderInput>): Promise<UseCaseResponse<Order>> { const customerId = required(request.input.customerId, "customerId"); if (request.input.total.amount < 0 || !Number.isFinite(request.input.total.amount)) throw new Error("Order total must be finite and non-negative"); const order: Order = { id: this.ids.order(), customerId, status: "PENDING", total: request.input.total }; return response(request, await this.repository.save(order)); } }
 export class ResolvePriceHandler implements UseCaseHandler<{ cartId: string }, PriceQuote> { constructor(private readonly pricing: PricingPort) {} async handle(request: UseCaseRequest<{ cartId: string }>): Promise<UseCaseResponse<PriceQuote>> { return response(request, await this.pricing.quote({ cartId: required(request.input.cartId, "cartId") as CartId })); } }
 export class ValidateDiscountHandler implements UseCaseHandler<{ discountId: string; cartId: string }, Discount> { constructor(private readonly promotion: PromotionPort) {} async handle(request: UseCaseRequest<{ discountId: string; cartId: string }>): Promise<UseCaseResponse<Discount>> { return response(request, await this.promotion.validateDiscount({ discountId: required(request.input.discountId, "discountId") as DiscountId, cartId: required(request.input.cartId, "cartId") as CartId })); } }
 export class CreatePaymentIntentHandler implements UseCaseHandler<CreatePaymentInput, PaymentIntent> { constructor(private readonly payments: PaymentProviderPort, private readonly ids: ApplicationIdFactory) {} async handle(request: UseCaseRequest<CreatePaymentInput>): Promise<UseCaseResponse<PaymentIntent>> { const amount=request.input.amount; if(!Number.isFinite(amount.amount)||amount.amount<0) throw new Error("Payment amount must be finite and non-negative"); const intent=await this.payments.create({orderId:request.input.orderId,amount}); return response(request,{...intent,id:intent.id||this.ids.payment()}); } }
@@ -167,5 +152,5 @@ export class GenerateRecommendationHandler implements UseCaseHandler<Recommendat
 export interface PartnerCatalogCreateInput { partnerId: PartnerId; name: string; ownerId: string; }
 export class CreatePartnerProductHandler implements UseCaseHandler<PartnerCatalogCreateInput, PartnerProduct> { constructor(private readonly repository: PartnerCatalogRepositoryPortV1, private readonly ids: ApplicationIdFactory) {} async handle(request: UseCaseRequest<PartnerCatalogCreateInput>): Promise<UseCaseResponse<PartnerProduct>> { const entity={id:this.ids.product(),partnerId:request.input.partnerId,ownerId:required(request.input.ownerId,"ownerId"),name:required(request.input.name,"name"),status:"DRAFT" as const} as PartnerProduct; return response(request,await this.repository.saveProduct(entity)); } }
 export class CreatePartnerServiceHandler implements UseCaseHandler<PartnerCatalogCreateInput, PartnerService> { constructor(private readonly repository: PartnerCatalogRepositoryPortV1, private readonly ids: ApplicationIdFactory) {} async handle(request: UseCaseRequest<PartnerCatalogCreateInput>): Promise<UseCaseResponse<PartnerService>> { const entity={id:this.ids.service(),partnerId:request.input.partnerId,ownerId:required(request.input.ownerId,"ownerId"),name:required(request.input.name,"name"),status:"DRAFT" as const} as PartnerService; return response(request,await this.repository.saveService(entity)); } }
-export const EXECUTABLE_FOUNDATION_USE_CASES={createCustomer:USE_CASE_IDS.customer.create,updateCustomer:USE_CASE_IDS.customer.update,createProduct:USE_CASE_IDS.catalog.productCreate,createService:USE_CASE_IDS.catalog.serviceCreate,createPartner:USE_CASE_IDS.partner.create,createPartnerProduct:USE_CASE_IDS.partner.productCreate,createPartnerService:USE_CASE_IDS.partner.serviceCreate,verifyPartner:USE_CASE_IDS.partner.verify,createCart:USE_CASE_IDS.commerce.cartCreate,updateCart:USE_CASE_IDS.commerce.cartUpdate,createOrder:USE_CASE_IDS.commerce.orderCreate,resolvePrice:USE_CASE_IDS.pricing.quote,validateDiscount:USE_CASE_IDS.promotion.discountValidate,createPaymentIntent:USE_CASE_IDS.payment.create,generateRecommendation:USE_CASE_IDS.ai.recommendation} as const;
-export const APPLICATION_CAPABILITIES_VERSION="1.4.0" as const;
+export const EXECUTABLE_FOUNDATION_USE_CASES={createCustomer:USE_CASE_IDS.customer.create,updateCustomer:USE_CASE_IDS.customer.update,createProduct:USE_CASE_IDS.catalog.productCreate,createService:USE_CASE_IDS.catalog.serviceCreate,createPartner:USE_CASE_IDS.partner.create,updatePartner:USE_CASE_IDS.partner.update,createPartnerProduct:USE_CASE_IDS.partner.productCreate,createPartnerService:USE_CASE_IDS.partner.serviceCreate,verifyPartner:USE_CASE_IDS.partner.verify,createCart:USE_CASE_IDS.commerce.cartCreate,updateCart:USE_CASE_IDS.commerce.cartUpdate,createOrder:USE_CASE_IDS.commerce.orderCreate,resolvePrice:USE_CASE_IDS.pricing.quote,validateDiscount:USE_CASE_IDS.promotion.discountValidate,createPaymentIntent:USE_CASE_IDS.payment.create,generateRecommendation:USE_CASE_IDS.ai.recommendation} as const;
+export const APPLICATION_CAPABILITIES_VERSION="1.5.0" as const;
