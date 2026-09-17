@@ -1,4 +1,4 @@
-import type { PartnerCatalogRepositoryPortV1, PartnerId, PartnerProduct, PartnerService } from "../../../domains/src/index.js";
+import type { PartnerCatalogRepositoryPortV1, PartnerId, PartnerProduct, PartnerService, ProductId } from "../../../domains/src/index.js";
 import type { D1DatabaseLike } from "../d1.js";
 
 async function one<T>(db: D1DatabaseLike, sql: string, values: readonly unknown[]): Promise<T | null> {
@@ -17,6 +17,13 @@ export class D1PartnerCatalogRepository implements PartnerCatalogRepositoryPortV
     if (!row) throw new Error("Partner product persistence returned no row");
     return { id: row.id as PartnerProduct["id"], ownerId: String(row.owner_id) as PartnerProduct["ownerId"], partnerId: row.partner_id as PartnerId, name: String(row.name), status: row.status as PartnerProduct["status"] };
   }
+  async updateProduct(id: ProductId, patch: { ownerId?: string; name?: string; status?: PartnerProduct["status"] }, partnerId: PartnerId, tenantId: string): Promise<PartnerProduct> {
+    const existing = await one<Record<string, unknown>>(this.db, "SELECT id,owner_id,partner_id,name,status FROM products WHERE id=? AND tenant_id=? AND partner_id=?", [id, tenantId, partnerId]);
+    if (!existing) throw new Error("Partner product not found for tenant");
+    const row = await one<Record<string, unknown>>(this.db, "UPDATE products SET owner_id=?,name=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND tenant_id=? AND partner_id=? RETURNING id,owner_id,partner_id,name,status", [patch.ownerId ?? existing.owner_id, patch.name ?? existing.name, patch.status ?? existing.status, id, tenantId, partnerId]);
+    if (!row) throw new Error("Partner product update returned no row");
+    return { id: row.id as PartnerProduct["id"], ownerId: String(row.owner_id) as PartnerProduct["ownerId"], partnerId: row.partner_id as PartnerId, name: String(row.name), status: row.status as PartnerProduct["status"] };
+  }
   async saveService(entity: PartnerService): Promise<PartnerService> {
     const partner = await one<{ id: string; status: string }>(this.db, "SELECT id,status FROM partners WHERE id=? AND tenant_id=?", [entity.partnerId, this.tenantId]);
     if (!partner || partner.status !== "VERIFIED") throw new Error("Verified partner not found for tenant");
@@ -25,4 +32,4 @@ export class D1PartnerCatalogRepository implements PartnerCatalogRepositoryPortV
     return { id: row.id as PartnerService["id"], ownerId: String(row.owner_id) as PartnerService["ownerId"], partnerId: row.partner_id as PartnerId, name: String(row.name), status: row.status as PartnerService["status"] };
   }
 }
-export const D1_PARTNER_CATALOG_REPOSITORY_VERSION = "1.0.0" as const;
+export const D1_PARTNER_CATALOG_REPOSITORY_VERSION = "1.1.0" as const;
