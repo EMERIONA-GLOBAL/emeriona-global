@@ -28,6 +28,7 @@ export interface ApplicationIdFactory {
 }
 
 export interface CreateCustomerInput { displayName: string; locale?: string; timezone?: string; }
+export interface UpdateCustomerInput { id: string; displayName?: string; status?: CustomerProfile["status"]; locale?: string; timezone?: string; }
 export interface CreateProductInput { ownerId: string; name: string; }
 export interface CreateServiceInput { ownerId: string; name: string; }
 export interface CreatePartnerInput { legalName: string; tenantId: string; }
@@ -53,6 +54,26 @@ export class CreateCustomerHandler implements UseCaseHandler<CreateCustomerInput
     const displayName = required(request.input.displayName, "displayName");
     const customer: CustomerProfile = { id: this.ids.customer(), status: "ACTIVE", displayName, locale: request.input.locale, timezone: request.input.timezone };
     return response(request, await this.repository.save(customer));
+  }
+}
+
+export class UpdateCustomerHandler implements UseCaseHandler<UpdateCustomerInput, CustomerProfile> {
+  constructor(private readonly repository: CustomerRepositoryPort) {}
+  async handle(request: UseCaseRequest<UpdateCustomerInput>): Promise<UseCaseResponse<CustomerProfile>> {
+    const id = required(request.input.id, "id") as CustomerId;
+    const existing = await this.repository.findById(id);
+    if (!existing) throw new Error("Customer not found for tenant");
+    if (request.input.displayName === undefined && request.input.status === undefined && request.input.locale === undefined && request.input.timezone === undefined) {
+      throw new Error("At least one customer field must be provided");
+    }
+    const updated: CustomerProfile = {
+      ...existing,
+      displayName: request.input.displayName === undefined ? existing.displayName : required(request.input.displayName, "displayName"),
+      status: request.input.status ?? existing.status,
+      locale: request.input.locale === undefined ? existing.locale : request.input.locale,
+      timezone: request.input.timezone === undefined ? existing.timezone : request.input.timezone,
+    };
+    return response(request, await this.repository.save(updated));
   }
 }
 
@@ -173,6 +194,7 @@ export class CreatePartnerServiceHandler implements UseCaseHandler<PartnerCatalo
 /** Canonical registration map for the executable foundation. */
 export const EXECUTABLE_FOUNDATION_USE_CASES = {
   createCustomer: USE_CASE_IDS.customer.create,
+  updateCustomer: USE_CASE_IDS.customer.update,
   createProduct: USE_CASE_IDS.catalog.productCreate,
   createService: USE_CASE_IDS.catalog.serviceCreate,
   createPartner: USE_CASE_IDS.partner.create,
@@ -188,4 +210,4 @@ export const EXECUTABLE_FOUNDATION_USE_CASES = {
   generateRecommendation: USE_CASE_IDS.ai.recommendation,
 } as const;
 
-export const APPLICATION_CAPABILITIES_VERSION = "1.2.0" as const;
+export const APPLICATION_CAPABILITIES_VERSION = "1.3.0" as const;
