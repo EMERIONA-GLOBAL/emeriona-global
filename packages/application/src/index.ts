@@ -26,8 +26,8 @@ export type { ReturnCreateInput, ReturnProgressInput, RefundRequestCreateInput, 
 export { CreateReturnHandler, ProgressReturnHandler, CreateRefundRequestHandler, ProgressRefundRequestHandler, RETURNS_REFUNDS_APPLICATION_VERSION } from './returns-refunds-capabilities.js';
 export type { CreateCatalogInput } from './catalog-capability.js';
 export { CreateCatalogHandler, CATALOG_APPLICATION_VERSION } from './catalog-capability.js';
-export type { CreateCatalogProductInput } from './catalog-product-capability.js';
-export { CreateCatalogProductHandler, CATALOG_PRODUCT_APPLICATION_VERSION } from './catalog-product-capability.js';
+export type { CreateCatalogProductInput, UpdateCatalogProductInput } from './catalog-product-capability.js';
+export { CreateCatalogProductHandler, UpdateCatalogProductHandler, CATALOG_PRODUCT_APPLICATION_VERSION } from './catalog-product-capability.js';
 export type { CartItemInput, CartItemResult, CheckoutResult, OperationalCommercePort } from './operational-commerce.js';
 export { AddCartItemHandler, CheckoutHandler, OPERATIONAL_COMMERCE_VERSION } from './operational-commerce.js';
 export type { PricingQuoteInput, PromotionValidationInput } from './pricing-promotions-capabilities.js';
