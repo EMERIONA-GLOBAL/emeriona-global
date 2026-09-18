@@ -1,5 +1,5 @@
 name: EMERIONA GLOBAL C12 Order Lifecycle Verification
-# v1.0.3 — activated on default branch for post-merge production verification
+# v1.0.4 — activated on default branch for post-merge production verification
 
 on:
   push:
@@ -90,7 +90,7 @@ jobs:
           CUSTOMER="customer-${GITHUB_RUN_ID}"
           ORDER="order-${GITHUB_RUN_ID}"
           cleanup() {
-            npx wrangler d1 execute emeriona-global-db --remote --command="DELETE FROM order_events WHERE tenant_id='$TENANT'; DELETE FROM orders WHERE tenant_id='$TENANT'; DELETE FROM customers WHERE tenant_id='$TENANT'; DELETE FROM tenants WHERE id='$TENANT';" >/dev/null || true
+            npx wrangler d1 execute emeriona-global-db --remote --command="DELETE FROM order_events WHERE tenant_id='$TENANT'; DELETE FROM audit_events WHERE tenant_id='$TENANT'; DELETE FROM idempotency_records WHERE tenant_id='$TENANT'; DELETE FROM orders WHERE tenant_id='$TENANT'; DELETE FROM customers WHERE tenant_id='$TENANT'; DELETE FROM tenants WHERE id='$TENANT';" >/dev/null || true
           }
           trap cleanup EXIT
 
