@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "baselineSha": "027b362e64d56d103240b50107480f322f72c066",
+  "baselineSha": "04cd2189923c8f6904636387a00127455b2f21b9",
   "policy": "Preserve every architectural contract; implementation advances lifecycle without deleting capability definitions.",
   "statusModel": [
     "CONTRACT",
@@ -207,8 +207,8 @@
     {
       "id": "fulfillment.execute",
       "domain": "COMMERCE",
-      "status": "CONTRACT",
-      "evidence": "Contract exists, but implementation is currently registered under non-contract IDs fulfillment.create/progress; canonical alignment is required."
+      "status": "VERIFIED",
+      "evidence": "PR #47 performed canonical alignment without deleting the existing fulfillment.create/progress paths: fulfillment.execute is now registered against the existing CreateFulfillmentHandler and POST /api/v1/fulfillments maps to the canonical use-case ID. Production verification run 35402983591 passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Worker deployment, health/readiness, route protection and fulfillment.execute smoke covering fulfillment persistence, idempotency replay, tenant isolation, fulfillment_events and audit evidence. Exact Main SHA verification run 35403058241 checked merge SHA 04cd2189923c8f6904636387a00127455b2f21b9 and passed the complete production verification path."
     },
     {
       "id": "pricing.quote",
@@ -386,13 +386,13 @@
     }
   ],
   "lastVerified": {
-    "id": "order.update",
-    "mergeSha": "027b362e64d56d103240b50107480f322f72c066",
-    "verification": "Exact Main SHA verification run 35402840256 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and production order.update smoke."
+    "id": "fulfillment.execute",
+    "mergeSha": "04cd2189923c8f6904636387a00127455b2f21b9",
+    "verification": "Exact Main SHA verification run 35403058241 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and production fulfillment.execute smoke."
   },
   "nextExecution": {
-    "id": "fulfillment.execute",
-    "reason": "order.update is now VERIFIED. fulfillment.execute is the next Commerce contract; the audit must reconcile the canonical contract with the existing fulfillment.create/progress implementation before any implementation or renaming.",
-    "plan": "Audit fulfillment.execute first; preserve fulfillment.create/progress and the architectural contract, then perform only the required canonical alignment or missing execution work, followed by Quality Gates, D1, Cloudflare production verification and Exact Main SHA evidence."
+    "id": "payment.create",
+    "reason": "fulfillment.execute is now VERIFIED. The next architectural contract is payment.create; audit the existing payment.intent.create implementation against the canonical payment.create contract before any implementation or renaming.",
+    "plan": "Audit payment.create first; preserve payment.intent.create and all payment capabilities, activate the canonical contract without deleting compatibility, then verify Quality Gates, D1, Cloudflare production and Exact Main SHA evidence."
   }
 }
