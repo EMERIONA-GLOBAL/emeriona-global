@@ -14,6 +14,8 @@ export class D1OrderRepository implements OrderRepositoryPortV1{
     return row?{id:row.id as OrderId,customerId:String(row.customer_id),status:row.status as Order["status"],total:{amount:Number(row.total_amount),currency:String(row.currency)}}:null;
   }
   async save(entity:Order){
+    const customer=await one<{id:string}>(this.db,"SELECT id FROM customers WHERE id=? AND tenant_id=? AND status IN ('PROSPECT','ACTIVE')",[entity.customerId,this.tenantId]);
+    if(!customer)throw new Error("Customer not found for tenant");
     const row=await one<Record<string,unknown>>(this.db,"INSERT INTO orders (id,tenant_id,customer_id,status,total_amount,currency) VALUES (?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET customer_id=excluded.customer_id,status=excluded.status,total_amount=excluded.total_amount,currency=excluded.currency,updated_at=CURRENT_TIMESTAMP WHERE orders.tenant_id=excluded.tenant_id RETURNING id,customer_id,status,total_amount,currency",[entity.id,this.tenantId,entity.customerId,entity.status,entity.total.amount,entity.total.currency]);
     if(!row)throw new Error("Order persistence returned no row");
     return{id:row.id as OrderId,customerId:String(row.customer_id),status:row.status as Order["status"],total:{amount:Number(row.total_amount),currency:String(row.currency)}};
@@ -29,4 +31,4 @@ export class D1OrderRepository implements OrderRepositoryPortV1{
     return updated;
   }
 }
-export const D1_DOMAIN_REPOSITORIES_VERSION="1.5.0" as const;
+export const D1_DOMAIN_REPOSITORIES_VERSION="1.6.0" as const;
