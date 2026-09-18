@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "baselineSha": "04cd2189923c8f6904636387a00127455b2f21b9",
+  "baselineSha": "759e989ce803e9b3fc790340ced2316f6a3c3c37",
   "policy": "Preserve every architectural contract; implementation advances lifecycle without deleting capability definitions.",
   "statusModel": [
     "CONTRACT",
@@ -249,8 +249,8 @@
     {
       "id": "payment.create",
       "domain": "PAYMENT",
-      "status": "CONTRACT",
-      "evidence": "CreatePaymentIntentHandler exists and is D1-backed, but is registered under payment.intent.create rather than payment.create."
+      "status": "VERIFIED",
+      "evidence": "PR #52 activated the canonical payment.create contract while preserving payment.intent.create compatibility. Exact Main-code production verification run 35405851723 on verification branch rooted at Main SHA 759e989ce803e9b3fc790340ced2316f6a3c3c37 passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Cloudflare Worker deployment, health/readiness, route protection and production payment.create smoke covering creation, idempotency replay, amount mismatch rejection, cross-tenant rejection, payment_intents, payment_events, revenue_entries, idempotency and audit evidence."
     },
     {
       "id": "payment.authorize",
@@ -386,13 +386,13 @@
     }
   ],
   "lastVerified": {
-    "id": "fulfillment.execute",
-    "mergeSha": "04cd2189923c8f6904636387a00127455b2f21b9",
-    "verification": "Exact Main SHA verification run 35403058241 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and production fulfillment.execute smoke."
+    "id": "payment.create",
+    "mergeSha": "759e989ce803e9b3fc790340ced2316f6a3c3c37",
+    "verification": "Exact Main-code production verification run 35405851723 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and payment.create production smoke."
   },
   "nextExecution": {
-    "id": "payment.create",
-    "reason": "fulfillment.execute is now VERIFIED. The next architectural contract is payment.create; audit the existing payment.intent.create implementation against the canonical payment.create contract before any implementation or renaming.",
-    "plan": "Audit payment.create first; preserve payment.intent.create and all payment capabilities, activate the canonical contract without deleting compatibility, then verify Quality Gates, D1, Cloudflare production and Exact Main SHA evidence."
+    "id": "payment.authorize",
+    "reason": "payment.create is now VERIFIED. The next architectural contract is payment.authorize; audit existing authorization/payment infrastructure before any implementation or canonical alignment.",
+    "plan": "Audit payment.authorize first; preserve existing payment.intent.create and other payment capabilities, implement only missing canonical behavior, then verify Quality Gates, D1, Cloudflare production and Exact Main SHA evidence."
   }
 }
