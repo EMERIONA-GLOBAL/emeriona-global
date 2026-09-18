@@ -38,7 +38,7 @@ const USE_CASE_ROUTES: ReadonlyArray<ApiRouteDefinition> = [
   { method: 'POST', path: '/api/v1/payment-intents', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'payment.intent.create' as UseCaseId },
   { method: 'POST', path: '/api/v1/invoices', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'billing.invoice.create' as UseCaseId },
   { method: 'POST', path: '/api/v1/settlements', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'billing.settlement.create' as UseCaseId },
-  { method: 'POST', path: '/api/v1/fulfillments', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'fulfillment.create' as UseCaseId },
+  { method: 'POST', path: '/api/v1/fulfillments', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'fulfillment.execute' as UseCaseId },
   { method: 'POST', path: '/api/v1/fulfillments/progress', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'fulfillment.progress' as UseCaseId },
   { method: 'POST', path: '/api/v1/returns', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'return.create' as UseCaseId },
   { method: 'POST', path: '/api/v1/returns/progress', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'return.progress' as UseCaseId },
