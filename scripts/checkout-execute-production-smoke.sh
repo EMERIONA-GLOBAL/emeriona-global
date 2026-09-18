@@ -9,10 +9,10 @@ curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-customer-${RUN_ID}" -X PO
 CUSTOMER_ID=$(jq -r '.data.id' /tmp/checkout-customer.json)
 curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-product-${RUN_ID}" -X POST "$BASE/api/v1/products" -d '{"ownerId":"checkout-owner","name":"Checkout Verification Product"}' | tee /tmp/checkout-product.json
 PRODUCT_ID=$(jq -r '.data.id' /tmp/checkout-product.json)
-curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-cart-${RUN_ID}" -X POST "$BASE/api/v1/carts" -d "{"customerId":"${CUSTOMER_ID}"}" | tee /tmp/checkout-cart.json
+curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-cart-${RUN_ID}" -X POST "$BASE/api/v1/carts" -d "{\"customerId\":\"${CUSTOMER_ID}\"}" | tee /tmp/checkout-cart.json
 CART_ID=$(jq -r '.data.id' /tmp/checkout-cart.json)
-curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-item-${RUN_ID}" -X POST "$BASE/api/v1/cart-items" -d "{"cartId":"${CART_ID}","productId":"${PRODUCT_ID}","quantity":2,"unitAmount":{"amount":25,"currency":"USD"}}" | tee /tmp/checkout-item.json
-curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-execute-${RUN_ID}" -X POST "$BASE/api/v1/checkout" -d "{"cartId":"${CART_ID}"}" | tee /tmp/checkout-result.json
+curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-item-${RUN_ID}" -X POST "$BASE/api/v1/cart-items" -d "{\"cartId\":\"${CART_ID}\",\"productId\":\"${PRODUCT_ID}\",\"quantity\":2,\"unitAmount\":{\"amount\":25,\"currency\":\"USD\"}}" | tee /tmp/checkout-item.json
+curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-execute-${RUN_ID}" -X POST "$BASE/api/v1/checkout" -d "{\"cartId\":\"${CART_ID}\"}" | tee /tmp/checkout-result.json
 ORDER_ID=$(jq -r '.data.orderId' /tmp/checkout-result.json)
 test "$(jq -r '.meta.useCaseId' /tmp/checkout-result.json)" = 'checkout.execute'
 test "$(jq -r '.data.total.amount' /tmp/checkout-result.json)" = '50'
