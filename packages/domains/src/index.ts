@@ -8,6 +8,7 @@ export type { PartnerId, PartnerOfferId, SettlementId, PartnerAccount, PartnerSt
 export { PARTNER_ECOSYSTEM_DOMAIN_VERSION } from "./partner.js";
 export type { OrderId, CartId, PaymentId, OfferId, DiscountId, Money, PriceQuote, Offer, Discount, Cart, Order, PaymentTransaction, Fulfillment, Settlement, PricingPort, PromotionPort, CommerceRepositoryPort, FulfillmentPort, SettlementPort } from "./commerce.js";
 export { COMMERCE_DOMAIN_VERSION } from "./commerce.js";
+export { ORDER_LIFECYCLE_VERSION, ORDER_LIFECYCLE, assertOrderStatusTransition } from "./order-lifecycle.js";
 export type { PaymentIntent, PaymentProviderPort, BillingPort } from "./payments.js";
 export { PAYMENTS_DOMAIN_VERSION } from "./payments.js";
 export type { PaymentIntentRecord, RevenueEntry, PaymentUseCaseId, PaymentIntentStatus } from "./payments-foundation.js";

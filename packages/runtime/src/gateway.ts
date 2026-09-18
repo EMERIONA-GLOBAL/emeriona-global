@@ -34,6 +34,7 @@ const USE_CASE_ROUTES: ReadonlyArray<ApiRouteDefinition> = [
   { method: 'POST', path: '/api/v1/cart-items', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'cart.item.add' as UseCaseId },
   { method: 'POST', path: '/api/v1/checkout', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'checkout.execute' as UseCaseId },
   { method: 'POST', path: '/api/v1/orders', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'order.create' as UseCaseId },
+  { method: 'POST', path: '/api/v1/orders/update', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'order.update' as UseCaseId },
   { method: 'POST', path: '/api/v1/payment-intents', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'payment.intent.create' as UseCaseId },
   { method: 'POST', path: '/api/v1/invoices', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'billing.invoice.create' as UseCaseId },
   { method: 'POST', path: '/api/v1/settlements', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'billing.settlement.create' as UseCaseId },
