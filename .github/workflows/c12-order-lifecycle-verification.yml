@@ -1,4 +1,5 @@
 name: EMERIONA GLOBAL C12 Order Lifecycle Verification
+# v1.0.1 — activated on default branch for post-merge production verification
 
 on:
   push:
