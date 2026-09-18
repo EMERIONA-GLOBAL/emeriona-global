@@ -11,19 +11,30 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-<header class="site-header">
-  <a class="brand" href="#top" aria-label="EMERIONA GLOBAL home"><span>EMERIONA™</span><small>GLOBAL</small></a>
+<header class="site-header" id="site-header">
+  <a class="brand" href="#top" aria-label="EMERIONA GLOBAL Official home">
+    <span>EMERIONA GLOBAL</span><small>OFFICIAL</small>
+  </a>
   <nav aria-label="Primary navigation">
     <a href="#about">About</a><a href="#ecosystem">Ecosystem</a><a href="#solutions">Solutions</a><a href="#commerce">Commerce</a><a href="#innovation">Innovation</a><a href="#knowledge">Knowledge</a><a href="#impact">Impact</a><a href="#method">Method</a><a href="#contact">Contact</a>
   </nav>
+  <div class="header-tools">
+    <button class="icon-button" id="search-toggle" type="button" aria-label="Open search" aria-controls="global-search" aria-expanded="false">⌕</button>
+    <button class="language-button" type="button" aria-label="Switch language">AR</button>
+  </div>
 </header>
 <main id="top">
-<section class="hero"><div class="hero-glow"></div><div class="hero-content">
-  <p class="eyebrow">A GLOBAL ECOSYSTEM FOR EMPOWERMENT, INNOVATION & IMPACT</p>
-  <h1>Empowering People.<br><em>Elevating Possibilities.</em><br>Creating Impact.</h1>
-  <p class="hero-copy">EMERIONA GLOBAL™ is a global ecosystem focused on empowering people, advancing ideas, developing solutions, and creating meaningful impact.</p>
-  <div class="hero-actions"><a class="button primary" href="#ecosystem">Explore the Ecosystem</a><a class="button secondary" href="#contact">Connect with EMERIONA</a></div>
-</div><div class="hero-mark" aria-hidden="true"><span></span><b>EG</b></div></section>
+<section class="hero" aria-label="EMERIONA GLOBAL cover">
+  <div class="hero-cover-glow" aria-hidden="true"></div>
+  <div class="hero-cover-frame" aria-hidden="true">
+    <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+    <div class="hero-core"><span>EG</span></div>
+  </div>
+  <div class="hero-cover-caption">
+    <span>EMERIONA GLOBAL OFFICIAL</span>
+    <b>Empowerment • Elevation • Impact</b>
+  </div>
+</section>
 <section class="foundation" aria-label="Foundation"><div><strong>EMPOWERMENT</strong><span>Enable people and ideas.</span></div><div><strong>ELEVATION</strong><span>Turn potential into progress.</span></div><div><strong>IMPACT</strong><span>Create measurable value.</span></div></section>
 <section id="about" class="section"><div class="section-heading"><p class="eyebrow">ABOUT EMERIONA GLOBAL™</p><h2>A global ecosystem, built for meaningful progress.</h2><p>EMERIONA GLOBAL™ brings people, ideas, knowledge, technology, products, services and partnerships into one progressive architecture — designed to evolve without losing its foundations.</p></div><div class="statement-grid"><article><span>01</span><h3>Empower</h3><p>Enable people, teams and ideas with practical capabilities, knowledge and opportunities.</p></article><article><span>02</span><h3>Elevate</h3><p>Turn potential into stronger solutions, better systems and sustainable progress.</p></article><article><span>03</span><h3>Impact</h3><p>Create useful, measurable value for customers, partners, communities and the wider world.</p></article></div></section>
 <section id="ecosystem" class="section"><div class="section-heading"><p class="eyebrow">THE ECOSYSTEM</p><h2>One architecture. Many possibilities.</h2><p>Built from day one as a complete ecosystem and activated progressively as capabilities mature.</p></div><div class="cards six"><article><span>01</span><h3>Leadership</h3><p>Leadership development, opportunities and global connections.</p></article><article><span>02</span><h3>Humanity</h3><p>Initiatives and solutions designed around people and communities.</p></article><article><span>03</span><h3>Development</h3><p>Practical pathways for growth, enterprise and sustainable progress.</p></article><article><span>04</span><h3>Culture</h3><p>Knowledge, creativity, identity and cross-cultural exchange.</p></article><article><span>05</span><h3>Science</h3><p>Research-oriented thinking, evidence and responsible discovery.</p></article><article><span>06</span><h3>Technology</h3><p>Digital products, intelligent systems and innovation infrastructure.</p></article></div></section>
@@ -34,7 +45,44 @@
 <section id="impact" class="impact"><div><p class="eyebrow">THE EMERIONA PROMISE</p><h2>Build what matters.<br>Grow what works.</h2><p>Empowerment • Elevation • Impact</p></div><div class="impact-stat"><strong>∞</strong><span>Progressive activation.<br>Global ambition.</span></div></section>
 <section id="method" class="section"><div class="section-heading"><p class="eyebrow">OUR METHOD</p><h2>From discovery to continuous improvement.</h2><p>A disciplined path keeps ideas grounded in evidence, quality and real-world value.</p></div><ol class="method-list"><li>Discover</li><li>Research</li><li>Validate</li><li>Design</li><li>Build</li><li>Test</li><li>Launch</li><li>Grow</li><li>Support</li><li>Measure</li><li>Improve</li></ol></section>
 <section id="contact" class="section contact"><div><p class="eyebrow">CONNECT WITH EMERIONA GLOBAL™</p><h2>Let’s create meaningful impact.</h2><p>Whether you have an idea, a partnership opportunity, a product or service, or a challenge worth solving, EMERIONA GLOBAL™ is building an open path from capability to useful action.</p></div><a class="button primary" href="mailto:emeriona.global@gmail.com">Contact EMERIONA GLOBAL</a></section>
-</main>
+<section class="discovery-zone" id="discovery" aria-labelledby="discovery-title">
+  <div class="discovery-inner">
+    <p class="eyebrow">DISCOVER WHAT YOU NEED</p>
+    <h1 id="discovery-title">اكتشف المنتجات والخدمات والحلول والفرص المناسبة لك داخل منظومة EMERIONA GLOBAL.</h1>
+    <p class="discovery-copy">ابدأ بما تحتاجه. اكتشف ما يناسبك داخل منظومة تجمع المنتجات والخدمات والحلول والفرص والمعرفة والشراكات.</p>
+    <form class="discovery-search" id="discovery-search" role="search">
+      <span aria-hidden="true">⌕</span><input id="discovery-input" type="search" placeholder="ماذا تبحث عنه؟" aria-label="ماذا تبحث عنه؟"><button type="submit">Explore Now <span>→</span></button>
+    </form>
+    <div class="quick-discovery" aria-label="Quick discovery">
+      <a href="#commerce">Products</a><a href="#commerce">Services</a><a href="#solutions">Solutions</a><a href="#contact">Opportunities</a>
+    </div>
+  </div>
+</section></main>
 <footer><span>© EMERIONA GLOBAL™</span><span>Empowerment • Elevation • Impact</span><span>A Global Ecosystem for Empowerment, Innovation & Impact</span></footer>
-</body>
+<div class="search-overlay" id="global-search" hidden>
+  <div class="search-panel" role="dialog" aria-modal="true" aria-labelledby="search-title">
+    <button class="search-close" id="search-close" type="button" aria-label="Close search">×</button>
+    <p class="eyebrow">EMERIONA DISCOVERY</p><h2 id="search-title">Discover across the ecosystem.</h2>
+    <form class="global-search-form" id="global-search-form"><input id="global-search-input" type="search" placeholder="Search products, services, solutions, opportunities, knowledge..." autocomplete="off"><button type="submit">Search</button></form>
+    <div class="search-hints"><span>Products</span><span>Services</span><span>Solutions</span><span>Opportunities</span><span>Knowledge</span><span>Partners</span></div>
+  </div>
+</div><script>
+(() => {
+  const header=document.getElementById('site-header');
+  const toggle=document.getElementById('search-toggle');
+  const overlay=document.getElementById('global-search');
+  const close=document.getElementById('search-close');
+  const input=document.getElementById('global-search-input');
+  const openSearch=()=>{overlay.hidden=false;document.body.classList.add('search-open');toggle.setAttribute('aria-expanded','true');requestAnimationFrame(()=>input.focus());};
+  const closeSearch=()=>{overlay.hidden=true;document.body.classList.remove('search-open');toggle.setAttribute('aria-expanded','false');toggle.focus();};
+  toggle.addEventListener('click',openSearch); close.addEventListener('click',closeSearch);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)closeSearch();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)closeSearch();});
+  const syncHeader=()=>header.classList.toggle('is-scrolled',window.scrollY>18);
+  syncHeader(); window.addEventListener('scroll',syncHeader,{passive:true});
+  const handleSearch=e=>{e.preventDefault(); const q=e.currentTarget.querySelector('input').value.trim(); if(q){window.location.hash='discovery'; document.getElementById('discovery-input').value=q;}};
+  document.getElementById('global-search-form').addEventListener('submit',e=>{handleSearch(e);closeSearch();});
+  document.getElementById('discovery-search').addEventListener('submit',handleSearch);
+})();
+</script></body>
 </html>
