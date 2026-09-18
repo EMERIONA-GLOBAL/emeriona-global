@@ -1,0 +1,48 @@
+name: Fulfillment Execute Exact Main Verification
+
+on:
+  push:
+    branches: [verify/fulfillment-execute-main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact Main merge SHA
+        uses: actions/checkout@v4
+        with:
+          ref: 04cd2189923c8f6904636387a00127455b2f21b9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Assert exact Main SHA
+        run: test "$(git rev-parse HEAD)" = "04cd2189923c8f6904636387a00127455b2f21b9"
+      - run: npm install --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run build --workspace=@emeriona-global/web
+      - name: Apply D1 migrations
+        run: npx wrangler d1 migrations apply emeriona-global-db --remote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy Worker
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Production Health
+        run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health | jq -e '.status == "ok" and .service == "emeriona-global"'
+      - name: Production Readiness and D1
+        run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health/ready | jq -e '.status == "ready" and .dependencies.database.status == "ok"'
+      - name: Route protection
+        run: test "$(curl -sS -o /tmp/fulfillment-method.json -w '%{http_code}' https://emeriona-global.emerionaglobal.workers.dev/api/v1/fulfillments)" = "405"
+      - name: Production fulfillment.execute smoke
+        run: bash scripts/fulfillment-execute-production-smoke.sh
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
