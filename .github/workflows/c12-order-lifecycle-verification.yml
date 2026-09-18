@@ -1,11 +1,9 @@
 name: EMERIONA GLOBAL C12 Order Lifecycle Verification
 
 on:
-  workflow_run:
-    workflows:
-      - EMERIONA GLOBAL Quality Gates
-    types:
-      - completed
+  push:
+    branches:
+      - architecture/c12-order-lifecycle
 
 permissions:
   contents: read
@@ -15,6 +13,23 @@ jobs:
     if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'architecture/c12-order-lifecycle'
     runs-on: ubuntu-latest
     steps:
+      - name: Wait for Quality Gates on this exact head
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for attempt in {1..30}; do
+            status="$(gh run list --workflow quality-gates.yml --commit "${GITHUB_SHA}" --limit 1 --json status,conclusion --jq 'if length == 0 then "missing" else .[0].status+":"+.[0].conclusion end' | tr -d ' ')"
+            echo "Quality Gates: ${status}"
+            case "${status}" in
+              completed:success) exit 0 ;;
+              completed:*) echo "Quality Gates did not pass"; exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo "Timed out waiting for Quality Gates"
+          exit 1
+
       - name: Checkout verified head
         uses: actions/checkout@v4
         with:
