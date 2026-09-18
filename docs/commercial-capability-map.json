@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "baselineSha": "f8c06aa3720352e5faa42f0477dde21fda569c91",
+  "baselineSha": "3f2aa588c490fe7355c44e8680b2543778c6e08c",
   "policy": "Preserve every architectural contract; implementation advances lifecycle without deleting capability definitions.",
   "statusModel": [
     "CONTRACT",
@@ -189,8 +189,8 @@
     {
       "id": "checkout.execute",
       "domain": "COMMERCE",
-      "status": "D1-BACKED",
-      "evidence": "CheckoutHandler registered with D1OperationalCommerceAdapter."
+      "status": "VERIFIED",
+      "evidence": "PR #39 verified checkout.execute through real D1 and Cloudflare production smoke; merged main SHA 3f2aa588c490fe7355c44e8680b2543778c6e08c. Exact Main SHA verification run 35402394607 checked out and asserted that exact Main SHA, then passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Worker deployment, production health/readiness, route protection, and checkout.execute production smoke covering order/order-item persistence, total, cart CHECKED_OUT, idempotency replay, tenant isolation, and D1 audit/idempotency evidence."
     },
     {
       "id": "order.create",
@@ -386,13 +386,13 @@
     }
   ],
   "lastVerified": {
-    "id": "cart.item.add",
-    "mergeSha": "f8c06aa3720352e5faa42f0477dde21fda569c91",
-    "verification": "Exact Main SHA verification run 35284789009 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and production cart.item.add smoke path."
+    "id": "checkout.execute",
+    "mergeSha": "3f2aa588c490fe7355c44e8680b2543778c6e08c",
+    "verification": "Exact Main SHA verification run 35402394607 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and production checkout.execute smoke."
   },
   "nextExecution": {
-    "id": "checkout.execute",
-    "reason": "cart.item.add is now VERIFIED. checkout.execute is the next Commerce contract and is already D1-backed; audit its actual handler, registration, canonical API exposure, D1 behavior and production evidence before creating any new implementation.",
-    "plan": "Audit checkout.execute first; preserve all existing architecture, implement only missing execution paths, then run Quality Gates, D1, Cloudflare production verification and Exact Main SHA evidence before promotion."
+    "id": "order.create",
+    "reason": "checkout.execute is now VERIFIED. order.create is the next Commerce contract; audit its actual handler, registration, canonical API exposure, D1 behavior and production evidence before creating any new implementation.",
+    "plan": "Audit order.create first; preserve existing architecture, implement only missing execution paths, then run Quality Gates, D1, Cloudflare production verification and Exact Main SHA evidence before promotion."
   }
 }
