@@ -17,9 +17,10 @@ ORDER_ID=$(jq -r '.data.orderId' /tmp/checkout-result.json)
 test "$(jq -r '.meta.useCaseId' /tmp/checkout-result.json)" = 'checkout.execute'
 test "$(jq -r '.data.total.amount' /tmp/checkout-result.json)" = '50'
 test "$(jq -r '.data.itemCount' /tmp/checkout-result.json)" = '1'
-curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-execute-${RUN_ID}" -X POST "$BASE/api/v1/checkout" -d "{"cartId":"${CART_ID}"}" | tee /tmp/checkout-replay.json
+curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-execute-${RUN_ID}" -X POST "$BASE/api/v1/checkout" -d "{\"cartId\":\"${CART_ID}\"}" | tee /tmp/checkout-replay.json
 test "$(jq -r '.data.orderId' /tmp/checkout-replay.json)" = "$ORDER_ID"
-STATUS=$(curl -sS -o /tmp/cross-tenant.json -w '%{http_code}' -H "x-tenant-id: checkout-other-${RUN_ID}" -H 'x-actor-id: checkout-verify-actor' -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: checkout-cross-${RUN_ID}" -X POST "$BASE/api/v1/checkout" -d "{"cartId":"${CART_ID}"}")
+test "$(jq -r '.data.total.amount' /tmp/checkout-replay.json)" = '50'
+STATUS=$(curl -sS -o /tmp/cross-tenant.json -w '%{http_code}' -H "x-tenant-id: checkout-other-${RUN_ID}" -H 'x-actor-id: checkout-verify-actor' -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: checkout-cross-${RUN_ID}" -X POST "$BASE/api/v1/checkout" -d "{\"cartId\":\"${CART_ID}\"}")
 test "$STATUS" = '400'
 SQL="SELECT (SELECT count(*) FROM orders WHERE id='${ORDER_ID}' AND tenant_id='${TENANT_ID}' AND total_amount=50 AND status='PENDING') AS order_ok, (SELECT count(*) FROM order_items WHERE order_id='${ORDER_ID}') AS items_ok, (SELECT count(*) FROM carts WHERE id='${CART_ID}' AND tenant_id='${TENANT_ID}' AND status='CHECKED_OUT') AS cart_ok, (SELECT count(*) FROM idempotency_records WHERE tenant_id='${TENANT_ID}' AND status='COMPLETED') AS idempotency_ok, (SELECT count(*) FROM audit_events WHERE tenant_id='${TENANT_ID}' AND outcome='SUCCEEDED') AS audit_ok;"
 npx wrangler d1 execute emeriona-global-db --remote --command="$SQL" | tee /tmp/checkout-persistence.txt
