@@ -3,6 +3,7 @@ name: EMERIONA GLOBAL C12 Order Lifecycle Verification
 on:
   push:
     branches:
+      - main
       - architecture/c12-order-lifecycle
 
 permissions:
