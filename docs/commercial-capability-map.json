@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "baselineSha": "d6b4d380f9905e43c4ae70edd84203d53eb8f603",
+  "baselineSha": "027b362e64d56d103240b50107480f322f72c066",
   "policy": "Preserve every architectural contract; implementation advances lifecycle without deleting capability definitions.",
   "statusModel": [
     "CONTRACT",
@@ -201,8 +201,8 @@
     {
       "id": "order.update",
       "domain": "COMMERCE",
-      "status": "CONTRACT",
-      "evidence": "Contract exists; no order update handler registration found."
+      "status": "VERIFIED",
+      "evidence": "PR #45 verified the existing UpdateOrderHandler/order lifecycle/D1 repository path and canonical POST /api/v1/orders/update without rebuilding it. Production verification run 35402757227 passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Worker deployment, health/readiness, route protection and order.update smoke covering valid lifecycle transition, idempotency replay, invalid transition rejection, tenant isolation, D1 order state and durable order_events/audit evidence. Exact Main SHA verification run 35402840256 checked merge SHA 027b362e64d56d103240b50107480f322f72c066 and passed the complete production verification path."
     },
     {
       "id": "fulfillment.execute",
@@ -386,13 +386,13 @@
     }
   ],
   "lastVerified": {
-    "id": "order.create",
-    "mergeSha": "d6b4d380f9905e43c4ae70edd84203d53eb8f603",
-    "verification": "Exact Main SHA verification run 35402656320 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and production order.create smoke."
+    "id": "order.update",
+    "mergeSha": "027b362e64d56d103240b50107480f322f72c066",
+    "verification": "Exact Main SHA verification run 35402840256 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and production order.update smoke."
   },
   "nextExecution": {
-    "id": "order.update",
-    "reason": "order.create is now VERIFIED. order.update is the next Commerce contract; audit its actual handler, registration, canonical API exposure, D1 behavior and production evidence before creating any new implementation.",
-    "plan": "Audit order.update first; preserve existing architecture, implement only missing execution paths, then run Quality Gates, D1, Cloudflare production verification and Exact Main SHA evidence before promotion."
+    "id": "fulfillment.execute",
+    "reason": "order.update is now VERIFIED. fulfillment.execute is the next Commerce contract; the audit must reconcile the canonical contract with the existing fulfillment.create/progress implementation before any implementation or renaming.",
+    "plan": "Audit fulfillment.execute first; preserve fulfillment.create/progress and the architectural contract, then perform only the required canonical alignment or missing execution work, followed by Quality Gates, D1, Cloudflare production verification and Exact Main SHA evidence."
   }
 }
