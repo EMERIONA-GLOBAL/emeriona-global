@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "baselineSha": "759e989ce803e9b3fc790340ced2316f6a3c3c37",
+  "baselineSha": "ffc84fe34511c450fbd120eba422ed2310ac9a11",
   "policy": "Preserve every architectural contract; implementation advances lifecycle without deleting capability definitions.",
   "statusModel": [
     "CONTRACT",
@@ -255,8 +255,8 @@
     {
       "id": "payment.authorize",
       "domain": "PAYMENT",
-      "status": "CONTRACT",
-      "evidence": "No canonical authorization handler registration found."
+      "status": "VERIFIED",
+      "evidence": "PR #54 activated the canonical payment.authorize application handler, provider-neutral D1 authorization lifecycle, runtime registration, and POST /api/v1/payments/authorize while preserving payment.create/payment.intent.create compatibility. Exact Main-code production verification run 35443728294 on workflow-only verification branch rooted at Main merge SHA ffc84fe34511c450fbd120eba422ed2310ac9a11 passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Cloudflare Worker deployment, health/readiness, route protection, and integrated payment.authorize production smoke covering AUTHORIZED response, replay/idempotency behavior, tenant isolation, and D1 authorization evidence.
     },
     {
       "id": "payment.capture",
@@ -386,13 +386,14 @@
     }
   ],
   "lastVerified": {
-    "id": "payment.create",
-    "mergeSha": "759e989ce803e9b3fc790340ced2316f6a3c3c37",
-    "verification": "Exact Main-code production verification run 35405851723 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and payment.create production smoke."
+    "id": "payment.authorize",
+    "mergeSha": "ffc84fe34511c450fbd120eba422ed2310ac9a11",
+    "verification": "Exact Main-code production verification run 35443774098 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route protection and payment.authorize production smoke."
   },
   "nextExecution": {
-    "id": "payment.authorize",
-    "reason": "payment.create is now VERIFIED. The next architectural contract is payment.authorize; audit existing authorization/payment infrastructure before any implementation or canonical alignment.",
-    "plan": "Audit payment.authorize first; preserve existing payment.intent.create and other payment capabilities, implement only missing canonical behavior, then verify Quality Gates, D1, Cloudflare production and Exact Main SHA evidence."
+    "id": "payment.capture",
+    "reason": "payment.authorize is now VERIFIED. The next architectural contract is payment.capture; audit existing capture/payment infrastructure before any implementation or canonical alignment.",
+    "plan": "Audit payment.capture first; preserve payment.authorize and all existing payment capabilities, implement only missing canonical behavior, then verify exact Main production behavior before updating the capability map."
   }
+}
 }
