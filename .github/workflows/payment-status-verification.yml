@@ -2,7 +2,7 @@ name: Payment Status Production Verification
 
 on:
   push:
-    branches: [commercial-payment-status]
+    branches: [commercial-payment-status, verify/payment-status-main]
   pull_request:
     branches: [main]
 
