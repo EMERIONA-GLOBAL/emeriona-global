@@ -1,0 +1,7 @@
+PRAGMA foreign_keys = ON;
+INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('refund-verification-tenant','Refund Verification','ACTIVE'),('refund-verification-other','Refund Verification Other','ACTIVE');
+INSERT OR IGNORE INTO customers (id,tenant_id,display_name,status) VALUES ('refund-verification-customer','refund-verification-tenant','Refund Verification Customer','ACTIVE');
+INSERT OR IGNORE INTO orders (id,tenant_id,customer_id,status,total_amount,currency) VALUES ('refund-verification-order','refund-verification-tenant','refund-verification-customer','FULFILLED',100,'USD');
+INSERT OR IGNORE INTO payment_intents (id,tenant_id,order_id,status,amount,currency) VALUES ('refund-verification-payment','refund-verification-tenant','refund-verification-order','CAPTURED',100,'USD');
+INSERT OR IGNORE INTO revenue_entries (id,tenant_id,order_id,payment_intent_id,amount,currency,status) VALUES ('refund-verification-revenue','refund-verification-tenant','refund-verification-order','refund-verification-payment',100,'USD','RECOGNIZED');
+INSERT OR IGNORE INTO payment_events (id,tenant_id,payment_intent_id,from_status,to_status,provider,correlation_id) VALUES ('refund-verification-event','refund-verification-tenant','refund-verification-payment','AUTHORIZED','CAPTURED','provider-neutral','refund-verification-correlation');
