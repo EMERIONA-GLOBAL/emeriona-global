@@ -14,6 +14,7 @@ export interface PaymentProviderPort {
   authorize(paymentId: PaymentId): Promise<PaymentIntent>;
   capture(paymentId: PaymentId): Promise<PaymentIntent>;
   refund(paymentId: PaymentId, amount?: Money): Promise<PaymentIntent>;
+  status(paymentId: PaymentId): Promise<PaymentIntent>;
 }
 
 export interface BillingPort {
