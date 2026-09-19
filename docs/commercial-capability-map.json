@@ -273,8 +273,8 @@
     {
       "id": "payment.status",
       "domain": "PAYMENT",
-      "status": "CONTRACT",
-      "evidence": "No canonical status handler registration found."
+      "status": "VERIFIED",
+      "evidence": "PR #64 activated the canonical payment.status application handler, tenant-scoped D1 read path, runtime registration and POST /api/v1/payments/status. Production verification run 35450611511 passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Cloudflare Worker deployment, health/readiness, route activation and real payment.status smoke with CAPTURED payment retrieval and cross-tenant rejection. Exact Main-code production verification run 35450672003 on verification branch rooted at Main merge SHA 6f4bb4a1181ef0884b3b06c151e583bce18a618c passed the complete verification path."
     },
     {
       "id": "billing.invoice.create",
@@ -386,12 +386,9 @@
     }
   ],
   "lastVerified": {
-    "id": "payment.refund",
-    "mergeSha": "242b923e5e3f86c4aef8b9f408bfd0c9449d1e95",
-    "verification": "Exact Main-code production verification run 35450346734 on verification branch rooted at Main SHA 242b923e5e3f86c4aef8b9f408bfd0c9449d1e95 passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Cloudflare Worker deployment, health/readiness, route protection, and real payment.refund lifecycle smoke with idempotent replay, tenant isolation, payment_intents REFUNDED, revenue_entries REVERSED, and CAPTURED -> REFUNDED payment event evidence."
-  },
-  "nextExecution": {
     "id": "payment.status",
+    "mergeSha": "6f4bb4a1181ef0884b3b06c151e583bce18a618c",
+    "verification": "Exact Main-code production verification run 35450672003 on verification branch rooted at Main SHA 6f4bb4a1181ef0884b3b06c151e583bce18a618c passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Cloudflare Worker deployment, health/readiness, route activation and real payment.status smoke with CAPTURED payment retrieval and cross-tenant rejection."
     "reason": "payment.refund is now VERIFIED. The next architectural contract is payment.status; audit the existing payment read/status infrastructure before any implementation or canonical alignment.",
     "plan": "Audit payment.status first; preserve payment.create, payment.authorize, payment.capture, payment.refund and all existing payment capabilities, implement only missing canonical behavior, then verify exact Main production behavior before updating the capability map."
   }
