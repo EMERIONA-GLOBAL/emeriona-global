@@ -59,14 +59,7 @@ jobs:
           test "$(jq -r '.data.id' /tmp/payment-authorize-replay.json)" = "${PAYMENT_ID}"
           STATUS=$(curl -sS -o /tmp/payment-authorize-cross.json -w '%{http_code}' -X POST "https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/authorize" -H "x-tenant-id: payment-other-${RUN_ID}" -H "x-actor-id: payment-verify-actor" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: payment-authorize-cross-${RUN_ID}" -d "{\"paymentId\":\"${PAYMENT_ID}\"}")
           test "${STATUS}" = '400'
-          npx wrangler d1 execute emeriona-global-db --remote --json --command="SELECT (SELECT count(*) FROM payment_intents WHERE id='${PAYMENT_ID}' AND tenant_id='${TENANT_ID}' AND status='AUTHORIZED') AS payment_ok, (SELECT count(*) FROM payment_events WHERE tenant_id='${TENANT_ID}' AND payment_intent_id='${PAYMENT_ID}' AND from_status='CREATED' AND to_status='AUTHORIZED') AS event_ok, (SELECT count(*) FROM idempotency_records WHERE tenant_id='${TENANT_ID}' AND use_case_id='payment.authorize' AND idempotency_key='payment-authorize-${RUN_ID}' AND status='COMPLETED') AS idempotency_ok, (SELECT count(*) FROM audit_events WHERE tenant_id='${TENANT_ID}' AND use_case_id='payment.authorize' AND outcome='SUCCEEDED') AS audit_ok;" | tee /tmp/payment-authorize-persistence.json
-          PAYMENT_OK=$(jq -r '.[]?.results[]? | select(.payment_ok != null) | .payment_ok' /tmp/payment-authorize-persistence.json | head -n1)
-          EVENT_OK=$(jq -r '.[]?.results[]? | select(.event_ok != null) | .event_ok' /tmp/payment-authorize-persistence.json | head -n1)
-          IDEMPOTENCY_OK=$(jq -r '.[]?.results[]? | select(.idempotency_ok != null) | .idempotency_ok' /tmp/payment-authorize-persistence.json | head -n1)
-          AUDIT_OK=$(jq -r '.[]?.results[]? | select(.audit_ok != null) | .audit_ok' /tmp/payment-authorize-persistence.json | head -n1)
-          echo "payment_ok=${PAYMENT_OK} event_ok=${EVENT_OK} idempotency_ok=${IDEMPOTENCY_OK} audit_ok=${AUDIT_OK}"
-          test "${PAYMENT_OK}" = '1'
-          test "${EVENT_OK}" = '1'
-          test "${IDEMPOTENCY_OK}" = '1'
-          test "${AUDIT_OK}" = '1'
+          SQL="SELECT CASE WHEN (SELECT count(*) FROM payment_intents WHERE id='${PAYMENT_ID}' AND tenant_id='${TENANT_ID}' AND status='AUTHORIZED')=1 AND (SELECT count(*) FROM payment_events WHERE tenant_id='${TENANT_ID}' AND payment_intent_id='${PAYMENT_ID}' AND from_status='CREATED' AND to_status='AUTHORIZED')=1 AND (SELECT count(*) FROM idempotency_records WHERE tenant_id='${TENANT_ID}' AND use_case_id='payment.authorize' AND idempotency_key='payment-authorize-${RUN_ID}' AND status='COMPLETED')=1 AND (SELECT count(*) FROM audit_events WHERE tenant_id='${TENANT_ID}' AND use_case_id='payment.authorize' AND outcome='SUCCEEDED')=1 THEN 'PASS' ELSE 'FAIL' END AS verification;"
+          npx wrangler d1 execute emeriona-global-db --remote --command="$SQL" | tee /tmp/payment-authorize-persistence.txt
+          grep -q 'PASS' /tmp/payment-authorize-persistence.txt
           echo "payment.authorize production smoke: PASS"
