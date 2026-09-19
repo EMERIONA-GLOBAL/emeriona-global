@@ -60,5 +60,12 @@ jobs:
           STATUS=$(curl -sS -o /tmp/payment-authorize-cross.json -w '%{http_code}' -X POST "https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/authorize" -H "x-tenant-id: payment-other-${RUN_ID}" -H "x-actor-id: payment-verify-actor" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: payment-authorize-cross-${RUN_ID}" -d "{\"paymentId\":\"${PAYMENT_ID}\"}")
           test "${STATUS}" = '400'
           npx wrangler d1 execute emeriona-global-db --remote --json --command="SELECT (SELECT count(*) FROM payment_intents WHERE id='${PAYMENT_ID}' AND tenant_id='${TENANT_ID}' AND status='AUTHORIZED') AS payment_ok, (SELECT count(*) FROM payment_events WHERE tenant_id='${TENANT_ID}' AND payment_intent_id='${PAYMENT_ID}' AND from_status='CREATED' AND to_status='AUTHORIZED') AS event_ok, (SELECT count(*) FROM idempotency_records WHERE tenant_id='${TENANT_ID}' AND use_case_id='payment.authorize' AND idempotency_key='payment-authorize-${RUN_ID}' AND status='COMPLETED') AS idempotency_ok, (SELECT count(*) FROM audit_events WHERE tenant_id='${TENANT_ID}' AND use_case_id='payment.authorize' AND outcome='SUCCEEDED') AS audit_ok;" | tee /tmp/payment-authorize-persistence.json
-          cat /tmp/payment-authorize-persistence.json
-          jq -e '.[]?.results[0] | (.payment_ok == 1 and .event_ok == 1 and .idempotency_ok == 1 and .audit_ok == 1)' /tmp/payment-authorize-persistence.json
+          PAYMENT_OK=$(jq -r '.[]?.results[0].payment_ok // 0' /tmp/payment-authorize-persistence.json)
+          EVENT_OK=$(jq -r '.[]?.results[0].event_ok // 0' /tmp/payment-authorize-persistence.json)
+          IDEMPOTENCY_OK=$(jq -r '.[]?.results[0].idempotency_ok // 0' /tmp/payment-authorize-persistence.json)
+          AUDIT_OK=$(jq -r '.[]?.results[0].audit_ok // 0' /tmp/payment-authorize-persistence.json)
+          test "${PAYMENT_OK}" = '1'
+          test "${EVENT_OK}" = '1'
+          test "${IDEMPOTENCY_OK}" = '1'
+          test "${AUDIT_OK}" = '1'
+          echo "payment.authorize production smoke: PASS"
