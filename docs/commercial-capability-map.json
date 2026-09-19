@@ -256,7 +256,7 @@
       "id": "payment.authorize",
       "domain": "PAYMENT",
       "status": "VERIFIED",
-      "evidence": "PR #54 activated the canonical payment.authorize application handler, provider-neutral D1 authorization lifecycle, runtime registration, and POST /api/v1/payments/authorize while preserving payment.create/payment.intent.create compatibility. Exact Main-code production verification run 35443728294 on workflow-only verification branch rooted at Main merge SHA ffc84fe34511c450fbd120eba422ed2310ac9a11 passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Cloudflare Worker deployment, health/readiness, route protection, and integrated payment.authorize production smoke covering AUTHORIZED response, replay/idempotency behavior, tenant isolation, and D1 authorization evidence.
+      "evidence": "PR #54 activated the canonical payment.authorize application handler, provider-neutral D1 authorization lifecycle, runtime registration, and POST /api/v1/payments/authorize while preserving payment.create/payment.intent.create compatibility. Exact Main-code production verification run 35443728294 on workflow-only verification branch rooted at Main merge SHA ffc84fe34511c450fbd120eba422ed2310ac9a11 passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Cloudflare Worker deployment, health/readiness, route protection, and integrated payment.authorize production smoke covering AUTHORIZED response, replay/idempotency behavior, tenant isolation, and D1 authorization evidence."
     },
     {
       "id": "payment.capture",
