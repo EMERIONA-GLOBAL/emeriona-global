@@ -32,3 +32,14 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health | jq -e '.status == "ok"'
       - run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health/ready | jq -e '.status == "ready"'
+
+      - name: Production capture smoke
+        run: |
+          RUN_ID="${GITHUB_RUN_ID}"
+          TENANT="capture-${RUN_ID}"
+          OTHER="capture-other-${RUN_ID}"
+          echo "Production capture smoke executes against deployed canonical route."
+          curl -fsS -X POST "https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/capture" -H "x-tenant-id: ${TENANT}" -H "x-actor-id: capture-verifier" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: capture-${RUN_ID}" -d '{"paymentId":"missing"}' -o /tmp/capture.json
+          test "$(jq -r '.error.code' /tmp/capture.json)" = 'use_case_failed'
+          STATUS=$(curl -sS -o /tmp/capture-other.json -w '%{http_code}' -X POST "https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/capture" -H "x-tenant-id: ${OTHER}" -H "x-actor-id: capture-verifier" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: capture-other-${RUN_ID}" -d '{"paymentId":"missing"}')
+          test "${STATUS}" = '400'
