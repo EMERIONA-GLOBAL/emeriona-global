@@ -97,6 +97,21 @@ export class D1ProviderNeutralPaymentAdapter implements PaymentProviderPort {
     await this.db.prepare("INSERT INTO payment_events (id,tenant_id,payment_intent_id,from_status,to_status,provider,correlation_id) VALUES (?,?,?,?,?,?,?)").bind(eventId,this.tenantId,paymentId,"AUTHORIZED","CAPTURED","provider-neutral",this.correlationId).all();
     return { id:updated.id as PaymentId, orderId:updated.order_id as OrderId, amount:{amount:Number(updated.amount),currency:updated.currency}, status:updated.status, providerReference:updated.provider_reference ?? undefined };
   }
+  async status(paymentId: PaymentId): Promise<PaymentIntent> {
+    const existing = await one<{ id:string; order_id:string; status:PaymentIntent["status"]; amount:number; currency:string; provider_reference:string|null }>(
+      this.db,
+      "SELECT id,order_id,status,amount,currency,provider_reference FROM payment_intents WHERE id=? AND tenant_id=?",
+      [paymentId,this.tenantId],
+    );
+    if (!existing) throw new Error("Payment intent not found for tenant");
+    return {
+      id: existing.id as PaymentId,
+      orderId: existing.order_id as OrderId,
+      amount: { amount: Number(existing.amount), currency: existing.currency },
+      status: existing.status,
+      providerReference: existing.provider_reference ?? undefined,
+    };
+  }
   async refund(paymentId: PaymentId): Promise<PaymentIntent> {
     const existing = await one<{ id:string; order_id:string; status:PaymentIntent["status"]; amount:number; currency:string; provider_reference:string|null }>(
       this.db,
