@@ -2,7 +2,7 @@ name: Payment Capture Production Verification
 
 on:
   push:
-    branches: [commercial-payment-capture]
+    branches: [commercial-payment-capture, verify/payment-capture-main]
   pull_request:
     branches: [main]
 
