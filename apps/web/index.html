@@ -13,9 +13,9 @@
 <header class="site-header" id="site-header">
 <a class="brand" href="#top" aria-label="EMERIONA GLOBAL Official home"><span class="brand-name">EMERIONA GLOBAL</span><small>OFFICIAL</small></a>
 <nav class="primary-nav" id="primary-nav" aria-label="Primary navigation">
-<div class="nav-item"><a href="#commerce">MARKET</a><div class="nav-menu"><a href="#commerce"><b>Products</b><span>Products & digital offerings</span></a><a href="#commerce"><b>Services</b><span>Professional & scalable services</span></a><a href="#commerce"><b>Offers</b><span>Offers, bundles & opportunities</span></a></div></div>
-<div class="nav-item"><a href="#discovery">DISCOVERY</a><div class="nav-menu"><a href="#discovery"><b>Smart Search</b><span>Discover what you need</span></a><a href="#knowledge"><b>Knowledge</b><span>Explore knowledge & intelligence</span></a><a href="#ecosystem"><b>Ecosystem</b><span>Explore EMERIONA worlds</span></a></div></div>
-<div class="nav-item"><a href="#partnerships">PARTNERSHIPS</a><div class="nav-menu"><a href="#partnerships"><b>Business Partnerships</b><span>Build with EMERIONA</span></a><a href="#partnerships"><b>Partner Offerings</b><span>Host products & services</span></a><a href="#partnerships"><b>Research & Development</b><span>Contribute ideas & projects</span></a></div></div>
+<div class="nav-item has-menu"><button class="nav-trigger" type="button" aria-expanded="false" aria-haspopup="true">MARKET <span>⌄</span></button><div class="nav-menu"><a href="#commerce"><b>Products</b><span>Products & digital offerings</span></a><a href="#commerce"><b>Services</b><span>Professional & scalable services</span></a><a href="#commerce"><b>Offers</b><span>Offers, bundles & opportunities</span></a></div></div>
+<div class="nav-item has-menu"><button class="nav-trigger" type="button" aria-expanded="false" aria-haspopup="true">DISCOVERY <span>⌄</span></button><div class="nav-menu"><a href="#discovery"><b>Smart Search</b><span>Discover what you need</span></a><a href="#knowledge"><b>Knowledge</b><span>Explore knowledge & intelligence</span></a><a href="#ecosystem"><b>Ecosystem</b><span>Explore EMERIONA worlds</span></a></div></div>
+<div class="nav-item has-menu"><button class="nav-trigger" type="button" aria-expanded="false" aria-haspopup="true">PARTNERSHIPS <span>⌄</span></button><div class="nav-menu"><a href="#partnerships"><b>Business Partnerships</b><span>Build with EMERIONA</span></a><a href="#partnerships"><b>Partner Offerings</b><span>Host products & services</span></a><a href="#partnerships"><b>Research & Development</b><span>Contribute ideas & projects</span></a></div></div>
 <div class="nav-item"><a href="#innovation">INNOVATION</a></div><div class="nav-item"><a href="#knowledge">KNOWLEDGE</a></div><div class="nav-item"><a href="#impact">IMPACT</a></div>
 </nav>
 <div class="header-tools"><a class="header-search" href="#discovery" aria-label="Go to EMERIONA Discovery">⌕ <span>Search</span></a><button class="language-button" type="button" aria-label="Switch language">AR</button><a class="header-cta" href="#contact">Connect</a><button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-controls="primary-nav" aria-expanded="false"><span></span><span></span><span></span></button></div>
@@ -59,7 +59,14 @@ const close=()=>{header.classList.remove('menu-open');toggle.setAttribute('aria-
 sync();window.addEventListener('scroll',sync,{passive:true});
 toggle.addEventListener('click',()=>{const open=!header.classList.contains('menu-open');header.classList.toggle('menu-open',open);toggle.setAttribute('aria-expanded',String(open));});
 nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
-document.addEventListener('click',e=>{if(!header.contains(e.target))close();});
+nav.querySelectorAll('.nav-trigger').forEach(trigger=>trigger.addEventListener('click',e=>{
+  const item=e.currentTarget.closest('.nav-item');
+  const open=item.classList.toggle('open');
+  nav.querySelectorAll('.nav-item.has-menu').forEach(other=>{if(other!==item){other.classList.remove('open');other.querySelector('.nav-trigger')?.setAttribute('aria-expanded','false');}});
+  trigger.setAttribute('aria-expanded',String(open));
+}));
+document.addEventListener('click',e=>{if(!header.contains(e.target)){close();nav.querySelectorAll('.nav-item.has-menu').forEach(item=>{item.classList.remove('open');item.querySelector('.nav-trigger')?.setAttribute('aria-expanded','false');});}});
+
 })();
 </script>
 </body>
