@@ -97,7 +97,32 @@ export class D1ProviderNeutralPaymentAdapter implements PaymentProviderPort {
     await this.db.prepare("INSERT INTO payment_events (id,tenant_id,payment_intent_id,from_status,to_status,provider,correlation_id) VALUES (?,?,?,?,?,?,?)").bind(eventId,this.tenantId,paymentId,"AUTHORIZED","CAPTURED","provider-neutral",this.correlationId).all();
     return { id:updated.id as PaymentId, orderId:updated.order_id as OrderId, amount:{amount:Number(updated.amount),currency:updated.currency}, status:updated.status, providerReference:updated.provider_reference ?? undefined };
   }
-  async refund(paymentId: PaymentId): Promise<PaymentIntent> { throw new Error(`Provider-neutral adapter does not refund real payment: ${paymentId}`); }
+  async refund(paymentId: PaymentId): Promise<PaymentIntent> {
+    const existing = await one<{ id:string; order_id:string; status:PaymentIntent["status"]; amount:number; currency:string; provider_reference:string|null }>(
+      this.db,
+      "SELECT id,order_id,status,amount,currency,provider_reference FROM payment_intents WHERE id=? AND tenant_id=?",
+      [paymentId,this.tenantId],
+    );
+    if (!existing) throw new Error("Payment intent not found for tenant");
+    if (existing.status === "REFUNDED") {
+      return { id:existing.id as PaymentId, orderId:existing.order_id as OrderId, amount:{amount:Number(existing.amount),currency:existing.currency}, status:"REFUNDED", providerReference:existing.provider_reference ?? undefined };
+    }
+    assertPaymentTransition(existing.status,"REFUNDED");
+    const eventId = `pev_${crypto.randomUUID()}`;
+    const updated = await one<{id:string;order_id:string;status:PaymentIntent["status"];amount:number;currency:string;provider_reference:string|null}>(
+      this.db,
+      "UPDATE payment_intents SET status='REFUNDED',updated_at=CURRENT_TIMESTAMP WHERE id=? AND tenant_id=? AND status='CAPTURED' RETURNING id,order_id,status,amount,currency,provider_reference",
+      [paymentId,this.tenantId],
+    );
+    if (!updated) throw new Error("Payment refund persistence failed");
+    await this.db.prepare(
+      "UPDATE revenue_entries SET status='REVERSED',reversed_at=CURRENT_TIMESTAMP WHERE tenant_id=? AND payment_intent_id=? AND status='RECOGNIZED'",
+    ).bind(this.tenantId,paymentId).all();
+    await this.db.prepare(
+      "INSERT INTO payment_events (id,tenant_id,payment_intent_id,from_status,to_status,provider,correlation_id) VALUES (?,?,?,?,?,?,?)",
+    ).bind(eventId,this.tenantId,paymentId,"CAPTURED","REFUNDED","provider-neutral",this.correlationId).all();
+    return { id:updated.id as PaymentId, orderId:updated.order_id as OrderId, amount:{amount:Number(updated.amount),currency:updated.currency}, status:updated.status, providerReference:updated.provider_reference ?? undefined };
+  }
 }
 
 export const D1_PROVIDER_NEUTRAL_PAYMENT_VERSION = "1.0.0" as const;
