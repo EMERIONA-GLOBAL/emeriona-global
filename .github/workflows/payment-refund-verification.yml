@@ -36,3 +36,21 @@ jobs:
         run: |
           code=$(curl -sS -o /tmp/refund.json -w '%{http_code}' -X GET https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/refund)
           test "$code" = "405"
+      - name: Payment refund production smoke
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx wrangler d1 execute emeriona-global-db --remote --file scripts/payment-refund-verification-seed.sql
+          body=$(curl -fsS -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/refund -H "x-tenant-id: refund-verification-tenant" -H "x-actor-id: refund-verifier" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: refund-verification-key" -d '{"paymentId":"refund-verification-payment"}')
+          echo "$body" | jq -e '.data.id == "refund-verification-payment" and .data.status == "REFUNDED" and .meta.useCaseId == "payment.refund"'
+          replay=$(curl -fsS -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/refund -H "x-tenant-id: refund-verification-tenant" -H "x-actor-id: refund-verifier" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: refund-verification-key" -d '{"paymentId":"refund-verification-payment"}')
+          echo "$replay" | jq -e '.data.id == "refund-verification-payment" and .data.status == "REFUNDED" and .meta.useCaseId == "payment.refund"'
+          status=$(curl -sS -o /tmp/refund-cross.json -w '%{http_code}' -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/refund -H "x-tenant-id: refund-verification-other" -H "x-actor-id: refund-verifier" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: refund-verification-cross-key" -d '{"paymentId":"refund-verification-payment"}')
+          test "$status" = "400"
+          jq -e '.error.code == "use_case_failed"' /tmp/refund-cross.json
+          evidence=$(npx wrangler d1 execute emeriona-global-db --remote --command "SELECT status FROM payment_intents WHERE id='refund-verification-payment'; SELECT status,reversed_at FROM revenue_entries WHERE payment_intent_id='refund-verification-payment'; SELECT from_status,to_status FROM payment_events WHERE payment_intent_id='refund-verification-payment' ORDER BY created_at DESC LIMIT 1;" --json)
+          echo "$evidence" | jq -e 'tostring | contains("REFUNDED")'
+          echo "$evidence" | jq -e 'tostring | contains("REVERSED")'
+          echo "$evidence" | jq -e 'tostring | contains("CAPTURED") and contains("REFUNDED")'
