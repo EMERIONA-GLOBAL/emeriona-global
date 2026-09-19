@@ -22,6 +22,8 @@ export type { UpdateOrderInput, OrderLifecyclePort } from "./order-lifecycle-cap
 export { UpdateOrderHandler, ORDER_LIFECYCLE_APPLICATION_VERSION } from "./order-lifecycle-capability.js";
 export type { PartnerServiceUpdateInput } from './partner-service-update-capability.js';
 export { UpdatePartnerServiceHandler, PARTNER_SERVICE_UPDATE_APPLICATION_VERSION } from './partner-service-update-capability.js';
+export type { AuthorizePaymentInput } from "./payment-authorization-capability.js";
+export { AuthorizePaymentHandler, PAYMENT_AUTHORIZATION_APPLICATION_VERSION } from "./payment-authorization-capability.js";
 export type { CreateInvoiceInput, CreateSettlementInput, BillingPort } from './billing-capabilities.js';
 export { CreateInvoiceHandler, CreateSettlementHandler, BILLING_APPLICATION_VERSION } from './billing-capabilities.js';
 export type { FulfillmentInput, FulfillmentProgressInput, FulfillmentPort } from './fulfillment-capabilities.js';
