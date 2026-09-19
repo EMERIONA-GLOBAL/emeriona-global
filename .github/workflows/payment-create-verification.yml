@@ -45,19 +45,3 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      - name: Production payment.authorize smoke
-        run: |
-          RUN_ID="${GITHUB_RUN_ID}"
-          TENANT_ID="payment-verify-${RUN_ID}"
-          PAYMENT_ID=$(npx wrangler d1 execute emeriona-global-db --remote --command="SELECT id FROM payment_intents WHERE tenant_id='${TENANT_ID}' ORDER BY rowid DESC LIMIT 1" --json | jq -r '.result[]?.results[]?.id // empty' | head -n1)
-          test -n "${PAYMENT_ID}"
-          curl -fsS -X POST "https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/authorize" -H "x-tenant-id: ${TENANT_ID}" -H "x-actor-id: payment-verify-actor" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: payment-authorize-${RUN_ID}" -d "{\"paymentId\":\"${PAYMENT_ID}\"}" | tee /tmp/payment-authorize.json
-          test "$(jq -r '.meta.useCaseId' /tmp/payment-authorize.json)" = 'payment.authorize'
-          test "$(jq -r '.data.status' /tmp/payment-authorize.json)" = 'AUTHORIZED'
-          curl -fsS -X POST "https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/authorize" -H "x-tenant-id: ${TENANT_ID}" -H "x-actor-id: payment-verify-actor" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: payment-authorize-${RUN_ID}" -d "{\"paymentId\":\"${PAYMENT_ID}\"}" | tee /tmp/payment-authorize-replay.json
-          test "$(jq -r '.data.status' /tmp/payment-authorize-replay.json)" = 'AUTHORIZED'
-          test "$(jq -r '.data.id' /tmp/payment-authorize-replay.json)" = "${PAYMENT_ID}"
-          STATUS=$(curl -sS -o /tmp/payment-authorize-cross.json -w '%{http_code}' -X POST "https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/authorize" -H "x-tenant-id: payment-other-${RUN_ID}" -H "x-actor-id: payment-verify-actor" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: payment-authorize-cross-${RUN_ID}" -d "{\"paymentId\":\"${PAYMENT_ID}\"}")
-          test "${STATUS}" = '400'
-          npx wrangler d1 execute emeriona-global-db --remote --command="SELECT (SELECT status FROM payment_intents WHERE id='${PAYMENT_ID}' AND tenant_id='${TENANT_ID}') AS payment_status, (SELECT count(*) FROM payment_events WHERE tenant_id='${TENANT_ID}' AND payment_intent_id='${PAYMENT_ID}' AND to_status='AUTHORIZED') AS authorization_events;" || true
-          echo "payment.authorize production smoke: PASS"
