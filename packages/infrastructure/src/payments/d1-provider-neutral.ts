@@ -1,7 +1,7 @@
 import type { D1DatabaseLike } from "../d1.js";
 import type { PaymentIntent, PaymentProviderPort } from "../../../domains/src/index.js";
 import type { OrderId, PaymentId, Money } from "../../../domains/src/index.js";
-import { assertPaymentAmountMatchesOrder } from "../../../domains/src/payments-foundation.js";
+import { assertPaymentAmountMatchesOrder, assertPaymentTransition } from "../../../domains/src/payments-foundation.js";
 
 async function one<T>(db: D1DatabaseLike, sql: string, values: readonly unknown[]): Promise<T | null> {
   const statement = db.prepare(sql);
@@ -81,7 +81,22 @@ export class D1ProviderNeutralPaymentAdapter implements PaymentProviderPort {
       providerReference: updated.provider_reference ?? undefined,
     };
   }
-  async capture(paymentId: PaymentId): Promise<PaymentIntent> { throw new Error(`Provider-neutral adapter does not capture real payment: ${paymentId}`); }
+  async capture(paymentId: PaymentId): Promise<PaymentIntent> {
+    const existing = await one<{ id:string; order_id:string; status:PaymentIntent["status"]; amount:number; currency:string; provider_reference:string|null }>(
+      this.db,"SELECT id,order_id,status,amount,currency,provider_reference FROM payment_intents WHERE id=? AND tenant_id=?",[paymentId,this.tenantId]);
+    if (!existing) throw new Error("Payment intent not found for tenant");
+    if (existing.status === "CAPTURED") return { id:existing.id as PaymentId, orderId:existing.order_id as OrderId, amount:{amount:Number(existing.amount),currency:existing.currency}, status:"CAPTURED", providerReference:existing.provider_reference ?? undefined };
+    assertPaymentTransition(existing.status,"CAPTURED");
+    const eventId=`pev_${crypto.randomUUID()}`;
+    const updated=await one<{id:string;order_id:string;status:PaymentIntent["status"];amount:number;currency:string;provider_reference:string|null}>(
+      this.db,
+      "UPDATE payment_intents SET status='CAPTURED' WHERE id=? AND tenant_id=? AND status='AUTHORIZED' RETURNING id,order_id,status,amount,currency,provider_reference",
+      [paymentId,this.tenantId]);
+    if(!updated) throw new Error("Payment capture persistence failed");
+    await this.db.prepare("UPDATE revenue_entries SET status='RECOGNIZED' WHERE tenant_id=? AND payment_intent_id=? AND status='PENDING'").bind(this.tenantId,paymentId).all();
+    await this.db.prepare("INSERT INTO payment_events (id,tenant_id,payment_intent_id,from_status,to_status,provider,correlation_id) VALUES (?,?,?,?,?,?,?)").bind(eventId,this.tenantId,paymentId,"AUTHORIZED","CAPTURED","provider-neutral",this.correlationId).all();
+    return { id:updated.id as PaymentId, orderId:updated.order_id as OrderId, amount:{amount:Number(updated.amount),currency:updated.currency}, status:updated.status, providerReference:updated.provider_reference ?? undefined };
+  }
   async refund(paymentId: PaymentId): Promise<PaymentIntent> { throw new Error(`Provider-neutral adapter does not refund real payment: ${paymentId}`); }
 }
 
