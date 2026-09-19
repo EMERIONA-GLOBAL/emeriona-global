@@ -2,7 +2,7 @@ name: Payment Refund Production Verification
 
 on:
   push:
-    branches: [commercial-payment-refund]
+    branches: [commercial-payment-refund, verify/payment-refund-main]
   pull_request:
     branches: [main]
 
