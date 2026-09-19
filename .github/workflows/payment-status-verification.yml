@@ -32,10 +32,11 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health | jq -e '.status == "ok"'
       - run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health/ready | jq -e '.status == "ready"'
-      - name: Payment status route protection
+      - name: Payment status route activation
         run: |
-          code=$(curl -sS -o /tmp/status.json -w '%{http_code}' -X GET https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/status)
-          test "$code" = "405"
+          code=$(curl -sS -o /tmp/status.json -w '%{http_code}' -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/status -H "x-tenant-id: status-verification-tenant" -H "x-actor-id: status-verifier" -H "x-currency: USD" -H "content-type: application/json" -d '{"paymentId":"missing"}')
+          test "$code" = "400"
+          jq -e '.error.code == "use_case_failed"' /tmp/status.json
       - name: Payment status production smoke
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
