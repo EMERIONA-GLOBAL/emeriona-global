@@ -396,4 +396,3 @@
     "plan": "Audit billing.invoice.create first; preserve all verified payment capabilities and existing billing boundaries, implement only missing canonical behavior, then verify exact Main production behavior before updating the capability map."
   }
 }
-}
