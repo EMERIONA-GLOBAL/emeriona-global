@@ -388,7 +388,7 @@
   "lastVerified": {
     "id": "payment.refund",
     "mergeSha": "242b923e5e3f86c4aef8b9f408bfd0c9449d1e95",
-    "verification": "Exact Main-code production verification run 35445715845 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route smoke and payment.capture lifecycle smoke."
+    "verification": "Exact Main-code production verification run 35450346734 on verification branch rooted at Main SHA 242b923e5e3f86c4aef8b9f408bfd0c9449d1e95 passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Cloudflare Worker deployment, health/readiness, route protection, and real payment.refund lifecycle smoke with idempotent replay, tenant isolation, payment_intents REFUNDED, revenue_entries REVERSED, and CAPTURED -> REFUNDED payment event evidence."
   },
   "nextExecution": {
     "id": "payment.status",
