@@ -64,6 +64,7 @@ jobs:
           EVENT_OK=$(jq -r '.[]?.results[0].event_ok // 0' /tmp/payment-authorize-persistence.json)
           IDEMPOTENCY_OK=$(jq -r '.[]?.results[0].idempotency_ok // 0' /tmp/payment-authorize-persistence.json)
           AUDIT_OK=$(jq -r '.[]?.results[0].audit_ok // 0' /tmp/payment-authorize-persistence.json)
+          echo "payment_ok=${PAYMENT_OK} event_ok=${EVENT_OK} idempotency_ok=${IDEMPOTENCY_OK} audit_ok=${AUDIT_OK}"
           test "${PAYMENT_OK}" = '1'
           test "${EVENT_OK}" = '1'
           test "${IDEMPOTENCY_OK}" = '1'
