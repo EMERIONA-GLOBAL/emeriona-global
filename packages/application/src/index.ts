@@ -28,6 +28,8 @@ export type { CapturePaymentInput } from "./payment-capture-capability.js";
 export { CapturePaymentHandler, PAYMENT_CAPTURE_APPLICATION_VERSION } from "./payment-capture-capability.js";
 export type { RefundPaymentInput } from "./payment-refund-capability.js";
 export { RefundPaymentHandler, PAYMENT_REFUND_APPLICATION_VERSION } from "./payment-refund-capability.js";
+export type { PaymentStatusInput } from "./payment-status-capability.js";
+export { PaymentStatusHandler, PAYMENT_STATUS_APPLICATION_VERSION } from "./payment-status-capability.js";
 export type { CreateInvoiceInput, CreateSettlementInput, BillingPort } from './billing-capabilities.js';
 export { CreateInvoiceHandler, CreateSettlementHandler, BILLING_APPLICATION_VERSION } from './billing-capabilities.js';
 export type { FulfillmentInput, FulfillmentProgressInput, FulfillmentPort } from './fulfillment-capabilities.js';
