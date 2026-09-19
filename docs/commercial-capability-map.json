@@ -268,7 +268,7 @@
       "id": "payment.refund",
       "domain": "PAYMENT",
       "status": "VERIFIED",
-      "evidence": "PR #62 activated the canonical payment.refund application handler, provider-neutral D1 CAPTURED -> REFUNDED lifecycle, revenue reversal, payment event evidence, runtime registration and POST /api/v1/payments/refund. Production verification run 35450056791 attempt 2 passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Cloudflare Worker deployment, health/readiness and route protection. The first deployment attempt failed only on a transient Cloudflare Workflow trigger update (workflow API internal error 10001); rerun succeeded without commercial code changes. Merged main SHA f67ed4749e8aa0a6a1c404db98a858f306b5d26f."
+      "evidence": "PR #62 activated the canonical payment.refund application handler, provider-neutral D1 CAPTURED -> REFUNDED lifecycle, revenue reversal, payment event evidence, runtime registration and POST /api/v1/payments/refund. Production verification run 35450056791 attempt 2 passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Cloudflare Worker deployment, health/readiness and route protection. The first deployment attempt failed only on a transient Cloudflare Workflow trigger update (workflow API internal error 10001); rerun succeeded without commercial code changes. Merged main SHA 242b923e5e3f86c4aef8b9f408bfd0c9449d1e95. Exact Main-code production verification run 35450346734 on verification branch rooted at that Main SHA passed Typecheck, Test, Platform Build, Web Build, remote D1 migrations, Cloudflare Worker deployment, health/readiness, route protection, and real payment.refund production smoke with idempotent replay, tenant isolation, payment_intents REFUNDED, revenue_entries REVERSED, and CAPTURED -> REFUNDED payment event evidence."
     },
     {
       "id": "payment.status",
@@ -387,7 +387,7 @@
   ],
   "lastVerified": {
     "id": "payment.refund",
-    "mergeSha": "f67ed4749e8aa0a6a1c404db98a858f306b5d26f",
+    "mergeSha": "242b923e5e3f86c4aef8b9f408bfd0c9449d1e95",
     "verification": "Exact Main-code production verification run 35445715845 passed the complete Typecheck/Test/Platform Build/Web Build, remote D1 migration, Cloudflare Worker deployment, health/readiness, route smoke and payment.capture lifecycle smoke."
   },
   "nextExecution": {
