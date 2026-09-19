@@ -2,7 +2,7 @@ name: Payment Create Production Verification
 
 on:
   push:
-    branches: [commercial-payment-create-alignment]
+    branches: [commercial-payment-create-alignment, verify/payment-authorize-main]
   pull_request:
     branches: [main]
 
