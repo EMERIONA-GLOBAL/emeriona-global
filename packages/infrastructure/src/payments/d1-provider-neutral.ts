@@ -46,7 +46,41 @@ export class D1ProviderNeutralPaymentAdapter implements PaymentProviderPort {
     return { id: inserted.id as PaymentId, orderId: input.orderId, amount: { amount: Number(inserted.amount), currency: inserted.currency }, status: inserted.status, providerReference: undefined };
   }
 
-  async authorize(paymentId: PaymentId): Promise<PaymentIntent> { throw new Error(`Provider-neutral adapter does not authorize real payment: ${paymentId}`); }
+  async authorize(paymentId: PaymentId): Promise<PaymentIntent> {
+    const existing = await one<{ id: string; order_id: string; status: PaymentIntent["status"]; amount: number; currency: string; provider_reference: string | null }>(
+      this.db,
+      "SELECT id,order_id,status,amount,currency,provider_reference FROM payment_intents WHERE id=? AND tenant_id=?",
+      [paymentId, this.tenantId],
+    );
+    if (!existing) throw new Error("Payment intent not found for tenant");
+    if (existing.status === "AUTHORIZED") {
+      return { id: existing.id as PaymentId, orderId: existing.order_id as OrderId, amount: { amount: Number(existing.amount), currency: existing.currency }, status: "AUTHORIZED", providerReference: existing.provider_reference ?? undefined };
+    }
+    if (existing.status !== "CREATED") throw new Error(`Payment intent cannot be authorized from status ${existing.status}`);
+
+    const eventId = `pev_${crypto.randomUUID()}`;
+    await this.db.prepare(
+      "UPDATE payment_intents SET status='AUTHORIZED' WHERE id=? AND tenant_id=? AND status='CREATED'",
+    ).bind(paymentId, this.tenantId).all();
+    const updated = await one<{ id: string; order_id: string; status: PaymentIntent["status"]; amount: number; currency: string; provider_reference: string | null }>(
+      this.db,
+      "SELECT id,order_id,status,amount,currency,provider_reference FROM payment_intents WHERE id=? AND tenant_id=?",
+      [paymentId, this.tenantId],
+    );
+    if (!updated || updated.status !== "AUTHORIZED") throw new Error("Payment authorization persistence failed");
+
+    await this.db.prepare(
+      "INSERT INTO payment_events (id,tenant_id,payment_intent_id,from_status,to_status,provider,correlation_id) VALUES (?,?,?,?,?,?,?)",
+    ).bind(eventId, this.tenantId, paymentId, "CREATED", "AUTHORIZED", "provider-neutral", this.correlationId).all();
+
+    return {
+      id: updated.id as PaymentId,
+      orderId: updated.order_id as OrderId,
+      amount: { amount: Number(updated.amount), currency: updated.currency },
+      status: updated.status,
+      providerReference: updated.provider_reference ?? undefined,
+    };
+  }
   async capture(paymentId: PaymentId): Promise<PaymentIntent> { throw new Error(`Provider-neutral adapter does not capture real payment: ${paymentId}`); }
   async refund(paymentId: PaymentId): Promise<PaymentIntent> { throw new Error(`Provider-neutral adapter does not refund real payment: ${paymentId}`); }
 }
