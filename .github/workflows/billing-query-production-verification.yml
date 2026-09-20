@@ -37,8 +37,8 @@ jobs:
         run: |
           BASE='https://emeriona-global.emerionaglobal.workers.dev'
           T="c4-smoke-${GITHUB_RUN_ID}"
-          I=$(npx wrangler d1 execute emeriona-global-db --remote --command="SELECT id FROM invoices WHERE tenant_id='${T}' ORDER BY issued_at DESC LIMIT 1" --json | jq -r '.results[0].results[0].id')
-          O=$(npx wrangler d1 execute emeriona-global-db --remote --command="SELECT order_id FROM invoices WHERE id='${I}' AND tenant_id='${T}'" --json | jq -r '.results[0].results[0].order_id')
+          I=$(npx wrangler d1 execute emeriona-global-db --remote --command="SELECT id FROM invoices WHERE tenant_id='${T}' ORDER BY issued_at DESC LIMIT 1" --json | jq -r '.[0].results[0].id')
+          O=$(npx wrangler d1 execute emeriona-global-db --remote --command="SELECT order_id FROM invoices WHERE id='${I}' AND tenant_id='${T}'" --json | jq -r '.[0].results[0].order_id')
           COMMON=(-H "x-tenant-id: ${T}" -H 'x-actor-id: billing-query-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
           curl -fsS "${COMMON[@]}" -X POST "$BASE/api/v1/billing/query" -d "{\"invoiceId\":\"${I}\"}" | jq -e --arg id "${I}" '.data | length == 1 and .[0].id == $id'
           curl -fsS "${COMMON[@]}" -X POST "$BASE/api/v1/billing/query" -d "{\"orderId\":\"${O}\"}" | jq -e --arg id "${I}" '.data | any(.[]; .id == $id)'
