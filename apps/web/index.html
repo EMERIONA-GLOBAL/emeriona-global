@@ -166,17 +166,17 @@
       <article id="market-solutions" class="market-panel featured-panel">
         <span class="market-panel-number">04</span><h3>Solutions</h3>
         <p>Connect needs with combinations of products, services, expertise and partner capabilities.</p>
-        <b>Discover solutions →</b>
+        <a class="market-panel-action" href="#discovery">Discover solutions →</a>
       </article>
       <article id="market-offers" class="market-panel">
         <span class="market-panel-number">05</span><h3>Offers</h3>
         <p>Present active offers, bundles, discounts and commercial opportunities through governed visibility.</p>
-        <b>Explore offers →</b>
+        <a class="market-panel-action" href="#market-catalog" data-market-filter="offers">Explore offers →</a>
       </article>
       <article id="market-partners" class="market-panel">
         <span class="market-panel-number">06</span><h3>Partner Offerings</h3>
         <p>Bring approved partner products and services into the same Market discovery and commercial journey.</p>
-        <b>Meet our partners →</b>
+        <a class="market-panel-action" href="#partnerships">Meet our partners →</a>
       </article>
     </div>
 
@@ -186,11 +186,11 @@
     </div>
 
     <div class="market-recommendations">
-      <div class="market-section-heading"><div><span>08</span><h3>Recommended for You</h3><p>Personalized recommendations are part of Market from day one and can become increasingly intelligent as customer interaction data grows.</p></div></div>
-      <div class="recommendation-placeholder"><strong>Personalized Market Discovery</strong><span>Recommendations connect Market with EMERIONA DISCOVERY, customer activity and the recommendation engine.</span></div>
+      <div class="market-section-heading"><div><span>08</span><h3>Recommended for You</h3><p>Personalized recommendations are part of Market from day one and connect Market with customer activity and the recommendation engine as eligible customer data becomes available.</p></div></div>
+      <div class="recommendation-placeholder"><strong>Personalized Market Discovery</strong><span>Recommendations connect Market with EMERIONA DISCOVERY, customer activity and the recommendation engine. The structure is active now; personalized items appear when eligible customer data exists.</span><a class="market-panel-action" href="#discovery">Open Discovery →</a></div>
     </div>
 
-    <div class="market-commercial">
+    <div class="market-commercial" id="commercial-journey">
       <div><div class="section-label"><span>09</span><p class="eyebrow">COMMERCIAL JOURNEY</p></div><h3>From discovery to execution.</h3><p>Market connects the visible experience to the commercial core: customer account, cart, checkout, orders, pricing, offers and fulfillment.</p></div>
       <div class="market-actions"><a href="#discovery">Explore Discovery →</a><a href="#contact">Make an Inquiry →</a><a href="#commerce">Return to Market →</a></div>
     </div>
@@ -272,7 +272,7 @@ window.addEventListener('hashchange',()=>{const key=location.hash.replace('#',''
       '<article class="market-card"><div class="market-card-media"><span>'+String(item.type||'offering').toUpperCase()+'</span></div><div class="market-card-body"><small>'+String(item.category||'EMERIONA MARKET')+'</small><h4>'+String(item.name||'Untitled offering')+'</h4><p>'+String(item.description||'Explore this offering inside EMERIONA MARKET CENTER.')+'</p><div class="market-card-meta"><span>'+String(item.partner||'EMERIONA GLOBAL')+'</span><a href="'+String(item.href||'#contact')+'">View details →</a></div></div></article>'
     ).join(''):'<div class="market-empty"><strong>Market catalog ready.</strong><span>Published products, services, solutions and partner offerings will appear here automatically when supplied by the commercial catalog.</span></div>';
   };
-  document.querySelectorAll('[data-market-filter]').forEach(el=>el.addEventListener('click',e=>{const f=e.currentTarget.dataset.marketFilter;if(!f)return;state.filter=f;document.querySelectorAll('.market-filter').forEach(b=>b.classList.toggle('active',b.dataset.marketFilter===f));render();}));
+  document.querySelectorAll('[data-market-filter]').forEach(el=>el.addEventListener('click',e=>{const f=e.currentTarget.dataset.marketFilter;if(!f)return;e.preventDefault();state.filter=f;document.querySelectorAll('.market-filter').forEach(b=>b.classList.toggle('active',b.dataset.marketFilter===f));render();document.getElementById('market-catalog')?.scrollIntoView({behavior:'smooth',block:'start'});}));
   search?.addEventListener('input',e=>{state.query=e.target.value;render();});
   sort?.addEventListener('change',e=>{state.sort=e.target.value;render();});
   clear?.addEventListener('click',()=>{state.query='';if(search)search.value='';render();search?.focus();});
