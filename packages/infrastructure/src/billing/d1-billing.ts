@@ -3,6 +3,7 @@ import type { InvoiceRecord, SettlementRecord } from "../../../domains/src/billi
 import { assertInvoiceAmountMatchesPayment, assertSettlementAmounts } from "../../../domains/src/billing-foundation.js";
 async function one<T>(db: D1DatabaseLike, sql: string, values: readonly unknown[]): Promise<T | null> { const statement = db.prepare(sql); const result = await (values.length ? statement.bind(...values) : statement).all<T & Record<string, unknown>>(); return (result.results[0] as T | undefined) ?? null; }
 export interface CreateInvoiceInput { orderId: string; paymentIntentId: string; amount: { amount: number; currency: string }; }
+export interface BillingQueryInput { invoiceId?: string; orderId?: string; }
 export interface CreateSettlementInput { orderId: string; partnerId: string; grossAmount: { amount: number; currency: string }; commissionAmount: { amount: number; currency: string }; netAmount: { amount: number; currency: string }; }
 export class D1BillingAdapter {
   constructor(private readonly db: D1DatabaseLike, private readonly tenantId: string, private readonly correlationId: string) {}
@@ -28,5 +29,11 @@ export class D1BillingAdapter {
     if(!inserted) throw new Error("Settlement persistence returned no row"); await this.db.prepare("INSERT INTO settlement_events (id,tenant_id,settlement_id,from_status,to_status,correlation_id) VALUES (?,?,?,?,?,?)").bind(eventId,this.tenantId,id,null,"PENDING",this.correlationId).all();
     return {id:inserted.id,orderId:input.orderId as SettlementRecord["orderId"],partnerId:input.partnerId,revenueEntryId:revenue.id,grossAmount:input.grossAmount,commissionAmount:{amount:Number(inserted.commission_amount),currency:inserted.currency},netAmount:{amount:Number(inserted.net_amount),currency:inserted.currency},status:inserted.status};
   }
+  async queryInvoices(input: BillingQueryInput): Promise<InvoiceRecord[]> {
+    const rows = input.invoiceId
+      ? await this.db.prepare("SELECT id,order_id,payment_intent_id,invoice_number,amount,currency,status FROM invoices WHERE id=? AND tenant_id=?").bind(input.invoiceId,this.tenantId).all<{id:string;order_id:string;payment_intent_id:string;invoice_number:string|null;amount:number;currency:string;status:"ISSUED"|"VOID"}>()
+      : await this.db.prepare("SELECT id,order_id,payment_intent_id,invoice_number,amount,currency,status FROM invoices WHERE order_id=? AND tenant_id=? ORDER BY issued_at DESC").bind(input.orderId,this.tenantId).all<{id:string;order_id:string;payment_intent_id:string;invoice_number:string|null;amount:number;currency:string;status:"ISSUED"|"VOID"}>();
+    return rows.results.map(row=>({id:row.id,orderId:row.order_id as InvoiceRecord["orderId"],paymentIntentId:row.payment_intent_id as InvoiceRecord["paymentIntentId"],number:row.invoice_number??`INV-${row.id}`,amount:{amount:Number(row.amount),currency:row.currency},status:row.status}));
+  }
 }
-export const D1_BILLING_ADAPTER_VERSION = "1.0.0" as const;
+export const D1_BILLING_ADAPTER_VERSION = "1.1.0" as const;
