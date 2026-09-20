@@ -102,7 +102,100 @@
 
 <section id="solutions" class="section dark-section"><div class="section-heading"><div class="section-label"><span>04</span><p class="eyebrow">SOLUTIONS</p></div><h2>From discovery to <em>real-world value.</em></h2><p>Products, services, ideas and projects move through a connected path of discovery, validation, building and improvement.</p></div><div class="pipeline"><div><b>Discover</b><span>Understand needs and opportunities.</span></div><i>→</i><div><b>Design</b><span>Shape useful experiences and solutions.</span></div><i>→</i><div><b>Build</b><span>Engineer real capabilities and systems.</span></div><i>→</i><div><b>Activate</b><span>Connect people, products and markets.</span></div><i>→</i><div><b>Improve</b><span>Measure, learn and continuously evolve.</span></div></div><div class="solution-list"><span>Digital Products &amp; Services</span><span>Technology &amp; Innovation</span><span>AI &amp; Intelligent Solutions</span><span>Digital Platforms</span><span>Knowledge Solutions</span><span>Custom Solutions</span></div></section>
 
-<section id="commerce" class="section commerce-section"><div class="section-heading"><div class="section-label"><span>05</span><p class="eyebrow">EMERIONA MARKET</p></div><h2>A commerce center <em>connected to the ecosystem.</em></h2><p>A real commerce domain connecting products, services, partners, offers and customer journeys through governed transaction architecture.</p></div><div class="commerce-grid"><article><b>Products &amp; Services</b><span>Discover useful offerings from EMERIONA and approved partners.</span></article><article><b>Partners &amp; Stores</b><span>Enable a structured ecosystem for trusted sellers and collaborators.</span></article><article><b>Offers &amp; Loyalty</b><span>Coupons, bundles, targeted offers, volume discounts and rewards.</span></article><article><b>Customer Journey</b><span>Search → Account → Cart → Checkout → Order → Fulfillment.</span></article></div></section>
+<section id="commerce" class="market-center" aria-labelledby="market-center-title">
+  <div class="market-hero">
+    <div class="market-hero-orbit" aria-hidden="true"></div>
+    <div class="market-hero-content">
+      <div class="section-label"><span>05</span><p class="eyebrow">EMERIONA GLOBAL • MARKET</p></div>
+      <h2 id="market-center-title"><span>EMERIONA</span> MARKET CENTER</h2>
+      <p class="market-hero-lead">The commercial center of the EMERIONA GLOBAL ecosystem — bringing together products, services, solutions, offers and partner offerings in one connected market experience.</p>
+      <div class="market-quick-links" aria-label="Market entry points">
+        <a href="#market-products" data-market-filter="products">Products</a>
+        <a href="#market-services" data-market-filter="services">Services</a>
+        <a href="#market-solutions" data-market-filter="solutions">Solutions</a>
+        <a href="#market-offers" data-market-filter="offers">Offers</a>
+        <a href="#market-partners" data-market-filter="partners">Partners</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="market-body">
+    <div class="market-intro">
+      <div>
+        <div class="section-label"><span>01</span><p class="eyebrow">SMART DISCOVERY</p></div>
+        <h3>Find what you need across the Market.</h3>
+        <p>Search products, services, solutions, offers and partner offerings through one connected market experience.</p>
+      </div>
+      <div class="market-search-shell">
+        <span aria-hidden="true">⌕</span>
+        <input id="market-search" type="search" placeholder="Search products, services, solutions, offers..." aria-label="Search EMERIONA Market">
+        <button id="market-search-clear" type="button" aria-label="Clear market search">Clear</button>
+      </div>
+    </div>
+
+    <div class="market-controls">
+      <div class="market-filters" role="tablist" aria-label="Market categories">
+        <button class="market-filter active" type="button" data-market-filter="all">All</button>
+        <button class="market-filter" type="button" data-market-filter="products">Products</button>
+        <button class="market-filter" type="button" data-market-filter="services">Services</button>
+        <button class="market-filter" type="button" data-market-filter="solutions">Solutions</button>
+        <button class="market-filter" type="button" data-market-filter="offers">Offers</button>
+        <button class="market-filter" type="button" data-market-filter="partners">Partner Offerings</button>
+      </div>
+      <label class="market-sort">Sort
+        <select id="market-sort" aria-label="Sort market results">
+          <option value="featured">Featured</option>
+          <option value="new">New</option>
+          <option value="name">Name</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="market-section-heading" id="market-products">
+      <div><span>02</span><h3>Featured Market</h3><p>Published products, services, solutions and offers are surfaced here according to their commercial visibility rules.</p></div>
+      <a href="#market-catalog" data-market-filter="all">Explore all market items →</a>
+    </div>
+    <div id="market-catalog" class="market-catalog" aria-live="polite"></div>
+
+    <div class="market-secondary-grid">
+      <article id="market-services" class="market-panel">
+        <span class="market-panel-number">03</span><h3>Categories &amp; Filters</h3>
+        <p>Organize a growing catalog by category, type, partner, availability and other commercial attributes.</p>
+        <div class="market-tags"><span>Business &amp; Enterprise</span><span>Technology &amp; Digital</span><span>Professional Services</span><span>Education &amp; Knowledge</span><span>Innovation &amp; Research</span><span>Development &amp; Impact</span></div>
+      </article>
+      <article id="market-solutions" class="market-panel featured-panel">
+        <span class="market-panel-number">04</span><h3>Solutions</h3>
+        <p>Connect needs with combinations of products, services, expertise and partner capabilities.</p>
+        <b>Discover solutions →</b>
+      </article>
+      <article id="market-offers" class="market-panel">
+        <span class="market-panel-number">05</span><h3>Offers</h3>
+        <p>Present active offers, bundles, discounts and commercial opportunities through governed visibility.</p>
+        <b>Explore offers →</b>
+      </article>
+      <article id="market-partners" class="market-panel">
+        <span class="market-panel-number">06</span><h3>Partner Offerings</h3>
+        <p>Bring approved partner products and services into the same Market discovery and commercial journey.</p>
+        <b>Meet our partners →</b>
+      </article>
+    </div>
+
+    <div class="market-experience">
+      <div class="market-section-heading"><div><span>07</span><h3>Product &amp; Service Experience</h3><p>Every published item has a structured path from discovery to action.</p></div></div>
+      <div class="market-flow"><span>Discover</span><i>→</i><span>Details</span><i>→</i><span>Inquiry</span><i>→</i><span>Add to Cart</span><i>→</i><span>Checkout</span><i>→</i><span>Order</span></div>
+    </div>
+
+    <div class="market-recommendations">
+      <div class="market-section-heading"><div><span>08</span><h3>Recommended for You</h3><p>Personalized recommendations are part of Market from day one and can become increasingly intelligent as customer interaction data grows.</p></div></div>
+      <div class="recommendation-placeholder"><strong>Personalized Market Discovery</strong><span>Recommendations connect Market with EMERIONA DISCOVERY, customer activity and the recommendation engine.</span></div>
+    </div>
+
+    <div class="market-commercial">
+      <div><div class="section-label"><span>09</span><p class="eyebrow">COMMERCIAL JOURNEY</p></div><h3>From discovery to execution.</h3><p>Market connects the visible experience to the commercial core: customer account, cart, checkout, orders, pricing, offers and fulfillment.</p></div>
+      <div class="market-actions"><a href="#discovery">Explore Discovery →</a><a href="#contact">Make an Inquiry →</a><a href="#commerce">Return to Market →</a></div>
+    </div>
+  </div>
+</section>
 
 <section id="partnerships" class="section partnership-section"><div class="section-heading"><div class="section-label"><span>06</span><p class="eyebrow">PARTNERSHIPS</p></div><h2>Build the <em>next connection.</em></h2><p>EMERIONA creates structured paths for organizations, businesses, creators, researchers and contributors to participate in the ecosystem.</p></div><div class="partnership-grid"><article><span>01</span><h3>Business Partnerships</h3><p>Collaborate on commercial opportunities, capabilities and growth.</p></article><article><span>02</span><h3>Partner Offerings</h3><p>Host and connect products and services inside the Market.</p></article><article><span>03</span><h3>Research &amp; Development</h3><p>Contribute research, ideas, projects and development capabilities.</p></article></div></section>
 
@@ -158,6 +251,33 @@ if(pillarKeys.includes(initialHash)){
   setTimeout(()=>document.getElementById('pillars')?.scrollIntoView({behavior:'smooth',block:'start'}),60);
 }
 window.addEventListener('hashchange',()=>{const key=location.hash.replace('#','');if(pillarKeys.includes(key))activatePillar(key,false);});
+
+
+/* Market Center experience — catalog-ready renderer */
+(() => {
+  const catalog=document.getElementById('market-catalog');
+  const search=document.getElementById('market-search');
+  const sort=document.getElementById('market-sort');
+  const clear=document.getElementById('market-search-clear');
+  if(!catalog)return;
+  const state={filter:'all',query:'',sort:'featured'};
+  const seed=[];
+  const getCatalog=()=>Array.isArray(window.EMERIONA_MARKET_CATALOG)?window.EMERIONA_MARKET_CATALOG:seed;
+  const render=()=>{
+    const q=state.query.trim().toLowerCase();
+    let items=getCatalog().filter(item=>state.filter==='all'||item.type===state.filter).filter(item=>!q||[item.name,item.description,item.category,item.partner].filter(Boolean).join(' ').toLowerCase().includes(q));
+    if(state.sort==='name')items.sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+    if(state.sort==='new')items.sort((a,b)=>Number(Boolean(b.isNew))-Number(Boolean(a.isNew)));
+    catalog.innerHTML=items.length?items.map(item=>
+      '<article class="market-card"><div class="market-card-media"><span>'+String(item.type||'offering').toUpperCase()+'</span></div><div class="market-card-body"><small>'+String(item.category||'EMERIONA MARKET')+'</small><h4>'+String(item.name||'Untitled offering')+'</h4><p>'+String(item.description||'Explore this offering inside EMERIONA MARKET CENTER.')+'</p><div class="market-card-meta"><span>'+String(item.partner||'EMERIONA GLOBAL')+'</span><a href="'+String(item.href||'#contact')+'">View details →</a></div></div></article>'
+    ).join(''):'<div class="market-empty"><strong>Market catalog ready.</strong><span>Published products, services, solutions and partner offerings will appear here automatically when supplied by the commercial catalog.</span></div>';
+  };
+  document.querySelectorAll('[data-market-filter]').forEach(el=>el.addEventListener('click',e=>{const f=e.currentTarget.dataset.marketFilter;if(!f)return;state.filter=f;document.querySelectorAll('.market-filter').forEach(b=>b.classList.toggle('active',b.dataset.marketFilter===f));render();}));
+  search?.addEventListener('input',e=>{state.query=e.target.value;render();});
+  sort?.addEventListener('change',e=>{state.sort=e.target.value;render();});
+  clear?.addEventListener('click',()=>{state.query='';if(search)search.value='';render();search?.focus();});
+  render();
+})();
 
 /* Translation control: English is the authored source language; Arabic is available through the page translation widget. */
 const languageButton=document.getElementById('language-button');
