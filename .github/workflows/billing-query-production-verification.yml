@@ -1,0 +1,46 @@
+name: EMERIONA GLOBAL Billing Query Production Verification
+on:
+  push:
+    branches:
+      - feature/billing-query-20260920
+  pull_request:
+    branches:
+      - main
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npx wrangler deploy --config wrangler.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health
+      - run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health/ready
+      - run: chmod +x scripts/c4-production-smoke.sh && bash scripts/c4-production-smoke.sh
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Verify billing.query by invoice and order
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          BASE='https://emeriona-global.emerionaglobal.workers.dev'
+          T="c4-smoke-${GITHUB_RUN_ID}"
+          I=$(npx wrangler d1 execute emeriona-global-db --remote --command="SELECT id FROM invoices WHERE tenant_id='${T}' ORDER BY issued_at DESC LIMIT 1" --json | jq -r '.results[0].results[0].id')
+          O=$(npx wrangler d1 execute emeriona-global-db --remote --command="SELECT order_id FROM invoices WHERE id='${I}' AND tenant_id='${T}'" --json | jq -r '.results[0].results[0].order_id')
+          COMMON=(-H "x-tenant-id: ${T}" -H 'x-actor-id: billing-query-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+          curl -fsS "${COMMON[@]}" -X POST "$BASE/api/v1/billing/query" -d "{\"invoiceId\":\"${I}\"}" | jq -e --arg id "${I}" '.data | length == 1 and .[0].id == $id'
+          curl -fsS "${COMMON[@]}" -X POST "$BASE/api/v1/billing/query" -d "{\"orderId\":\"${O}\"}" | jq -e --arg id "${I}" '.data | any(.[]; .id == $id)'
+          test "$(curl -sS -o /tmp/billing-query-get.json -w '%{http_code}' "$BASE/api/v1/billing/query")" = '405'
+          test "$(curl -sS -o /tmp/billing-query-empty.json -w '%{http_code}' "${COMMON[@]}" -X POST "$BASE/api/v1/billing/query" -d '{}')" = '400'
