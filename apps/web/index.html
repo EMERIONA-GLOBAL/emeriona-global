@@ -42,9 +42,10 @@
 <section id="pillars" class="pillars-section" aria-labelledby="pillars-title">
 <div class="pillars-inner">
 <div class="section-heading pillars-heading">
-<div class="section-label"><span>03</span><p class="eyebrow">EMPOWERMENT • ELEVATION • IMPACT</p></div>
-<h2 id="pillars-title">Three connected paths.<br><em>One global ecosystem.</em></h2>
-<p>Each pillar begins with a comprehensive definition, then opens into real paths, sections, branches and experiences. Nothing here is only a label: every path is designed to lead somewhere useful.</p>
+<div class="section-label"><span>03</span><p class="eyebrow">THE CORE OF EMERIONA GLOBAL</p></div>
+<h2 id="pillars-title">Empowerment • Elevation • Impact</h2>
+<p class="pillars-lead">The three foundational paths of EMERIONA GLOBAL — a complete experience of what the ecosystem is, what it contains, and where each path can lead.</p>
+<p>Explore the architecture and detailed pathways today. Where a final product, service or execution is not yet activated, the path remains visible and its final activation point is intentionally frozen rather than hidden.</p>
 </div>
 
 <div class="pillar-tabs" role="tablist" aria-label="EMERIONA GLOBAL pillars">
@@ -134,16 +135,29 @@ document.addEventListener('click',e=>{if(!header.contains(e.target)){close();nav
 
 })();
 
-/* Pillar tabs */
-document.querySelectorAll('.pillar-tab').forEach(tab=>tab.addEventListener('click',()=>{
-  const key=tab.dataset.pillar;
+/* Core pillar experience: tabs + deep-linkable states */
+const pillarKeys=['empowerment','elevation','impact'];
+const activatePillar=(key,scroll=true)=>{
+  const safe=pillarKeys.includes(key)?key:'empowerment';
+  const tab=document.querySelector('.pillar-tab[data-pillar="'+safe+'"]');
+  if(!tab)return;
   document.querySelectorAll('.pillar-tab').forEach(t=>{const active=t===tab;t.classList.toggle('active',active);t.setAttribute('aria-selected',String(active));});
   document.querySelectorAll('.pillar-panel').forEach(panel=>{
-    const active=panel.id==='pillar-panel-'+key;
+    const active=panel.id==='pillar-panel-'+safe;
     panel.classList.toggle('active',active);
     panel.hidden=!active;
   });
-}));
+  const section=document.getElementById('pillars');
+  if(scroll&&section)section.scrollIntoView({behavior:'smooth',block:'start'});
+  if(history.replaceState)history.replaceState(null,'','#'+safe);
+};
+document.querySelectorAll('.pillar-tab').forEach(tab=>tab.addEventListener('click',()=>activatePillar(tab.dataset.pillar,true)));
+const initialHash=location.hash.replace('#','');
+if(pillarKeys.includes(initialHash)){
+  activatePillar(initialHash,false);
+  setTimeout(()=>document.getElementById('pillars')?.scrollIntoView({behavior:'smooth',block:'start'}),60);
+}
+window.addEventListener('hashchange',()=>{const key=location.hash.replace('#','');if(pillarKeys.includes(key))activatePillar(key,false);});
 
 /* Translation control: English is the authored source language; Arabic is available through the page translation widget. */
 const languageButton=document.getElementById('language-button');
