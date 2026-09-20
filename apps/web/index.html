@@ -18,7 +18,13 @@
 <div class="nav-item has-menu"><button class="nav-trigger" type="button" aria-expanded="false" aria-haspopup="true">PARTNERSHIPS <span>⌄</span></button><div class="nav-menu"><a href="#partnerships"><b>Business Partnerships</b><span>Build with EMERIONA</span></a><a href="#partnerships"><b>Partner Offerings</b><span>Host products & services</span></a><a href="#partnerships"><b>Research & Development</b><span>Contribute ideas & projects</span></a></div></div>
 <div class="nav-item"><a href="#innovation">INNOVATION</a></div><div class="nav-item"><a href="#knowledge">KNOWLEDGE</a></div><div class="nav-item"><a href="#impact">IMPACT</a></div>
 </nav>
-<div class="header-tools"><a class="header-search" href="#discovery" aria-label="Go to EMERIONA Discovery">⌕ <span>Search</span></a><button class="language-button" type="button" aria-label="Switch language">AR</button><a class="header-cta" href="#contact">Connect</a><button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-controls="primary-nav" aria-expanded="false"><span></span><span></span><span></span></button></div>
+<div class="header-tools"><a class="header-search" href="#discovery" aria-label="Go to EMERIONA Discovery">⌕ <span>Search</span></a><div class="language-control">
+<button class="language-button" id="language-button" type="button" aria-label="Open translation options" aria-expanded="false">AR <span>⌄</span></button>
+<div class="language-menu" id="language-menu" aria-label="Translation options">
+<div class="language-menu-title">Translate this page</div>
+<div id="google_translate_element"></div>
+</div>
+</div><a class="header-cta" href="#contact">Connect</a><button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-controls="primary-nav" aria-expanded="false"><span></span><span></span><span></span></button></div>
 </header>
 
 <main id="top">
@@ -28,9 +34,67 @@
 <div class="hero-side-note" aria-hidden="true"><span>GLOBAL DIGITAL ECOSYSTEM</span><b>01 / 06</b></div>
 </section>
 
-<section class="discovery-zone" id="discovery" aria-labelledby="discovery-title"><div class="discovery-inner"><div class="section-label"><span>01</span><p class="eyebrow">EMERIONA DISCOVERY</p></div><h2 id="discovery-title">اكتشف المنتجات والخدمات والحلول والفرص المناسبة لك داخل منظومة EMERIONA GLOBAL.</h2><p class="discovery-copy">ابدأ بما تحتاجه. اكتشف ما يناسبك داخل منظومة تجمع المنتجات والخدمات والحلول والفرص والمعرفة والشراكات.</p><form class="discovery-search" id="discovery-search" role="search"><span class="search-symbol" aria-hidden="true">⌕</span><input id="discovery-input" type="search" placeholder="ماذا تبحث عنه؟" aria-label="ماذا تبحث عنه؟"><button type="submit">Explore <span>→</span></button></form><div class="quick-discovery" aria-label="Quick discovery"><a href="#commerce">Products</a><a href="#commerce">Services</a><a href="#solutions">Solutions</a><a href="#partnerships">Opportunities</a></div><div class="discovery-powered">Powered by <strong>EMERIONA DISCOVERY</strong></div></div></section>
+<section class="discovery-zone" id="discovery" aria-labelledby="discovery-title"><div class="discovery-inner"><div class="section-label"><span>01</span><p class="eyebrow">EMERIONA DISCOVERY</p></div><h2 id="discovery-title">Discover the products, services, solutions and opportunities that fit you inside EMERIONA GLOBAL.</h2><p class="discovery-copy">Start with what you need. Discover products, services, solutions, opportunities, knowledge and partnerships through one connected ecosystem.</p><form class="discovery-search" id="discovery-search" role="search"><span class="search-symbol" aria-hidden="true">⌕</span><input id="discovery-input" type="search" placeholder="ماذا تبحث عنه؟" aria-label="ماذا تبحث عنه؟"><button type="submit">Explore <span>→</span></button></form><div class="quick-discovery" aria-label="Quick discovery"><a href="#commerce">Products</a><a href="#commerce">Services</a><a href="#solutions">Solutions</a><a href="#partnerships">Opportunities</a></div><div class="discovery-powered">Powered by <strong>EMERIONA DISCOVERY</strong></div></div></section>
 
 <section id="about" class="section intro-section"><div class="section-heading"><div class="section-label"><span>02</span><p class="eyebrow">ABOUT EMERIONA GLOBAL™</p></div><h2>One global ecosystem.<br><em>Many paths to progress.</em></h2><p>EMERIONA GLOBAL™ connects people, ideas, knowledge, technology, products, services and partnerships through one coherent digital architecture.</p></div><div class="statement-grid"><article><span>01</span><h3>Empower</h3><p>Enable people, teams and ideas with practical capabilities, knowledge and opportunities.</p></article><article><span>02</span><h3>Elevate</h3><p>Turn potential into stronger solutions, better systems and sustainable progress.</p></article><article><span>03</span><h3>Impact</h3><p>Create useful, measurable value for customers, partners, communities and the wider world.</p></article></div></section>
+
+<section id="pillars" class="pillars-section" aria-labelledby="pillars-title">
+<div class="pillars-inner">
+<div class="section-heading pillars-heading">
+<div class="section-label"><span>03</span><p class="eyebrow">EMPOWERMENT • ELEVATION • IMPACT</p></div>
+<h2 id="pillars-title">Three connected paths.<br><em>One global ecosystem.</em></h2>
+<p>Each pillar begins with a comprehensive definition, then opens into real paths, sections, branches and experiences. Nothing here is only a label: every path is designed to lead somewhere useful.</p>
+</div>
+
+<div class="pillar-tabs" role="tablist" aria-label="EMERIONA GLOBAL pillars">
+<button class="pillar-tab active" type="button" role="tab" aria-selected="true" aria-controls="pillar-panel-empowerment" data-pillar="empowerment"><span>01</span> Empowerment</button>
+<button class="pillar-tab" type="button" role="tab" aria-selected="false" aria-controls="pillar-panel-elevation" data-pillar="elevation"><span>02</span> Elevation</button>
+<button class="pillar-tab" type="button" role="tab" aria-selected="false" aria-controls="pillar-panel-impact" data-pillar="impact"><span>03</span> Impact</button>
+</div>
+
+<div class="pillar-panel active" id="pillar-panel-empowerment" role="tabpanel">
+<div class="pillar-definition"><span>01 — EMPOWERMENT</span><p>Empowering individuals, institutions, organizations and entrepreneurs, and turning ideas, knowledge, innovation and technology into capabilities, programs, initiatives and projects that can be implemented.</p></div>
+<div class="path-grid">
+<details class="path-card"><summary><span>01</span><strong>Empowerment & Consulting</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Sections</summary><ul><li>Consulting for individuals, institutions and organizations</li><li>Business and development consulting</li><li>Project and initiative consulting</li><li>Innovation, technology and AI consulting</li></ul></details><a href="#contact" class="path-action">Explore this path →</a></div></details>
+<details class="path-card"><summary><span>02</span><strong>Programs, Grants & Initiatives</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Sections</summary><ul><li>Program design and preparation</li><li>Program implementation mechanisms</li><li>Grant implementation mechanisms</li><li>Initiative management</li><li>Project development</li><li>Monitoring, results and impact measurement</li></ul></details><a href="#contact" class="path-action">Explore this path →</a></div></details>
+<details class="path-card"><summary><span>03</span><strong>Knowledge & Content</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Community peace</li><li>Global peace</li><li>Sustainable development</li><li>Sustainable Development Goals</li><li>Innovation & technology</li><li>Artificial intelligence</li><li>Entrepreneurship</li><li>Development & capacity building</li></ul></details><a href="#contact" class="path-action">Explore this path →</a></div></details>
+<details class="path-card"><summary><span>04</span><strong>Ideas & Innovation</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Idea development</li><li>Turning ideas into projects</li><li>Innovation</li><li>Research & development</li><li>Technology solutions</li><li>AI solutions</li></ul></details><a href="#contact" class="path-action">Develop an idea →</a></div></details>
+</div>
+<div class="pillar-close">We empower you. <span>We shorten the distance, time and effort.</span></div>
+</div>
+
+<div class="pillar-panel" id="pillar-panel-elevation" role="tabpanel" hidden>
+<div class="pillar-definition"><span>02 — ELEVATION</span><p>Elevating individuals, institutions, organizations and entrepreneurs, and developing ideas, projects, products, services and systems through innovation, knowledge, technology and artificial intelligence—turning existing potential into stronger solutions and more sustainable growth.</p></div>
+<div class="path-grid">
+<details class="path-card"><summary><span>01</span><strong>Development & Transformation</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Sections</summary><ul><li>Individual and capability development</li><li>Institutional and organizational development</li><li>Business development</li><li>Project development</li><li>Product and service development</li><li>Operating model development</li><li>Digital transformation</li><li>Process and system improvement</li></ul></details><a href="#contact" class="path-action">Develop your organization →</a></div></details>
+<details class="path-card"><summary><span>02</span><strong>Innovation & Renewal</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Sections</summary><ul><li>Idea development</li><li>Product and service innovation</li><li>Organizational innovation</li><li>Technology innovation</li><li>Research & development</li><li>Solution design</li><li>Prototype development</li><li>Turning ideas into applicable solutions</li><li>Reinventing products, services and processes</li></ul></details><a href="#contact" class="path-action">Develop your idea →</a></div></details>
+<details class="path-card"><summary><span>03</span><strong>Technology & Artificial Intelligence</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Technology solutions</li><li>Digital transformation</li><li>AI applications</li><li>Business and process automation</li><li>AI Solutions</li><li>AI-Assisted Development</li><li>Digital capability development</li><li>Technology and AI integration</li></ul></details><a href="#contact" class="path-action">Use technology & AI →</a></div></details>
+<details class="path-card"><summary><span>04</span><strong>Business & Entrepreneurship</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Business and project development</li><li>Business model development</li><li>Strategy and growth</li><li>Product and service development</li><li>Market development</li><li>Partnership building</li><li>Customer experience improvement</li><li>Competitive capability development</li><li>Entrepreneur support</li></ul></details><a href="#contact" class="path-action">Develop your business →</a></div></details>
+<details class="path-card"><summary><span>05</span><strong>Knowledge & Capability Building</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Training and development</li><li>Capacity building</li><li>Skills development</li><li>Specialized knowledge</li><li>Continuous learning</li><li>Knowledge transfer</li><li>Leadership development</li><li>Team development</li></ul></details><a href="#contact" class="path-action">Develop your capabilities →</a></div></details>
+<details class="path-card"><summary><span>06</span><strong>Solutions & Opportunities</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Problem-solving solutions</li><li>Matching needs with suitable solutions</li><li>Project and initiative development</li><li>Connecting projects with expertise and technology</li><li>Connecting ideas with opportunities and partners</li><li>Developing collaboration and growth opportunities</li></ul></details><a href="#contact" class="path-action">Find a path forward →</a></div></details>
+</div>
+<div class="elevation-quick"><span>Develop your organization</span><span>Develop your project</span><span>Develop your idea</span><span>Develop your product</span><span>Develop your service</span><span>Develop your business</span><span>Develop your capabilities</span><span>Develop your solutions</span><span>Use technology & AI</span><span>Build new partnerships</span></div>
+<div class="pillar-close">We help you evolve.</div>
+</div>
+
+<div class="pillar-panel" id="pillar-panel-impact" role="tabpanel" hidden>
+<div class="pillar-definition"><span>03 — IMPACT</span><p>Creating positive and sustainable impact that extends from the individual to society and humanity, from knowledge and science to technology and culture, and from meaningful intangible impact to tangible, measurable outcomes.</p></div>
+<div class="path-grid impact-path-grid">
+<details class="path-card"><summary><span>01</span><strong>Individual Impact</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Improving individual lives</li><li>Capacity building</li><li>Realizing potential</li><li>Knowledge and learning</li><li>Entrepreneurship</li><li>Personal and professional development</li></ul></details><a href="#contact" class="path-action">Explore individual impact →</a></div></details>
+<details class="path-card"><summary><span>02</span><strong>Community Impact</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Community development</li><li>Community empowerment</li><li>Community initiatives</li><li>Community peace</li><li>Addressing community challenges</li><li>Building more capable and sustainable communities</li></ul></details><a href="#contact" class="path-action">Explore community impact →</a></div></details>
+<details class="path-card"><summary><span>03</span><strong>Humanitarian Impact</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Global peace</li><li>Humanitarian action</li><li>Serving humanity</li><li>Human dignity</li><li>Cooperation and solidarity</li><li>Humanitarian initiatives</li></ul></details><a href="#contact" class="path-action">Explore humanitarian impact →</a></div></details>
+<details class="path-card"><summary><span>04</span><strong>Professional Impact</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Career path development</li><li>Skills building</li><li>Employment opportunities</li><li>Entrepreneurship</li><li>Institution and team development</li><li>Efficiency and productivity</li></ul></details><a href="#contact" class="path-action">Explore professional impact →</a></div></details>
+<details class="path-card"><summary><span>05</span><strong>Development Impact</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Sustainable development</li><li>Sustainable Development Goals (SDGs)</li><li>Development programs and initiatives</li><li>Development projects</li><li>Capacity building</li><li>Sustainable solutions</li></ul></details><a href="#contact" class="path-action">Explore development impact →</a></div></details>
+<details class="path-card"><summary><span>06</span><strong>Scientific Impact</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Scientific research</li><li>Knowledge</li><li>Studies and research</li><li>Scientific innovation</li><li>Knowledge dissemination</li><li>Knowledge transfer</li><li>Connecting science to application</li></ul></details><a href="#contact" class="path-action">Explore scientific impact →</a></div></details>
+<details class="path-card"><summary><span>07</span><strong>Technological Impact</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Technology innovation</li><li>Digital transformation</li><li>Artificial intelligence</li><li>Technology solutions</li><li>Digital product development</li><li>Using technology to solve challenges</li></ul></details><a href="#contact" class="path-action">Explore technology impact →</a></div></details>
+<details class="path-card"><summary><span>08</span><strong>Cultural Impact</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Knowledge and culture</li><li>Dialogue and communication</li><li>Cultural exchange</li><li>Cultural content</li><li>Preserving and sharing knowledge</li><li>Strengthening understanding and connection</li></ul></details><a href="#contact" class="path-action">Explore cultural impact →</a></div></details>
+<details class="path-card"><summary><span>09</span><strong>Meaningful Impact</strong><b>Open path →</b></summary><div class="path-body"><details open><summary>Branches</summary><ul><li>Hope</li><li>Inspiration</li><li>Trust</li><li>Appreciation</li><li>Belonging</li><li>Positivity</li><li>Strengthening motivation and capacity for change</li></ul></details><a href="#contact" class="path-action">Explore meaningful impact →</a></div></details>
+<details class="path-card tangible-impact"><summary><span>10</span><strong>Tangible Impact</strong><b>Final path →</b></summary><div class="path-body"><p class="tangible-intro">The final destination of the Impact experience: turning purpose into visible, useful and measurable outcomes.</p><details open><summary>Final outcome branches</summary><ul><li>Products</li><li>Services</li><li>Projects</li><li>Programs</li><li>Initiatives</li><li>Solutions</li><li>Measurable results</li><li>Economic and social value</li><li>Impact indicators, data and reports</li></ul></details><a href="#contact" class="path-action">Build measurable impact →</a></div></details>
+</div>
+<div class="impact-close"><strong>Tangible Impact is the final path.</strong><span>Products → Services → Projects → Programs → Initiatives → Solutions → Measurable Results → Economic & Social Value → Impact Indicators, Data & Reports.</span></div>
+</div>
+</div>
+</section>
 
 <section id="ecosystem" class="section ecosystem-section"><div class="section-heading"><div class="section-label"><span>03</span><p class="eyebrow">THE ECOSYSTEM</p></div><h2>Built as a <em>complete world</em> from day one.</h2><p>The architecture brings distinct domains together while keeping one clear global experience.</p></div><div class="ecosystem-grid"><a href="#commerce" class="eco-card featured"><span>MARKET</span><h3>Commerce</h3><p>Products, services, offers, partners and customer journeys.</p><b>Explore Market →</b></a><a href="#partnerships" class="eco-card"><span>PARTNERSHIPS</span><h3>Build Together</h3><p>Business, product, service, research and contribution partnerships.</p><b>Explore →</b></a><a href="#innovation" class="eco-card"><span>INNOVATION</span><h3>Digital Factory</h3><p>Research, validation, design, engineering and continuous improvement.</p><b>Explore →</b></a><a href="#knowledge" class="eco-card"><span>KNOWLEDGE</span><h3>Intelligence</h3><p>Knowledge, research, learning resources and intelligent discovery.</p><b>Explore →</b></a><a href="#impact" class="eco-card"><span>IMPACT</span><h3>Meaningful Value</h3><p>Analytics, evidence and intelligence for measurable outcomes.</p><b>Explore →</b></a><a href="#solutions" class="eco-card"><span>SOLUTIONS</span><h3>Real-World Value</h3><p>Digital products, services, solutions, ideas and projects.</p><b>Explore →</b></a></div></section>
 
@@ -68,6 +132,43 @@ nav.querySelectorAll('.nav-trigger').forEach(trigger=>trigger.addEventListener('
 document.addEventListener('click',e=>{if(!header.contains(e.target)){close();nav.querySelectorAll('.nav-item.has-menu').forEach(item=>{item.classList.remove('open');item.querySelector('.nav-trigger')?.setAttribute('aria-expanded','false');});}});
 
 })();
+
+/* Pillar tabs */
+document.querySelectorAll('.pillar-tab').forEach(tab=>tab.addEventListener('click',()=>{
+  const key=tab.dataset.pillar;
+  document.querySelectorAll('.pillar-tab').forEach(t=>{const active=t===tab;t.classList.toggle('active',active);t.setAttribute('aria-selected',String(active));});
+  document.querySelectorAll('.pillar-panel').forEach(panel=>{
+    const active=panel.id==='pillar-panel-'+key;
+    panel.classList.toggle('active',active);
+    panel.hidden=!active;
+  });
+}));
+
+/* Translation control: English is the authored source language; Arabic is available through the page translation widget. */
+const languageButton=document.getElementById('language-button');
+const languageMenu=document.getElementById('language-menu');
+if(languageButton&&languageMenu){
+  languageButton.addEventListener('click',e=>{
+    e.stopPropagation();
+    const open=languageMenu.classList.toggle('open');
+    languageButton.setAttribute('aria-expanded',String(open));
+  });
+  document.addEventListener('click',e=>{
+    if(!languageMenu.contains(e.target)&&e.target!==languageButton){
+      languageMenu.classList.remove('open');
+      languageButton.setAttribute('aria-expanded','false');
+    }
+  });
+}
+window.googleTranslateElementInit=()=>{
+  new google.translate.TranslateElement({
+    pageLanguage:'en',
+    includedLanguages:'en,ar',
+    autoDisplay:false,
+    layout:google.translate.TranslateElement.InlineLayout.SIMPLE
+  },'google_translate_element');
+};
 </script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
