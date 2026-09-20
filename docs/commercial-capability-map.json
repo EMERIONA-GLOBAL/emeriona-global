@@ -285,8 +285,8 @@
     {
       "id": "billing.query",
       "domain": "BILLING",
-      "status": "CONTRACT",
-      "evidence": "No canonical billing.query registration found."
+      "status": "VERIFIED",
+      "evidence": "PR #70 activated the tenant-scoped billing.query handler and D1 read path. Exact production verification run 35480250553 (run #6) passed Typecheck, Test, Platform Build, Web Build, canonical Cloudflare Worker deployment, health/readiness, invoice/order lookup, input validation, method protection and explicit cross-tenant isolation. The first run failed only due to incorrect wrangler JSON parsing in the verification script and was corrected without runtime changes."
     },
     {
       "id": "settlement.calculate",
@@ -386,13 +386,13 @@
     }
   ],
   "lastVerified": {
-    "id": "billing.invoice.create",
-    "mergeSha": "7483c20d6ca8550f5abd73f3a0619c2c66485808",
-    "verification": "Exact Main-code production verification run 35479968144 on verification branch rooted at Main SHA 7483c20d6ca8550f5abd73f3a0619c2c66485808 passed Typecheck, Test, Platform Build, Web Build, canonical Cloudflare Worker deployment, health/readiness, and the existing C4 production smoke covering invoice creation, D1 persistence, billing event/audit evidence, idempotent replay, settlement compatibility and route protection."
+    "id": "billing.query",
+    "mergeSha": "62096d2eb101be027c4cc68f7400260444f10840",
+    "verification": "Production verification run 35480250553 (run #6) passed the complete billing.query verification path on canonical emeriona-global, including D1-backed invoice lookup by invoiceId/orderId and cross-tenant isolation."
   },
   "nextExecution": {
-    "id": "billing.query",
-    "reason": "billing.invoice.create is now VERIFIED. The next architectural contract is billing.query; audit the existing billing read/query implementation before any implementation or canonical alignment.",
-    "plan": "Audit billing.query first; preserve the verified invoice capability and existing billing boundaries, implement only missing canonical behavior, then verify exact Main production behavior before updating the capability map."
+    "id": "settlement.calculate",
+    "reason": "billing.query is now VERIFIED. The next unresolved commercial contract in the billing/settlement chain is settlement.calculate; audit the existing settlement.create implementation and canonical contract alignment before any new build.",
+    "plan": "Audit settlement.calculate first; preserve existing billing/settlement boundaries, align only what is missing, then verify exact Main production behavior before promoting the capability."
   }
 }
