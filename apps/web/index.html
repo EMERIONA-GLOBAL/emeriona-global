@@ -259,3 +259,67 @@ window.addEventListener('hashchange',()=>{const key=location.hash.replace('#',''
   const catalog=document.getElementById('market-catalog');
   const search=document.getElementById('market-search');
   const sort=document.getElementById('market-sort');
+  const clear=document.getElementById('market-search-clear');
+  if(!catalog)return;
+  const state={filter:'all',query:'',sort:'featured',items:[],loading:false,error:''};
+  const configuredTenant=document.querySelector('meta[name="emeriona-market-tenant"]')?.getAttribute('content')?.trim() || window.EMERIONA_MARKET_TENANT_ID || '';
+  const escapeHtml=(value)=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const render=()=>{
+    if(state.loading){catalog.innerHTML='<div class="market-empty"><strong>Loading Market.</strong><span>Connecting to the EMERIONA commercial catalog…</span></div>';return;}
+    if(state.error){catalog.innerHTML='<div class="market-empty"><strong>Market catalog unavailable.</strong><span>'+escapeHtml(state.error)+'</span></div>';return;}
+    let items=state.items.filter(item=>state.filter==='all'||item.type===state.filter||(state.filter==='partners'&&item.partner&&item.partner!=='EMERIONA GLOBAL'));
+    if(state.sort==='name')items.sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+    if(state.sort==='new')items.sort((a,b)=>Number(Boolean(b.isNew))-Number(Boolean(a.isNew)));
+    catalog.innerHTML=items.length?items.map(item=>{
+      const type=escapeHtml(item.type||'offering'), name=escapeHtml(item.name||'Untitled offering'), partner=escapeHtml(item.partner||'EMERIONA GLOBAL');
+      const detail='?marketItem='+encodeURIComponent(String(item.id));
+      return '<article class="market-card" data-market-item-id="'+escapeHtml(item.id)+'"><div class="market-card-media"><span>'+type.toUpperCase()+'</span></div><div class="market-card-body"><small>'+escapeHtml(item.category||'EMERIONA MARKET')+'</small><h4>'+name+'</h4><p>Published and commercially eligible inside EMERIONA MARKET CENTER.</p><div class="market-card-meta"><span>'+partner+'</span><a href="#commercial-journey" data-market-detail="'+escapeHtml(item.id)+'">View details →</a></div></div></article>';
+    }).join(''):'<div class="market-empty"><strong>Market catalog ready.</strong><span>No published and commercially eligible items match the current selection. Real products, services and partner offerings appear automatically from the commercial catalog when eligible.</span></div>';
+  };
+  const load=async()=>{
+    if(!configuredTenant){state.items=[];state.error='Market API is connected and waiting for the production tenant context. No commercial data is fabricated or inserted.';render();return;}
+    state.loading=true;state.error='';render();
+    try{
+      const params=new URLSearchParams({filter:'all',limit:'100'});
+      const response=await fetch('/api/v1/market/catalog?'+params.toString(),{headers:{'x-tenant-id':configuredTenant,'accept':'application/json'}});
+      const payload=await response.json();
+      if(!response.ok)throw new Error(payload?.error?.message||'Market catalog request failed');
+      state.items=Array.isArray(payload?.data?.items)?payload.data.items:[];
+    }catch(error){state.items=[];state.error=error instanceof Error?error.message:'Market catalog request failed';}
+    finally{state.loading=false;render();}
+  };
+  document.querySelectorAll('[data-market-filter]').forEach(el=>el.addEventListener('click',e=>{const f=e.currentTarget.dataset.marketFilter;if(!f)return;e.preventDefault();state.filter=f;document.querySelectorAll('.market-filter').forEach(b=>b.classList.toggle('active',b.dataset.marketFilter===f));render();document.getElementById('market-catalog')?.scrollIntoView({behavior:'smooth',block:'start'});}));
+  search?.addEventListener('input',async e=>{state.query=e.target.value;state.loading=true;render();if(!configuredTenant){state.loading=false;render();return;}try{const params=new URLSearchParams({filter:state.filter==='partners'?'partners':state.filter,q:state.query,limit:'100'});const response=await fetch('/api/v1/market/catalog?'+params.toString(),{headers:{'x-tenant-id':configuredTenant,'accept':'application/json'}});const payload=await response.json();if(!response.ok)throw new Error(payload?.error?.message||'Market search failed');state.items=Array.isArray(payload?.data?.items)?payload.data.items:[];state.error='';}catch(error){state.error=error instanceof Error?error.message:'Market search failed';}finally{state.loading=false;render();}});
+  sort?.addEventListener('change',e=>{state.sort=e.target.value;render();});
+  clear?.addEventListener('click',()=>{state.query='';if(search)search.value='';load();search?.focus();});
+  load();
+})();
+
+/* Translation control: English is the authored source language; Arabic is available through the page translation widget. */
+const languageButton=document.getElementById('language-button');
+const languageMenu=document.getElementById('language-menu');
+if(languageButton&&languageMenu){
+  languageButton.addEventListener('click',e=>{
+    e.stopPropagation();
+    const open=languageMenu.classList.toggle('open');
+    languageButton.setAttribute('aria-expanded',String(open));
+  });
+  document.addEventListener('click',e=>{
+    if(!languageMenu.contains(e.target)&&e.target!==languageButton){
+      languageMenu.classList.remove('open');
+      languageButton.setAttribute('aria-expanded','false');
+    }
+  });
+}
+window.googleTranslateElementInit=()=>{
+  new google.translate.TranslateElement({
+    pageLanguage:'en',
+    includedLanguages:'en,ar',
+    autoDisplay:false,
+    layout:google.translate.TranslateElement.InlineLayout.SIMPLE
+  },'google_translate_element');
+};
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>
