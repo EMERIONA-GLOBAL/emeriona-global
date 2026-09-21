@@ -8,6 +8,8 @@ export type ApiErrorCode = 'method_not_allowed' | 'not_found' | 'invalid_runtime
 export interface ApiErrorBody { code: ApiErrorCode; message: string; requestId?: string; correlationId?: string; }
 export interface ApiErrorEnvelope { error: ApiErrorBody; }
 const USE_CASE_ROUTES: ReadonlyArray<ApiRouteDefinition> = [
+  { method: 'GET', path: '/api/v1/market/catalog', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'market.catalog.query' as UseCaseId },
+
   { method: 'POST', path: '/api/v1/customers', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'customer.create' as UseCaseId },
   { method: 'POST', path: '/api/v1/catalogs', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'catalog.create' as UseCaseId },
   { method: 'POST', path: '/api/v1/products', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'catalog.product.create' as UseCaseId },
