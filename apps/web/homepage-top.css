@@ -288,3 +288,158 @@
     grid-template-columns:1fr;
   }
 }
+
+
+/* =========================================================
+   EMERIONA GLOBAL — HERO COVER + OFFICIAL DEFINITION
+   Presentation pass: visual identity first, definition second.
+   The existing cover artwork is preserved; this layer only
+   establishes its presentation frame and the definition zone.
+   ========================================================= */
+
+.hero{
+  background:#061019;
+  overflow:clip;
+}
+
+.hero-visual{
+  height:clamp(460px,58vw,720px);
+  min-height:460px;
+  max-height:720px;
+  isolation:isolate;
+  background-position:center center;
+}
+
+.hero-visual:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(215,181,109,.08),transparent 32%),
+    linear-gradient(90deg,rgba(3,9,14,.12),transparent 34%,transparent 66%,rgba(3,9,14,.14));
+  pointer-events:none;
+}
+
+.hero-visual:after{
+  z-index:1;
+  background:
+    linear-gradient(180deg,rgba(3,9,14,.02) 38%,rgba(3,9,14,.08) 64%,rgba(3,9,14,.58) 100%),
+    linear-gradient(90deg,rgba(3,9,14,.18),transparent 25%,transparent 75%,rgba(3,9,14,.18));
+}
+
+.hero-content{
+  border-top:1px solid rgba(215,181,109,.16);
+  border-bottom:1px solid rgba(215,181,109,.12);
+  box-shadow:0 24px 70px rgba(0,0,0,.2);
+  min-height:320px;
+}
+
+.hero-kicker{
+  font-weight:600;
+}
+
+.hero h1{
+  max-width:920px;
+  font-weight:650;
+}
+
+.hero-lead{
+  color:#c4d0d5;
+}
+
+.hero-meta{
+  padding-top:2px;
+}
+
+@media(max-width:900px){
+  .hero-visual{
+    height:clamp(360px,64vw,560px);
+    min-height:360px;
+  }
+}
+
+@media(max-width:600px){
+  .hero-visual{
+    height:clamp(250px,70vw,390px);
+    min-height:250px;
+  }
+  .hero-content{
+    min-height:0;
+  }
+}
+
+/* =========================================================
+   CORE PILLARS — distinct world background
+   ========================================================= */
+.pillars-section{
+  position:relative;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(215,181,109,.08),transparent 34%),
+    linear-gradient(180deg,#08151e 0%,#0a1b25 52%,#071019 100%);
+  color:var(--white);
+  border-top:1px solid rgba(215,181,109,.12);
+  border-bottom:1px solid rgba(215,181,109,.12);
+}
+
+.pillars-section:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent,rgba(44,201,232,.018),transparent);
+  pointer-events:none;
+}
+
+/* =========================================================
+   MARKET CENTER — dedicated commercial world treatment
+   ========================================================= */
+.market-center{
+  position:relative;
+  background:#071019;
+}
+
+.market-hero{
+  position:relative;
+  isolation:isolate;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(215,181,109,.11),transparent 30%),
+    linear-gradient(135deg,#071019 0%,#0b1c27 48%,#071019 100%);
+  border-top:1px solid rgba(215,181,109,.14);
+  border-bottom:1px solid rgba(215,181,109,.18);
+}
+
+.market-hero:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(3,9,14,.28),transparent 25%,transparent 75%,rgba(3,9,14,.28)),
+    radial-gradient(circle at 50% 100%,rgba(44,201,232,.035),transparent 35%);
+  pointer-events:none;
+}
+
+.market-hero-content{
+  position:relative;
+  z-index:2;
+}
+
+.market-hero h2{
+  max-width:820px;
+  font-weight:650;
+  letter-spacing:-.03em;
+}
+
+.market-hero-lead{
+  color:#c2cdd2;
+}
+
+.market-body{
+  background:
+    linear-gradient(180deg,#f5f2ea 0%,#fff 22%,#fff 100%);
+}
+
+@media(max-width:600px){
+  .market-body{
+    padding-top:58px;
+  }
+}
