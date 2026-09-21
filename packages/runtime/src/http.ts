@@ -12,6 +12,7 @@ export interface RuntimeHttpRequest {
   service: string;
   environment: Environment;
   version: string;
+  defaultTenantId?: string;
 }
 
 export const DEFAULT_RUNTIME_POLICY: RuntimePolicy = {
@@ -20,15 +21,15 @@ export const DEFAULT_RUNTIME_POLICY: RuntimePolicy = {
   retryLimit: 0,
 };
 
-function requiredHeader(request: Request, name: string): string {
+function optionalHeader(request: Request, name: string): string | undefined {
   const value = request.headers.get(name)?.trim();
-  if (!value) throw new Error(`${name} is required`);
-  return value;
+  return value || undefined;
 }
 
 export function createRuntimeHttpContext(input: RuntimeHttpRequest): RuntimeHttpContext {
-  const { request, service, environment, version } = input;
-  const tenantId = requiredHeader(request, 'x-tenant-id');
+  const { request, service, environment, version, defaultTenantId } = input;
+  const tenantId = optionalHeader(request, 'x-tenant-id') || defaultTenantId;
+  if (!tenantId) throw new Error('x-tenant-id is required');
   const requestId = request.headers.get('x-request-id')?.trim() || crypto.randomUUID();
   const correlationId = request.headers.get('x-correlation-id')?.trim() || requestId;
   const actorId = request.headers.get('x-actor-id')?.trim() || undefined;
