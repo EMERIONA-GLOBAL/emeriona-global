@@ -10,8 +10,8 @@ function errorResponse(code: Parameters<typeof createApiError>[0], message: stri
 function validCurrency(value: string | null): value is string { return value !== null && /^[A-Z]{3}$/.test(value.trim()); }
 async function checkDatabase(db: D1DatabaseLike): Promise<{ status: "ok"; latencyMs: number }> { const started = Date.now(); await db.prepare("SELECT 1 AS ok").all<{ ok: number }>(); return { status: "ok", latencyMs: Date.now() - started }; }
 async function checkActiveTenant(db: D1DatabaseLike, tenantId: string): Promise<boolean> {
-  const result = await db.prepare("SELECT id FROM tenants WHERE id = ? AND status = 'ACTIVE' LIMIT 1").bind(tenantId).first<{ id: string }>();
-  return Boolean(result?.id);
+  const result = await db.prepare("SELECT id FROM tenants WHERE id = ? AND status = 'ACTIVE' LIMIT 1").bind(tenantId).all<{ id: string }>();
+  return result.results.length > 0;
 }
 export default { async fetch(request: Request, env: Env): Promise<Response> { const url = new URL(request.url); const path = url.pathname; const route = resolveApiRoute(path, request.method); if (!path.startsWith("/api/")) return env.ASSETS.fetch(request);
 if (path === "/api/health") { if (!route) return errorResponse("method_not_allowed", "Method not allowed", 405); return json({ service: "emeriona-global", status: "ok", layer: "api-runtime", apiVersion: API_VERSION, runtimeVersion: RUNTIME_HTTP_VERSION, workflow: "emeriona-core-workflow" }); }
