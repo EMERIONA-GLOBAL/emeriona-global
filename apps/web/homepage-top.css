@@ -5,7 +5,7 @@
 .brand{margin-right:18px}.brand-name{font-size:16px;letter-spacing:.12em;color:var(--white)}.brand small{font-size:8px;color:var(--gold);letter-spacing:.18em}
 .primary-nav{gap:6px}.nav-item>a,.nav-trigger{min-height:44px;padding:8px 12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);border-radius:12px;font-size:10px;letter-spacing:.1em;color:#eef2f3}.nav-item:hover>a,.nav-item:hover>.nav-trigger,.nav-item.open>.nav-trigger{color:#fff;background:linear-gradient(180deg,rgba(215,181,109,.13),rgba(255,255,255,.035));border-color:rgba(215,181,109,.5);box-shadow:0 8px 24px rgba(0,0,0,.16)}
 .nav-item>a:before,.nav-trigger:before{content:"";width:7px;height:7px;border:1px solid currentColor;transform:rotate(45deg);opacity:.9}.nav-trigger span{font-size:10px;color:#8e9ba3}.header-tools{gap:7px}.header-search,.language-button,.header-cta{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.14)}
-.hero{min-height:auto;padding:0;display:block;background:#061019}.hero-visual{position:relative;inset:auto;z-index:1;width:100%;height:min(69vw,680px);min-height:430px;background-image:linear-gradient(180deg,rgba(3,9,14,.06) 0%,rgba(3,9,14,.02) 55%,rgba(3,9,14,.5) 100%),url("https://emeriona.github.io/emeriona-website/assets/covers/emeriona-global-cover-en.png") center/cover no-repeat,#061019;border-bottom:1px solid rgba(215,181,109,.2)}
+.hero{min-height:auto;padding:0;display:block;background:#061019}.hero-visual{position:relative;inset:auto;z-index:1;width:100%;height:min(69vw,680px);min-height:430px;background-image:linear-gradient(180deg,rgba(3,9,14,.06) 0%,rgba(3,9,14,.02) 55%,rgba(3,9,14,.5) 100%),url("/assets/covers/emeriona-global-cover-en.png") center/cover no-repeat,#061019;border-bottom:1px solid rgba(215,181,109,.2)}
 .hero-visual:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,9,14,.02) 45%,rgba(3,9,14,.38) 100%);pointer-events:none}.hero-grid,.hero-halo,.hero-orbit,.hero-core,.hero-point{opacity:.08}
 .hero-content{max-width:none;position:relative;z-index:2;margin:0;padding:58px max(24px,calc((100vw - var(--max))/2)) 62px;text-align:center;background:linear-gradient(180deg,rgba(7,19,29,.92) 0%,#0b1d28 52%,#071019 100%);overflow:hidden}.hero-content:before{content:"";position:absolute;width:680px;height:680px;border:1px solid rgba(215,181,109,.11);border-radius:50%;left:50%;top:-500px;transform:translateX(-50%);box-shadow:0 0 0 80px rgba(215,181,109,.018),0 0 0 170px rgba(44,201,232,.012);pointer-events:none}.hero-kicker{position:relative;margin:0 0 13px;color:var(--gold);font-size:11px;letter-spacing:.24em}.hero h1{position:relative;max-width:850px;margin:0 auto;font-size:clamp(28px,4vw,48px);line-height:1.08;letter-spacing:-.025em;color:var(--white)}.hero h1 em{color:var(--gold-soft);font-style:normal}.hero-lead{position:relative;max-width:760px;margin:16px auto 24px;color:#b9c6cc;font-size:15px;line-height:1.75}.hero-actions{position:relative;justify-content:center}.button{padding:12px 18px}.hero-meta{position:relative;justify-content:center;margin-top:28px;color:#aab8bf}.hero-side-note{display:none}
 .discovery-zone{padding-top:78px;background:linear-gradient(180deg,#f1eee6 0%,#fff 100%)}
@@ -24,7 +24,6 @@
   --ux-section-gap:clamp(72px,8vw,124px);
 }
 
-/* Global rhythm: every major world starts and ends on a controlled grid. */
 .section,
 .discovery-zone,
 .pillars-section,
@@ -33,413 +32,124 @@
   scroll-margin-top:96px;
 }
 
-/* Header: stable geometry prevents nav wrapping/overlap. */
-.site-header{
-  min-height:78px;
-}
-.primary-nav{
-  flex:1 1 auto;
-  min-width:0;
-  align-items:center;
-}
-.nav-item>a,
-.nav-trigger{
-  white-space:nowrap;
-}
-.header-tools{
-  flex:0 0 auto;
-  white-space:nowrap;
-}
+.site-header{min-height:78px}
+.primary-nav{flex:1 1 auto;min-width:0;align-items:center}
+.nav-item>a,.nav-trigger{white-space:nowrap}
+.header-tools{flex:0 0 auto;white-space:nowrap}
 
-/* Hero: keep identity, definition, supporting copy and actions in one
-   predictable vertical stack. The existing visual remains untouched. */
 .hero-content{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  min-height:300px;
-  padding-top:clamp(42px,5vw,68px);
-  padding-bottom:clamp(46px,5vw,72px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:300px;padding-top:clamp(42px,5vw,68px);padding-bottom:clamp(46px,5vw,72px);
 }
-.hero-kicker{
-  margin-bottom:14px;
-}
-.hero h1{
-  width:min(900px,100%);
-  font-size:clamp(32px,4vw,48px);
-  line-height:1.08;
-  text-wrap:balance;
-}
-.hero-lead{
-  width:min(760px,100%);
-  margin-top:18px;
-  font-size:clamp(14px,1.25vw,17px);
-  line-height:1.78;
-  text-wrap:pretty;
-}
-.hero-actions{
-  margin-top:2px;
-  gap:10px;
-}
-.hero-meta{
-  margin-top:28px;
-}
+.hero-kicker{margin-bottom:14px}
+.hero h1{width:min(900px,100%);font-size:clamp(32px,4vw,48px);line-height:1.08;text-wrap:balance}
+.hero-lead{width:min(760px,100%);margin-top:18px;font-size:clamp(14px,1.25vw,17px);line-height:1.78;text-wrap:pretty}
+.hero-actions{margin-top:2px;gap:10px}
+.hero-meta{margin-top:28px}
 
-/* Discovery: give the engine its own clean visual zone instead of
-   competing with the hero. */
-.discovery-zone{
-  padding:clamp(72px,8vw,112px) 24px;
-}
-.discovery-inner{
-  width:var(--ux-container);
-  margin-inline:auto;
-}
+.discovery-zone{padding:clamp(72px,8vw,112px) 24px}
+.discovery-inner{width:var(--ux-container);margin-inline:auto}
 
-/* Core pillars: strong container + predictable tab/panel relationship. */
-.pillars-section{
-  padding:var(--ux-section-gap) 24px;
-}
-.pillars-inner{
-  width:var(--ux-container);
-  margin-inline:auto;
-}
-.pillars-heading h2{
-  font-size:clamp(34px,4vw,52px);
-  line-height:1.06;
-  text-wrap:balance;
-}
-.pillars-heading .pillars-lead{
-  max-width:820px;
-}
-.pillar-tabs{
-  margin-top:34px;
-  gap:10px;
-}
-.pillar-tab{
-  min-height:58px;
-  padding:12px 18px;
-}
-.pillar-panel{
-  margin-top:18px;
-  padding:clamp(24px,3vw,38px);
-  border-radius:var(--ux-radius);
-}
-.path-grid{
-  align-items:start;
-  gap:14px;
-}
-.path-card{
-  min-width:0;
-}
-.path-card summary{
-  min-height:68px;
-}
-.pillar-close{
-  margin-top:28px;
-}
+.pillars-section{padding:var(--ux-section-gap) 24px}
+.pillars-inner{width:var(--ux-container);margin-inline:auto}
+.pillars-heading h2{font-size:clamp(34px,4vw,52px);line-height:1.06;text-wrap:balance}
+.pillars-heading .pillars-lead{max-width:820px}
+.pillar-tabs{margin-top:34px;gap:10px}
+.pillar-tab{min-height:58px;padding:12px 18px}
+.pillar-panel{margin-top:18px;padding:clamp(24px,3vw,38px);border-radius:var(--ux-radius)}
+.path-grid{align-items:start;gap:14px}
+.path-card{min-width:0}
+.path-card summary{min-height:68px}
+.pillar-close{margin-top:28px}
 
-/* Main world headings: reduce oversized titles and reserve clear space
-   around every title/body/action group. */
-.section-heading h2,
-.world-section h2{
-  font-size:clamp(30px,3.8vw,50px);
-  line-height:1.08;
-  text-wrap:balance;
-}
-.section-heading>p,
-.world-section .lead{
-  max-width:780px;
-  line-height:1.78;
-}
+.section-heading h2,.world-section h2{font-size:clamp(30px,3.8vw,50px);line-height:1.08;text-wrap:balance}
+.section-heading>p,.world-section .lead{max-width:780px;line-height:1.78}
 
-/* MARKET CENTER: authoritative sizing pass.
-   The title is intentionally restrained; no overlap or stacked collision. */
-.market-hero{
-  min-height:520px;
-}
-.market-hero-content{
-  width:min(1100px,calc(100% - 48px));
-  padding:86px 0 78px;
-}
-.market-hero h2{
-  width:min(900px,100%);
-  font-size:clamp(36px,4.5vw,54px);
-  line-height:1.02;
-  letter-spacing:-.035em;
-  margin:0 auto 22px;
-  text-wrap:balance;
-}
-.market-hero h2 span{
-  display:inline;
-  font-size:1em;
-}
-.market-hero h2::after{
-  margin-top:22px;
-}
-.market-hero-lead{
-  width:min(760px,100%);
-  font-size:16px;
-  line-height:1.78;
-}
-.market-quick-links{
-  max-width:900px;
-  margin-inline:auto;
-}
-.market-body{
-  padding-top:78px;
-}
-.market-intro h3,
-.market-section-heading h3,
-.market-commercial h3{
-  font-size:clamp(28px,3.4vw,42px);
-  line-height:1.08;
-}
-.market-catalog{
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  align-items:stretch;
-}
-.market-card,
-.market-panel,
-.market-commercial,
-.market-search-shell,
-.market-controls{
-  min-width:0;
-}
+.market-hero{min-height:520px}
+.market-hero-content{width:min(1100px,calc(100% - 48px));padding:86px 0 78px}
+.market-hero h2{width:min(900px,100%);font-size:clamp(36px,4.5vw,54px);line-height:1.02;letter-spacing:-.035em;margin:0 auto 22px;text-wrap:balance}
+.market-hero h2 span{display:inline;font-size:1em}
+.market-hero h2::after{margin-top:22px}
+.market-hero-lead{width:min(760px,100%);font-size:16px;line-height:1.78}
+.market-quick-links{max-width:900px;margin-inline:auto}
+.market-body{padding-top:78px}
+.market-intro h3,.market-section-heading h3,.market-commercial h3{font-size:clamp(28px,3.4vw,42px);line-height:1.08}
+.market-catalog{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
+.market-card,.market-panel,.market-commercial,.market-search-shell,.market-controls{min-width:0}
+.market-filter,.market-quick-links a,.market-flow span,.market-panel-action{white-space:nowrap}
 
-/* Prevent long labels from breaking the layout. */
-.market-filter,
-.market-quick-links a,
-.market-flow span,
-.market-panel-action{
-  white-space:nowrap;
-}
-
-/* Responsive containment: collapse only when the available width
-   requires it, never by arbitrary content removal. */
 @media(max-width:1100px){
-  .primary-nav{
-    gap:4px;
-  }
-  .nav-item>a,
-  .nav-trigger{
-    padding-inline:9px;
-  }
-  .market-hero h2{
-    font-size:clamp(36px,5.2vw,50px);
-  }
+  .primary-nav{gap:4px}
+  .nav-item>a,.nav-trigger{padding-inline:9px}
+  .market-hero h2{font-size:clamp(36px,5.2vw,50px)}
 }
 @media(max-width:900px){
-  .site-header{
-    min-height:70px;
-  }
-  .hero-content{
-    min-height:0;
-  }
-  .market-hero{
-    min-height:460px;
-  }
-  .market-hero-content{
-    width:calc(100% - 40px);
-    padding:70px 0 64px;
-  }
-  .market-hero h2{
-    font-size:clamp(34px,7vw,46px);
-  }
-  .market-catalog{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
+  .site-header{min-height:70px}
+  .hero-content{min-height:0}
+  .market-hero{min-height:460px}
+  .market-hero-content{width:calc(100% - 40px);padding:70px 0 64px}
+  .market-hero h2{font-size:clamp(34px,7vw,46px)}
+  .market-catalog{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:600px){
-  :root{
-    --ux-container:calc(100% - 32px);
-  }
-  .hero-content{
-    padding-inline:16px;
-  }
-  .hero h1{
-    font-size:30px;
-    line-height:1.1;
-  }
-  .hero-lead{
-    font-size:14px;
-  }
-  .pillars-section{
-    padding-inline:16px;
-  }
-  .pillars-heading h2{
-    font-size:36px;
-  }
-  .market-hero{
-    min-height:420px;
-  }
-  .market-hero-content{
-    width:calc(100% - 32px);
-    padding:60px 0 52px;
-  }
-  .market-hero h2{
-    font-size:clamp(32px,9vw,42px);
-    line-height:1.05;
-  }
-  .market-hero-lead{
-    font-size:14px;
-  }
-  .market-catalog{
-    grid-template-columns:1fr;
-  }
+  :root{--ux-container:calc(100% - 32px)}
+  .hero-content{padding-inline:16px}
+  .hero h1{font-size:30px;line-height:1.1}
+  .hero-lead{font-size:14px}
+  .pillars-section{padding-inline:16px}
+  .pillars-heading h2{font-size:36px}
+  .market-hero{min-height:420px}
+  .market-hero-content{width:calc(100% - 32px);padding:60px 0 52px}
+  .market-hero h2{font-size:clamp(32px,9vw,42px);line-height:1.05}
+  .market-hero-lead{font-size:14px}
+  .market-catalog{grid-template-columns:1fr}
 }
-
 
 /* =========================================================
    EMERIONA GLOBAL — OFFICIAL HERO COVER + OFFICIAL DEFINITION
-   Presentation pass: visual identity first, definition second.
-   The approved EMERIONA GLOBAL official cover is the Hero source.
-   Its presentation frame is controlled here without altering the artwork.
+   The approved official cover is now INTERNAL to this repository.
+   The legacy repository is not used by the new Hero.
    ========================================================= */
 
-.hero{
-  background:#061019;
-  overflow:clip;
-}
+.hero{background:#061019;overflow:clip}
 
 .hero-visual{
-  height:clamp(460px,58vw,720px);
-  min-height:460px;
-  max-height:720px;
-  isolation:isolate;
+  height:clamp(460px,58vw,720px);min-height:460px;max-height:720px;isolation:isolate;
   background-position:center center;
 }
 
 .hero-visual:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  z-index:0;
-  background:
-    radial-gradient(circle at 50% 46%,rgba(215,181,109,.08),transparent 32%),
-    linear-gradient(90deg,rgba(3,9,14,.12),transparent 34%,transparent 66%,rgba(3,9,14,.14));
+  content:"";position:absolute;inset:0;z-index:0;
+  background:radial-gradient(circle at 50% 46%,rgba(215,181,109,.08),transparent 32%),linear-gradient(90deg,rgba(3,9,14,.12),transparent 34%,transparent 66%,rgba(3,9,14,.14));
   pointer-events:none;
 }
-
 .hero-visual:after{
   z-index:1;
-  background:
-    linear-gradient(180deg,rgba(3,9,14,.02) 38%,rgba(3,9,14,.08) 64%,rgba(3,9,14,.58) 100%),
-    linear-gradient(90deg,rgba(3,9,14,.18),transparent 25%,transparent 75%,rgba(3,9,14,.18));
+  background:linear-gradient(180deg,rgba(3,9,14,.02) 38%,rgba(3,9,14,.08) 64%,rgba(3,9,14,.58) 100%),linear-gradient(90deg,rgba(3,9,14,.18),transparent 25%,transparent 75%,rgba(3,9,14,.18));
 }
+.hero-content{border-top:1px solid rgba(215,181,109,.16);border-bottom:1px solid rgba(215,181,109,.12);box-shadow:0 24px 70px rgba(0,0,0,.2);min-height:320px}
+.hero-kicker{font-weight:600}
+.hero h1{max-width:920px;font-weight:650}
+.hero-lead{color:#c4d0d5}
+.hero-meta{padding-top:2px}
 
-.hero-content{
-  border-top:1px solid rgba(215,181,109,.16);
-  border-bottom:1px solid rgba(215,181,109,.12);
-  box-shadow:0 24px 70px rgba(0,0,0,.2);
-  min-height:320px;
-}
-
-.hero-kicker{
-  font-weight:600;
-}
-
-.hero h1{
-  max-width:920px;
-  font-weight:650;
-}
-
-.hero-lead{
-  color:#c4d0d5;
-}
-
-.hero-meta{
-  padding-top:2px;
-}
-
-@media(max-width:900px){
-  .hero-visual{
-    height:clamp(360px,64vw,560px);
-    min-height:360px;
-  }
-}
-
-@media(max-width:600px){
-  .hero-visual{
-    height:clamp(250px,70vw,390px);
-    min-height:250px;
-  }
-  .hero-content{
-    min-height:0;
-  }
-}
+@media(max-width:900px){.hero-visual{height:clamp(360px,64vw,560px);min-height:360px}}
+@media(max-width:600px){.hero-visual{height:clamp(250px,70vw,390px);min-height:250px}.hero-content{min-height:0}}
 
 /* =========================================================
    CORE PILLARS — distinct world background
    ========================================================= */
-.pillars-section{
-  position:relative;
-  background:
-    radial-gradient(circle at 50% 0%,rgba(215,181,109,.08),transparent 34%),
-    linear-gradient(180deg,#08151e 0%,#0a1b25 52%,#071019 100%);
-  color:var(--white);
-  border-top:1px solid rgba(215,181,109,.12);
-  border-bottom:1px solid rgba(215,181,109,.12);
-}
-
-.pillars-section:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(90deg,transparent,rgba(44,201,232,.018),transparent);
-  pointer-events:none;
-}
+.pillars-section{position:relative;background:radial-gradient(circle at 50% 0%,rgba(215,181,109,.08),transparent 34%),linear-gradient(180deg,#08151e 0%,#0a1b25 52%,#071019 100%);color:var(--white);border-top:1px solid rgba(215,181,109,.12);border-bottom:1px solid rgba(215,181,109,.12)}
+.pillars-section:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(44,201,232,.018),transparent);pointer-events:none}
 
 /* =========================================================
    MARKET CENTER — dedicated commercial world treatment
    ========================================================= */
-.market-center{
-  position:relative;
-  background:#071019;
-}
-
-.market-hero{
-  position:relative;
-  isolation:isolate;
-  background:
-    radial-gradient(circle at 50% 42%,rgba(215,181,109,.11),transparent 30%),
-    linear-gradient(135deg,#071019 0%,#0b1c27 48%,#071019 100%);
-  border-top:1px solid rgba(215,181,109,.14);
-  border-bottom:1px solid rgba(215,181,109,.18);
-}
-
-.market-hero:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(90deg,rgba(3,9,14,.28),transparent 25%,transparent 75%,rgba(3,9,14,.28)),
-    radial-gradient(circle at 50% 100%,rgba(44,201,232,.035),transparent 35%);
-  pointer-events:none;
-}
-
-.market-hero-content{
-  position:relative;
-  z-index:2;
-}
-
-.market-hero h2{
-  max-width:820px;
-  font-weight:650;
-  letter-spacing:-.03em;
-}
-
-.market-hero-lead{
-  color:#c2cdd2;
-}
-
-.market-body{
-  background:
-    linear-gradient(180deg,#f5f2ea 0%,#fff 22%,#fff 100%);
-}
-
-@media(max-width:600px){
-  .market-body{
-    padding-top:58px;
-  }
-}
+.market-center{position:relative;background:#071019}
+.market-hero{position:relative;isolation:isolate;background:radial-gradient(circle at 50% 42%,rgba(215,181,109,.11),transparent 30%),linear-gradient(135deg,#071019 0%,#0b1c27 48%,#071019 100%);border-top:1px solid rgba(215,181,109,.14);border-bottom:1px solid rgba(215,181,109,.18)}
+.market-hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,9,14,.28),transparent 25%,transparent 75%,rgba(3,9,14,.28)),radial-gradient(circle at 50% 100%,rgba(44,201,232,.035),transparent 35%);pointer-events:none}
+.market-hero-content{position:relative;z-index:2}
+.market-hero h2{max-width:820px;font-weight:650;letter-spacing:-.03em}
+.market-hero-lead{color:#c2cdd2}
+.market-body{background:linear-gradient(180deg,#f5f2ea 0%,#fff 22%,#fff 100%)}
+@media(max-width:600px){.market-body{padding-top:58px}}
