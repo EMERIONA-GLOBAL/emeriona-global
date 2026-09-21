@@ -9,11 +9,15 @@ function json(data: unknown, status = 200, headers?: HeadersInit): Response { re
 function errorResponse(code: Parameters<typeof createApiError>[0], message: string, status: number, context?: { requestId?: string; correlationId?: string }): Response { return json(createApiError(code, message, context), status); }
 function validCurrency(value: string | null): value is string { return value !== null && /^[A-Z]{3}$/.test(value.trim()); }
 async function checkDatabase(db: D1DatabaseLike): Promise<{ status: "ok"; latencyMs: number }> { const started = Date.now(); await db.prepare("SELECT 1 AS ok").all<{ ok: number }>(); return { status: "ok", latencyMs: Date.now() - started }; }
+async function checkActiveTenant(db: D1DatabaseLike, tenantId: string): Promise<boolean> {
+  const result = await db.prepare("SELECT id FROM tenants WHERE id = ? AND status = 'ACTIVE' LIMIT 1").bind(tenantId).first<{ id: string }>();
+  return Boolean(result?.id);
+}
 export default { async fetch(request: Request, env: Env): Promise<Response> { const url = new URL(request.url); const path = url.pathname; const route = resolveApiRoute(path, request.method); if (!path.startsWith("/api/")) return env.ASSETS.fetch(request);
 if (path === "/api/health") { if (!route) return errorResponse("method_not_allowed", "Method not allowed", 405); return json({ service: "emeriona-global", status: "ok", layer: "api-runtime", apiVersion: API_VERSION, runtimeVersion: RUNTIME_HTTP_VERSION, workflow: "emeriona-core-workflow" }); }
 if (path === "/api/health/ready") { if (request.method !== "GET") return errorResponse("method_not_allowed", "Method not allowed", 405); try { const database = await checkDatabase(env.DB); return json({ service: "emeriona-global", status: "ready", dependencies: { database }, apiVersion: API_VERSION, runtimeVersion: RUNTIME_HTTP_VERSION }); } catch (error) { return json({ service: "emeriona-global", status: "not_ready", dependencies: { database: { status: "error", message: error instanceof Error ? error.message : "Database readiness check failed" } }, apiVersion: API_VERSION, runtimeVersion: RUNTIME_HTTP_VERSION }, 503); } }
 if (!hasApiPath(path)) return errorResponse("not_found", "API route not found", 404); if (!route || route.route.kind !== "USE_CASE" || !route.route.useCaseId) return errorResponse("method_not_allowed", "Method not allowed", 405);
-const useCaseId = route.route.useCaseId as UseCaseId; let runtimeContext; try { runtimeContext = createRuntimeHttpContext({ request, service: "emeriona-global-api", environment: "PRODUCTION", version: RUNTIME_HTTP_VERSION }); validateRuntimeHttpPolicy(request); } catch (error) { return errorResponse("invalid_runtime_context", error instanceof Error ? error.message : "Invalid runtime context", 400); }
+const useCaseId = route.route.useCaseId as UseCaseId; let runtimeContext; try { runtimeContext = createRuntimeHttpContext({ request, service: "emeriona-global-api", environment: "PRODUCTION", version: RUNTIME_HTTP_VERSION, defaultTenantId: request.method === "GET" && path === "/api/v1/market/catalog" ? "emeriona-global" : undefined }); validateRuntimeHttpPolicy(request); } catch (error) { return errorResponse("invalid_runtime_context", error instanceof Error ? error.message : "Invalid runtime context", 400); }
 const actorId = runtimeContext.actorId; const requestContext = { requestId: runtimeContext.requestId, correlationId: runtimeContext.correlationId };
 if (request.method === "GET" && path === "/api/v1/market/catalog") {
   const filter = url.searchParams.get("filter") ?? "all";
@@ -21,6 +25,7 @@ if (request.method === "GET" && path === "/api/v1/market/catalog") {
   const limitValue = url.searchParams.get("limit");
   const limit = limitValue ? Number(limitValue) : undefined;
   if (limitValue && (!Number.isFinite(limit) || limit! < 1)) return errorResponse("use_case_failed", "Invalid market limit", 400, requestContext);
+  if (!(await checkActiveTenant(env.DB, runtimeContext.tenantId))) return errorResponse("invalid_runtime_context", "Configured tenant is not active", 400, requestContext);
   const foundation = createFoundationRuntime(env.DB, { tenantId: runtimeContext.tenantId, currency: "USD", correlationId: runtimeContext.correlationId, authorize: async (requestedUseCase) => requestedUseCase === useCaseId });
   try {
     const result = await foundation.execute<unknown, unknown>({
