@@ -3,6 +3,7 @@ import { CreateCartHandler, UpdateCartHandler, CreateCustomerHandler, UpdateCust
 import { UpdatePartnerServiceHandler } from "../../application/src/partner-service-update-capability.js";
 import { D1CartRepository, D1CustomerRepository, D1OrderRepository, D1PartnerRepository, D1ProductRepository, D1ServiceRepository } from "./repositories/domain-repositories.js";
 import { D1CatalogRepository } from "./repositories/catalog-repository.js";
+import { D1MarketCatalogRepository } from "./repositories/market-catalog-repository.js";
 import { D1PartnerCatalogRepository } from "./repositories/partner-catalog-repository.js";
 import { D1CatalogPublicationAdapter } from "./catalog/catalog-publication.js";
 import { D1PartnerOffersAdapter } from "./commerce/d1-partner-offers.js";
