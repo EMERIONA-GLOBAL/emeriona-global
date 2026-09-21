@@ -134,3 +134,51 @@ html{scroll-padding-top:76px}.site-header{padding:12px 20px}.brand{margin-right:
   .market-flow{padding:20px;justify-content:flex-start}
   .market-commercial{padding:30px 22px}
 }
+
+/* Market Center — complete visual system refinement */
+.market-center{background:#f5f2eb}
+.market-hero{min-height:590px;isolation:isolate;background:radial-gradient(900px 520px at 76% 45%,rgba(215,181,109,.16),transparent 58%),radial-gradient(620px 420px at 18% 72%,rgba(44,201,232,.08),transparent 60%),linear-gradient(135deg,#050d14 0%,#091923 46%,#0c2631 100%)}
+.market-hero:before{opacity:.7;background-size:72px 72px}
+.market-hero:after{width:880px;height:880px;left:78%;border-color:rgba(215,181,109,.10);box-shadow:0 0 0 100px rgba(215,181,109,.016),0 0 0 220px rgba(44,201,232,.01)}
+.market-hero-orbit{width:560px;height:230px;right:5%;border-color:rgba(215,181,109,.20);box-shadow:0 0 90px rgba(215,181,109,.06);opacity:.85}
+.market-hero-content{width:min(1180px,calc(100% - 48px));padding:108px 0 96px}
+.market-hero .section-label{margin-bottom:18px}
+.market-hero .eyebrow{color:var(--gold);letter-spacing:.22em}
+.market-hero h2{font-size:clamp(56px,8.2vw,112px);font-weight:900;line-height:.91;letter-spacing:-.065em;margin:0 auto 28px;text-shadow:0 12px 45px rgba(0,0,0,.22)}
+.market-hero h2 span{display:block;font-size:1.12em;background:linear-gradient(100deg,#fff 0%,#f4f0e7 42%,#e6cf9a 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.market-hero h2::after{content:"";display:block;width:86px;height:1px;margin:28px auto 0;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.market-hero-lead{max-width:780px;font-size:16px;line-height:1.85;color:#c6d0d4}
+.market-quick-links{margin-top:34px;gap:10px}
+.market-quick-links a{min-width:104px;padding:11px 17px;border-color:rgba(215,181,109,.25);background:rgba(5,13,20,.28);backdrop-filter:blur(8px);font-size:10px;letter-spacing:.09em}
+.market-quick-links a:first-child{background:rgba(215,181,109,.12);border-color:rgba(215,181,109,.55);color:#fff}
+.market-body{padding:96px 24px 120px}
+.market-intro{grid-template-columns:.82fr 1.18fr;gap:54px;align-items:center;margin-bottom:42px}
+.market-intro h3{font-size:clamp(30px,4vw,48px)}
+.market-search-shell{min-height:58px;padding:8px 10px 8px 20px;border-radius:18px}
+.market-search-shell input{font-size:14px}
+.market-search-shell button{padding:9px 13px;border:1px solid #e3dccf;border-radius:10px;background:#faf8f3}
+.market-controls{padding:14px;border:1px solid #ddd6c9;border-radius:16px;background:rgba(255,255,255,.62);box-shadow:0 12px 32px rgba(21,33,42,.035);margin-bottom:38px}
+.market-filter{padding:10px 15px}
+.market-section-heading h3{font-size:clamp(30px,4vw,46px)}
+.market-catalog{min-height:120px}
+.market-card{border-radius:22px}
+.market-card-media{height:170px}
+.market-empty{min-height:180px;place-content:center}
+.market-empty strong{font-size:19px;color:#26343d}
+.market-empty span{max-width:650px;margin:auto;line-height:1.75}
+.market-secondary-grid{grid-template-columns:repeat(4,1fr);gap:14px;margin-top:70px}
+.market-panel{min-height:275px;padding:28px;border-radius:22px;display:flex;flex-direction:column}
+.market-panel h3{font-size:23px}
+.market-panel .market-panel-action{margin-top:auto;padding-top:22px}
+.market-panel.featured-panel{background:linear-gradient(145deg,#08151e,#0e2a35);box-shadow:0 20px 55px rgba(7,19,28,.14)}
+.market-tags{margin-top:auto;padding-top:20px}
+.market-experience,.market-recommendations{margin-top:82px;padding-top:66px}
+.market-flow{padding:28px;gap:12px}
+.market-flow span{padding:11px 16px}
+.recommendation-placeholder{min-height:150px;place-content:center;padding:32px}
+.market-commercial{margin-top:82px;padding:48px;border-radius:26px;box-shadow:0 24px 70px rgba(7,19,28,.14)}
+.market-commercial h3{font-size:clamp(30px,4vw,46px)}
+.market-actions a{transition:.2s}
+.market-actions a:hover{transform:translateX(3px)}
+@media(max-width:1100px){.market-secondary-grid{grid-template-columns:repeat(2,1fr)}.market-hero-orbit{right:-8%}}
+@media(max-width:700px){.market-hero{min-height:540px}.market-hero-content{width:calc(100% - 36px);padding:84px 0 72px}.market-hero h2{font-size:clamp(48px,14vw,68px);line-height:.93}.market-hero-lead{font-size:14px;line-height:1.75}.market-hero-orbit{width:420px;height:170px;right:-38%;opacity:.45}.market-body{padding:72px 18px 90px}.market-intro{gap:28px}.market-controls{padding:11px}.market-secondary-grid{grid-template-columns:1fr}.market-panel{min-height:235px}.market-flow{padding:20px;justify-content:flex-start}.market-commercial{padding:30px 22px}}
