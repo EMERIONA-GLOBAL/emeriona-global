@@ -14,7 +14,26 @@ if (path === "/api/health") { if (!route) return errorResponse("method_not_allow
 if (path === "/api/health/ready") { if (request.method !== "GET") return errorResponse("method_not_allowed", "Method not allowed", 405); try { const database = await checkDatabase(env.DB); return json({ service: "emeriona-global", status: "ready", dependencies: { database }, apiVersion: API_VERSION, runtimeVersion: RUNTIME_HTTP_VERSION }); } catch (error) { return json({ service: "emeriona-global", status: "not_ready", dependencies: { database: { status: "error", message: error instanceof Error ? error.message : "Database readiness check failed" } }, apiVersion: API_VERSION, runtimeVersion: RUNTIME_HTTP_VERSION }, 503); } }
 if (!hasApiPath(path)) return errorResponse("not_found", "API route not found", 404); if (!route || route.route.kind !== "USE_CASE" || !route.route.useCaseId) return errorResponse("method_not_allowed", "Method not allowed", 405);
 const useCaseId = route.route.useCaseId as UseCaseId; let runtimeContext; try { runtimeContext = createRuntimeHttpContext({ request, service: "emeriona-global-api", environment: "PRODUCTION", version: RUNTIME_HTTP_VERSION }); validateRuntimeHttpPolicy(request); } catch (error) { return errorResponse("invalid_runtime_context", error instanceof Error ? error.message : "Invalid runtime context", 400); }
-const actorId = runtimeContext.actorId; const requestContext = { requestId: runtimeContext.requestId, correlationId: runtimeContext.correlationId }; if (!actorId) return errorResponse("tenant_and_actor_context_required", "Tenant and actor context are required", 400, requestContext);
+const actorId = runtimeContext.actorId; const requestContext = { requestId: runtimeContext.requestId, correlationId: runtimeContext.correlationId };
+if (request.method === "GET" && path === "/api/v1/market/catalog") {
+  const filter = url.searchParams.get("filter") ?? "all";
+  const query = url.searchParams.get("q") ?? undefined;
+  const limitValue = url.searchParams.get("limit");
+  const limit = limitValue ? Number(limitValue) : undefined;
+  if (limitValue && (!Number.isFinite(limit) || limit! < 1)) return errorResponse("use_case_failed", "Invalid market limit", 400, requestContext);
+  const foundation = createFoundationRuntime(env.DB, { tenantId: runtimeContext.tenantId, currency: "USD", correlationId: runtimeContext.correlationId, authorize: async (requestedUseCase) => requestedUseCase === useCaseId });
+  try {
+    const result = await foundation.execute<unknown, unknown>({
+      useCaseId,
+      context: { tenantId: runtimeContext.tenantId as UseCaseRequest<unknown>["context"]["tenantId"], correlationId: runtimeContext.correlationId as UseCaseRequest<unknown>["context"]["correlationId"], actorId, requestId: runtimeContext.requestId, locale: runtimeContext.locale, timezone: runtimeContext.timezone, metadata: { transport: "cloudflare-worker", runtimeVersion: RUNTIME_HTTP_VERSION, apiVersion: API_VERSION } },
+      input: { filter, query, limit },
+    });
+    return json({ data: result.output, meta: { useCaseId: result.useCaseId, correlationId: result.correlationId, requestId: runtimeContext.requestId, apiVersion: API_VERSION } });
+  } catch (error) {
+    return errorResponse("use_case_failed", error instanceof Error ? error.message : "Market catalog query failed", 400, requestContext);
+  }
+}
+if (!actorId) return errorResponse("tenant_and_actor_context_required", "Tenant and actor context are required", 400, requestContext);
 const currency = request.headers.get("x-currency"); if (!validCurrency(currency)) return errorResponse("valid_currency_required", "A valid ISO 4217 currency code is required", 400, requestContext);
 let input: unknown; try { input = await request.json(); } catch { return errorResponse("invalid_json", "Request body must be valid JSON", 400, requestContext); }
 const idempotencyKey = request.headers.get("idempotency-key")?.trim() || undefined; const foundation = createFoundationRuntime(env.DB, { tenantId: runtimeContext.tenantId, currency: currency.trim(), correlationId: runtimeContext.correlationId, authorize: async (requestedUseCase) => requestedUseCase === useCaseId && actorId.length > 0 });
