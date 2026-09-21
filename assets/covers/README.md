@@ -2,7 +2,10 @@
 
 The Hero uses the approved official EMERIONA GLOBAL cover artwork.
 
-Canonical source asset:
-`https://emeriona.github.io/emeriona-website/assets/covers/emeriona-global-cover-en.png`
+Canonical repository-local asset:
 
-The legacy repository remains unchanged. This source reference is used only as the official visual asset for the new site's Hero until the binary asset is internalized in the new repository's static assets.
+`assets/covers/emeriona-global-cover-en.png`
+
+This asset is owned and served by the new EMERIONA GLOBAL repository. The legacy repository `emeriona/emeriona-website` remains completely separate and unchanged.
+
+The new Hero must not depend on the legacy repository for this cover or any other new-site asset.
