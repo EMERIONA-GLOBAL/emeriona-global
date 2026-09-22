@@ -19,6 +19,22 @@ if (path === "/api/health/ready") { if (request.method !== "GET") return errorRe
 if (!hasApiPath(path)) return errorResponse("not_found", "API route not found", 404); if (!route || route.route.kind !== "USE_CASE" || !route.route.useCaseId) return errorResponse("method_not_allowed", "Method not allowed", 405);
 const useCaseId = route.route.useCaseId as UseCaseId; let runtimeContext; try { runtimeContext = createRuntimeHttpContext({ request, service: "emeriona-global-api", environment: "PRODUCTION", version: RUNTIME_HTTP_VERSION, defaultTenantId: request.method === "GET" && (path === "/api/v1/market/catalog" || path === "/api/v1/catalog/categories") ? "emeriona-global" : undefined }); validateRuntimeHttpPolicy(request); } catch (error) { return errorResponse("invalid_runtime_context", error instanceof Error ? error.message : "Invalid runtime context", 400); }
 const actorId = runtimeContext.actorId; const requestContext = { requestId: runtimeContext.requestId, correlationId: runtimeContext.correlationId };
+if (request.method === "GET" && (path === "/api/v1/products/query" || path === "/api/v1/services/query")) {
+  const id = url.searchParams.get("id")?.trim();
+  if (!id) return errorResponse("use_case_failed", "Catalog entity id is required", 400, requestContext);
+  if (!(await checkActiveTenant(env.DB, runtimeContext.tenantId))) return errorResponse("invalid_runtime_context", "Configured tenant is not active", 400, requestContext);
+  const foundation = createFoundationRuntime(env.DB, { tenantId: runtimeContext.tenantId, currency: "USD", correlationId: runtimeContext.correlationId, authorize: async (requestedUseCase) => requestedUseCase === useCaseId });
+  try {
+    const result = await foundation.execute<unknown, unknown>({
+      useCaseId,
+      context: { tenantId: runtimeContext.tenantId as UseCaseRequest<unknown>["context"]["tenantId"], correlationId: runtimeContext.correlationId as UseCaseRequest<unknown>["context"]["correlationId"], actorId, requestId: runtimeContext.requestId, locale: runtimeContext.locale, timezone: runtimeContext.timezone, metadata: { transport: "cloudflare-worker", runtimeVersion: RUNTIME_HTTP_VERSION, apiVersion: API_VERSION } },
+      input: { id },
+    });
+    return json({ data: result.output, meta: { useCaseId: result.useCaseId, correlationId: result.correlationId, requestId: runtimeContext.requestId, apiVersion: API_VERSION } });
+  } catch (error) {
+    return errorResponse("use_case_failed", error instanceof Error ? error.message : "Catalog entity query failed", 400, requestContext);
+  }
+}
 if (request.method === "GET" && (path === "/api/v1/market/catalog" || path === "/api/v1/catalog/categories")) {
   const filter = url.searchParams.get("filter") ?? "all";
   const categoryKind = url.searchParams.get("kind") ?? "PRODUCT";
