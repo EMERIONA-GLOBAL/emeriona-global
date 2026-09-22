@@ -35,4 +35,6 @@ export type { CommerceUseCaseId } from "./commerce-foundation.js";
 export { COMMERCE_FOUNDATION_VERSION, COMMERCE_USE_CASE_IDS, assertMoney, assertSameCurrency, assertOrderTotal, assertPaymentMatchesOrder, assertCheckoutableCart, assertFulfillmentAllowed, COMMERCE_LIFECYCLE } from "./commerce-foundation.js";
 export type { PricingQuote, PromotionValidation } from "./pricing-promotions-foundation.js";
 export { PRICING_PROMOTIONS_FOUNDATION_VERSION, assertPricingInvariant } from "./pricing-promotions-foundation.js";
-export const DOMAIN_LAYER_VERSION = "2.0.0" as const;
+export type { PricingRequestId, PricingRequestStatus, PricingRequest, PricingRequestRepositoryPortV1 } from "./pricing-request.js";
+export { PRICING_REQUEST_DOMAIN_VERSION } from "./pricing-request.js";
+export const DOMAIN_LAYER_VERSION = "2.1.0" as const;
