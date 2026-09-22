@@ -7,6 +7,7 @@ export { D1PersistenceAdapter, D1_ADAPTER_VERSION } from './d1.js';export type {
 export { PersistenceEntityRepository, PERSISTENCE_REPOSITORY_VERSION } from './repositories/persistence-repository.js';export type { PersistenceEntityMapper } from './repositories/persistence-repository.js';
 export { D1CustomerRepository, D1ProductRepository, D1ServiceRepository, D1PartnerRepository, D1CartRepository, D1OrderRepository, D1_DOMAIN_REPOSITORIES_VERSION } from './repositories/domain-repositories.js';
 export { D1PartnerCatalogRepository, D1_PARTNER_CATALOG_REPOSITORY_VERSION } from './repositories/partner-catalog-repository.js';
+export { D1CatalogCategoryRepository, D1_CATALOG_CATEGORY_REPOSITORY_VERSION } from './repositories/catalog-category-repository.js';
 export { D1CatalogRepository, D1_CATALOG_REPOSITORY_VERSION } from './repositories/catalog-repository.js';
 export { D1MarketCatalogRepository, D1_MARKET_CATALOG_REPOSITORY_VERSION } from './repositories/market-catalog-repository.js';
 export { D1CatalogPublicationAdapter, C9_CATALOG_PUBLICATION_INFRASTRUCTURE_VERSION } from './catalog/catalog-publication.js';
