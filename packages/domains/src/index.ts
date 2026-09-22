@@ -6,6 +6,8 @@ export type { ProductId, ServiceId, CatalogId, CatalogOwnerId, Product, Service,
 export type { CatalogCategoryKind, CatalogCategoryStatus, CatalogCategoryId, CatalogCategory, CatalogCategoryRepositoryPort } from "./catalog-taxonomy.js";
 export { CATALOG_TAXONOMY_VERSION } from "./catalog-taxonomy.js";
 export { CATALOG_DOMAIN_VERSION } from "./catalog.js";
+export type { SolutionId, SolutionStatus, Solution, SolutionRepositoryPortV1 } from "./solution.js";
+export { SOLUTION_DOMAIN_VERSION } from "./solution.js";
 export type { PartnerId, PartnerOfferId, SettlementId, PartnerAccount, PartnerStore, PartnerProduct, PartnerService, PartnerOffer, PartnerSettlement, PartnerAccessPolicy, PartnerRepositoryPort } from "./partner.js";
 export { PARTNER_ECOSYSTEM_DOMAIN_VERSION } from "./partner.js";
 export type { OrderId, CartId, PaymentId, OfferId, DiscountId, Money, PriceQuote, Offer, Discount, Cart, Order, PaymentTransaction, Fulfillment, Settlement, PricingPort, PromotionPort, CommerceRepositoryPort, FulfillmentPort, SettlementPort } from "./commerce.js";
