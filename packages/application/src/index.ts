@@ -62,6 +62,8 @@ export type { CreateCommercialInquiryInput, UpdateCommercialInquiryInput, QueryC
 export { CreateCommercialInquiryHandler, UpdateCommercialInquiryHandler, QueryCommercialInquiryHandler, COMMERCIAL_INQUIRY_APPLICATION_VERSION } from "./commercial-inquiry-capability.js";
 export type { CreatePricingRequestInput, UpdatePricingRequestInput, QueryPricingRequestInput } from "./pricing-request-capability.js";
 export { CreatePricingRequestHandler, UpdatePricingRequestHandler, QueryPricingRequestHandler, PRICING_REQUEST_APPLICATION_VERSION } from "./pricing-request-capability.js";
+export type { CreatePricingDecisionInput, AddPricingDecisionInputInput, ResolvePricingDecisionInput } from "./pricing-decision-capability.js";
+export { CreatePricingDecisionHandler, AddPricingDecisionInputHandler, ResolvePricingDecisionHandler, GOVERNED_PRICING_APPLICATION_VERSION } from "./pricing-decision-capability.js";
 export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'2.1.0',status:'OPERATIONAL_D1_PATH',providerNeutral:true} as const;
 
 export { QueryProductHandler, QueryServiceHandler, CATALOG_ENTITY_QUERY_APPLICATION_VERSION } from "./catalog-entity-query-capability.js";
