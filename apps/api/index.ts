@@ -17,10 +17,11 @@ export default { async fetch(request: Request, env: Env): Promise<Response> { co
 if (path === "/api/health") { if (!route) return errorResponse("method_not_allowed", "Method not allowed", 405); return json({ service: "emeriona-global", status: "ok", layer: "api-runtime", apiVersion: API_VERSION, runtimeVersion: RUNTIME_HTTP_VERSION, workflow: "emeriona-core-workflow" }); }
 if (path === "/api/health/ready") { if (request.method !== "GET") return errorResponse("method_not_allowed", "Method not allowed", 405); try { const database = await checkDatabase(env.DB); return json({ service: "emeriona-global", status: "ready", dependencies: { database }, apiVersion: API_VERSION, runtimeVersion: RUNTIME_HTTP_VERSION }); } catch (error) { return json({ service: "emeriona-global", status: "not_ready", dependencies: { database: { status: "error", message: error instanceof Error ? error.message : "Database readiness check failed" } }, apiVersion: API_VERSION, runtimeVersion: RUNTIME_HTTP_VERSION }, 503); } }
 if (!hasApiPath(path)) return errorResponse("not_found", "API route not found", 404); if (!route || route.route.kind !== "USE_CASE" || !route.route.useCaseId) return errorResponse("method_not_allowed", "Method not allowed", 405);
-const useCaseId = route.route.useCaseId as UseCaseId; let runtimeContext; try { runtimeContext = createRuntimeHttpContext({ request, service: "emeriona-global-api", environment: "PRODUCTION", version: RUNTIME_HTTP_VERSION, defaultTenantId: request.method === "GET" && path === "/api/v1/market/catalog" ? "emeriona-global" : undefined }); validateRuntimeHttpPolicy(request); } catch (error) { return errorResponse("invalid_runtime_context", error instanceof Error ? error.message : "Invalid runtime context", 400); }
+const useCaseId = route.route.useCaseId as UseCaseId; let runtimeContext; try { runtimeContext = createRuntimeHttpContext({ request, service: "emeriona-global-api", environment: "PRODUCTION", version: RUNTIME_HTTP_VERSION, defaultTenantId: request.method === "GET" && (path === "/api/v1/market/catalog" || path === "/api/v1/catalog/categories") ? "emeriona-global" : undefined }); validateRuntimeHttpPolicy(request); } catch (error) { return errorResponse("invalid_runtime_context", error instanceof Error ? error.message : "Invalid runtime context", 400); }
 const actorId = runtimeContext.actorId; const requestContext = { requestId: runtimeContext.requestId, correlationId: runtimeContext.correlationId };
-if (request.method === "GET" && path === "/api/v1/market/catalog") {
+if (request.method === "GET" && (path === "/api/v1/market/catalog" || path === "/api/v1/catalog/categories")) {
   const filter = url.searchParams.get("filter") ?? "all";
+  const categoryKind = url.searchParams.get("kind") ?? "PRODUCT";
   const query = url.searchParams.get("q") ?? undefined;
   const limitValue = url.searchParams.get("limit");
   const limit = limitValue ? Number(limitValue) : undefined;
@@ -31,7 +32,7 @@ if (request.method === "GET" && path === "/api/v1/market/catalog") {
     const result = await foundation.execute<unknown, unknown>({
       useCaseId,
       context: { tenantId: runtimeContext.tenantId as UseCaseRequest<unknown>["context"]["tenantId"], correlationId: runtimeContext.correlationId as UseCaseRequest<unknown>["context"]["correlationId"], actorId, requestId: runtimeContext.requestId, locale: runtimeContext.locale, timezone: runtimeContext.timezone, metadata: { transport: "cloudflare-worker", runtimeVersion: RUNTIME_HTTP_VERSION, apiVersion: API_VERSION } },
-      input: { filter, query, limit },
+      input: path === "/api/v1/catalog/categories" ? { kind: categoryKind } : { filter, query, limit },
     });
     return json({ data: result.output, meta: { useCaseId: result.useCaseId, correlationId: result.correlationId, requestId: runtimeContext.requestId, apiVersion: API_VERSION } });
   } catch (error) {

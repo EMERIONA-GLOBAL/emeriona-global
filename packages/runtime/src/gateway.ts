@@ -9,6 +9,7 @@ export interface ApiErrorBody { code: ApiErrorCode; message: string; requestId?:
 export interface ApiErrorEnvelope { error: ApiErrorBody; }
 const USE_CASE_ROUTES: ReadonlyArray<ApiRouteDefinition> = [
   { method: 'GET', path: '/api/v1/market/catalog', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'market.catalog.query' as UseCaseId },
+  { method: 'GET', path: '/api/v1/catalog/categories', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'catalog.categories.query' as UseCaseId },
 
   { method: 'POST', path: '/api/v1/customers', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'customer.create' as UseCaseId },
   { method: 'POST', path: '/api/v1/catalogs', version: API_VERSION, kind: 'USE_CASE', useCaseId: 'catalog.create' as UseCaseId },

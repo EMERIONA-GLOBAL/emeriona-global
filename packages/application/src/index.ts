@@ -37,6 +37,8 @@ export { CreateFulfillmentHandler, ProgressFulfillmentHandler, FULFILLMENT_APPLI
 export type { ReturnCreateInput, ReturnProgressInput, RefundRequestCreateInput, RefundRequestProgressInput, ReturnsRefundsPort } from './returns-refunds-capabilities.js';
 export { CreateReturnHandler, ProgressReturnHandler, CreateRefundRequestHandler, ProgressRefundRequestHandler, RETURNS_REFUNDS_APPLICATION_VERSION } from './returns-refunds-capabilities.js';
 export type { MarketCatalogQueryInput } from './market-catalog-query-capability.js';
+export type { CatalogCategoryQueryInput, CatalogCategoryQueryOutput } from './catalog-category-query-capability.js';
+export { QueryCatalogCategoriesHandler, CATALOG_CATEGORY_QUERY_APPLICATION_VERSION } from './catalog-category-query-capability.js';
 export { QueryMarketCatalogHandler, MARKET_CATALOG_QUERY_APPLICATION_VERSION } from './market-catalog-query-capability.js';
 export type { CreateCatalogInput } from './catalog-capability.js';
 export { CreateCatalogHandler, CATALOG_APPLICATION_VERSION } from './catalog-capability.js';
