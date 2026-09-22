@@ -57,3 +57,6 @@ export { IDENTITY_AUTHORIZATION_APPLICATION_VERSION } from './identity-authoriza
 export type { PartnerIntelligenceInput, PartnerAnalytics, PartnerPerformance, PartnerImpact, PartnerIntelligencePort } from './partner-intelligence-capabilities.js';
 export { QueryPartnerAnalyticsHandler, QueryPartnerPerformanceHandler, MeasurePartnerImpactHandler, PARTNER_INTELLIGENCE_APPLICATION_VERSION } from './partner-intelligence-capabilities.js';
 export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'2.1.0',status:'OPERATIONAL_D1_PATH',providerNeutral:true} as const;
+
+export { QueryProductHandler, QueryServiceHandler, CATALOG_ENTITY_QUERY_APPLICATION_VERSION } from "./catalog-entity-query-capability.js";
+export type { CatalogEntityQueryInput, ProductQueryOutput, ServiceQueryOutput } from "./catalog-entity-query-capability.js";
