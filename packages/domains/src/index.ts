@@ -37,4 +37,6 @@ export type { PricingQuote, PromotionValidation } from "./pricing-promotions-fou
 export { PRICING_PROMOTIONS_FOUNDATION_VERSION, assertPricingInvariant } from "./pricing-promotions-foundation.js";
 export type { PricingRequestId, PricingRequestStatus, PricingRequest, PricingRequestRepositoryPortV1 } from "./pricing-request.js";
 export { PRICING_REQUEST_DOMAIN_VERSION } from "./pricing-request.js";
-export const DOMAIN_LAYER_VERSION = "2.1.0" as const;
+export type { PricingDecision, PricingDecisionId, PricingDecisionStatus, PricingDecisionInput, PricingDecisionRepositoryPortV1, PricingInputDirection } from "./pricing-decision.js";
+export { GOVERNED_PRICING_DOMAIN_VERSION } from "./pricing-decision.js";
+export const DOMAIN_LAYER_VERSION = "2.2.0" as const;
