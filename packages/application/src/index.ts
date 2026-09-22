@@ -58,6 +58,8 @@ export type { PartnerIntelligenceInput, PartnerAnalytics, PartnerPerformance, Pa
 export { QueryPartnerAnalyticsHandler, QueryPartnerPerformanceHandler, MeasurePartnerImpactHandler, PARTNER_INTELLIGENCE_APPLICATION_VERSION } from './partner-intelligence-capabilities.js';
 export type { CreateSolutionInput, UpdateSolutionInput, QuerySolutionInput, SolutionQueryOutput } from "./solution-capability.js";
 export { CreateSolutionHandler, UpdateSolutionHandler, QuerySolutionHandler, SOLUTION_APPLICATION_VERSION } from "./solution-capability.js";
+export type { CreateCommercialInquiryInput, UpdateCommercialInquiryInput, QueryCommercialInquiryInput } from "./commercial-inquiry-capability.js";
+export { CreateCommercialInquiryHandler, UpdateCommercialInquiryHandler, QueryCommercialInquiryHandler, COMMERCIAL_INQUIRY_APPLICATION_VERSION } from "./commercial-inquiry-capability.js";
 export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'2.1.0',status:'OPERATIONAL_D1_PATH',providerNeutral:true} as const;
 
 export { QueryProductHandler, QueryServiceHandler, CATALOG_ENTITY_QUERY_APPLICATION_VERSION } from "./catalog-entity-query-capability.js";
