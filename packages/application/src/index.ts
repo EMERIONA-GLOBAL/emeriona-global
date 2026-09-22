@@ -37,6 +37,8 @@ export { CreateFulfillmentHandler, ProgressFulfillmentHandler, FULFILLMENT_APPLI
 export type { ReturnCreateInput, ReturnProgressInput, RefundRequestCreateInput, RefundRequestProgressInput, ReturnsRefundsPort } from './returns-refunds-capabilities.js';
 export { CreateReturnHandler, ProgressReturnHandler, CreateRefundRequestHandler, ProgressRefundRequestHandler, RETURNS_REFUNDS_APPLICATION_VERSION } from './returns-refunds-capabilities.js';
 export type { MarketCatalogQueryInput } from './market-catalog-query-capability.js';
+export type { CatalogCategoryQueryInput, CatalogCategoryQueryOutput } from './catalog-category-query-capability.js';
+export { QueryCatalogCategoriesHandler, CATALOG_CATEGORY_QUERY_APPLICATION_VERSION } from './catalog-category-query-capability.js';
 export { QueryMarketCatalogHandler, MARKET_CATALOG_QUERY_APPLICATION_VERSION } from './market-catalog-query-capability.js';
 export type { CreateCatalogInput } from './catalog-capability.js';
 export { CreateCatalogHandler, CATALOG_APPLICATION_VERSION } from './catalog-capability.js';
@@ -55,3 +57,6 @@ export { IDENTITY_AUTHORIZATION_APPLICATION_VERSION } from './identity-authoriza
 export type { PartnerIntelligenceInput, PartnerAnalytics, PartnerPerformance, PartnerImpact, PartnerIntelligencePort } from './partner-intelligence-capabilities.js';
 export { QueryPartnerAnalyticsHandler, QueryPartnerPerformanceHandler, MeasurePartnerImpactHandler, PARTNER_INTELLIGENCE_APPLICATION_VERSION } from './partner-intelligence-capabilities.js';
 export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundation',version:'2.1.0',status:'OPERATIONAL_D1_PATH',providerNeutral:true} as const;
+
+export { QueryProductHandler, QueryServiceHandler, CATALOG_ENTITY_QUERY_APPLICATION_VERSION } from "./catalog-entity-query-capability.js";
+export type { CatalogEntityQueryInput, ProductQueryOutput, ServiceQueryOutput } from "./catalog-entity-query-capability.js";
