@@ -6,13 +6,13 @@
   if(!form||!input||!results)return;
 
   const pathways=[
-    {key:'products',label:'Products',title:'Digital Products',description:'Explore software, platforms, applications, SaaS, AI products and digital assets.',href:'#commerce'},
-    {key:'services',label:'Services',title:'Digital Services',description:'Find technology, business, creative, AI, integration and digital capability pathways.',href:'#contact'},
-    {key:'solutions',label:'Solutions',title:'Digital Solutions',description:'Connect a real need with combinations of products, services, expertise and partner capabilities.',href:'#market-solutions'},
+    {key:'products',label:'Products',title:'Digital Products',description:'Explore published products from the live EMERIONA commercial catalog.',href:'#commerce'},
+    {key:'services',label:'Services',title:'Digital Services',description:'Explore published services from the live EMERIONA commercial catalog.',href:'#commerce'},
+    {key:'solutions',label:'Solutions',title:'Digital Solutions',description:'Connect a real need with products, services, expertise and partner capabilities.',href:'#market-solutions'},
     {key:'knowledge',label:'Knowledge',title:'Digital Knowledge',description:'Explore research, guides, insights, reports, resources and practical knowledge.',href:'#knowledge'},
     {key:'opportunities',label:'Opportunities',title:'Digital Opportunities',description:'Explore business, partnership, project, collaboration and innovation opportunity paths.',href:'#contact'},
     {key:'projects',label:'Projects',title:'Digital Projects',description:'Move from idea through discovery, assessment, design, development, launch and impact.',href:'#contact'},
-    {key:'partners',label:'Partners',title:'Digital Partners',description:'Build technology, product, service, solution, AI, research and distribution partnerships.',href:'#partnerships'},
+    {key:'partners',label:'Partners',title:'Digital Partners',description:'Explore approved partner offerings published in the live Market catalog.',href:'#partnerships'},
     {key:'discovery',label:'Discovery',title:'EMERIONA Discovery',description:'Let the discovery engine route your need across the connected ecosystem.',href:'#discovery'}
   ];
 
@@ -29,56 +29,70 @@
     if(/partner|partnership|شريك|شراكة/.test(q))return'partners';
     return'discovery';
   };
-  const render=(items,message)=>{
-    const routes=items.length?items:pathways.filter(p=>p.key==='discovery'||p.key===intentFor(message)).concat(pathways.filter(p=>p.key!=='discovery'&&p.key!==intentFor(message)).slice(0,3));
-    results.innerHTML=routes.slice(0,5).map(p=>'<article class="discovery-result"><span>'+escape(p.label)+'</span><div><strong>'+escape(p.title)+'</strong><small>'+escape(p.description)+'</small></div><a href="'+p.href+'">Open path →</a></article>').join('');
-  };
-  const searchCatalog=async query=>{
-    const tenant=document.querySelector('meta[name="emeriona-market-tenant"]')?.getAttribute('content')?.trim()||window.EMERIONA_MARKET_TENANT_ID||'';
-    if(!tenant)return[];
-    const response=await fetch('/api/v1/market/catalog?'+new URLSearchParams({filter:'all',q:query,limit:'20'}).toString(),{headers:{'x-tenant-id':tenant,accept:'application/json'}});
-    if(!response.ok)return[];
-    const payload=await response.json();
-    const catalog=Array.isArray(payload?.data?.items)?payload.data.items:[];
-    return catalog.map(item=>({key:'market',label:item.type||'Market',title:item.name||'Market offering',description:'Published and commercially eligible in EMERIONA MARKET CENTER.',href:'#commercial-journey'}));
-  };
+
   const routeMap={
-    products:{selector:'#market-products',filter:'products'},
-    services:{selector:'#market-services',filter:'services'},
+    products:{selector:'#commerce',filter:'products'},
+    services:{selector:'#commerce',filter:'services'},
     solutions:{selector:'#market-solutions',filter:'solutions'},
-    partners:{selector:'#market-partners'},
+    partners:{selector:'#market-partners',filter:'partners'},
     knowledge:{selector:'#knowledge'},
     opportunities:{selector:'#contact',subject:'Digital Opportunity'},
     projects:{selector:'#contact',subject:'Digital Project'}
   };
-  const activateMarketFilter=filter=>{
-    const button=document.querySelector('.market-filter[data-market-filter="'+filter+'"]');
-    if(button)button.click();
-  };
+
   const routeToWorld=key=>{
     const route=routeMap[key]; if(!route)return;
-    if(route.filter)activateMarketFilter(route.filter);
-    const target=document.querySelector(route.selector);
-    if(!target)return;
+    if(route.filter)document.querySelector('.market-filter[data-market-filter="'+route.filter+'"]')?.click();
+    const target=document.querySelector(route.selector); if(!target)return;
     if(route.subject){
-      const email='emeriona.global@gmail.com';
       const subject=encodeURIComponent(route.subject);
-      target.querySelector('a[href^="mailto:"]')?.setAttribute('href','mailto:'+email+'?subject='+subject);
+      target.querySelector('a[href^="mailto:"]')?.setAttribute('href','mailto:emeriona.global@gmail.com?subject='+subject);
     }
     target.scrollIntoView({behavior:'smooth',block:'start'});
     if(history.replaceState)history.replaceState(null,'',route.selector);
   };
+
+  const openMarketItem=item=>{
+    if(!item?.id)return;
+    window.dispatchEvent(new CustomEvent('emeriona:market-item',{detail:item}));
+    document.getElementById('commerce')?.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  const render=(items,message)=>{
+    if(items.length){
+      results.innerHTML=items.slice(0,8).map(item=>{
+        const type=escape(item.type||'offering');
+        const name=escape(item.name||'Market offering');
+        const partner=escape(item.partner||'EMERIONA GLOBAL');
+        return '<article class="discovery-result"><span>'+type+'</span><div><strong>'+name+'</strong><small>Live catalog entity · '+partner+' · '+escape(item.status||'PUBLISHED')+'</small></div><button type="button" class="discovery-result-action" data-market-result-id="'+escape(item.id)+'">Open in Market →</button></article>';
+      }).join('');
+      results.querySelectorAll('[data-market-result-id]').forEach(button=>button.addEventListener('click',()=>openMarketItem(items.find(item=>String(item.id)===button.dataset.marketResultId))));
+      return;
+    }
+    const key=intentFor(message);
+    const routes=pathways.filter(p=>p.key===key||p.key==='discovery'||(key==='partners'&&p.key==='products')).slice(0,4);
+    results.innerHTML=routes.map(p=>'<article class="discovery-result"><span>'+escape(p.label)+'</span><div><strong>'+escape(p.title)+'</strong><small>'+escape(p.description)+'</small></div><a href="'+p.href+'" data-discovery-fallback="'+p.key+'">Open path →</a></article>').join('');
+    results.querySelectorAll('[data-discovery-fallback]').forEach(a=>a.addEventListener('click',e=>{const key=a.dataset.discoveryFallback;if(routeMap[key]){e.preventDefault();routeToWorld(key);}}));
+  };
+
+  const searchCatalog=async query=>{
+    const response=await fetch('/api/v1/market/catalog?'+new URLSearchParams({filter:'all',q:String(query||''),limit:'20'}).toString(),{headers:{accept:'application/json'}});
+    if(!response.ok)throw new Error('Market catalog request failed');
+    const payload=await response.json();
+    return Array.isArray(payload?.data?.items)?payload.data.items:[];
+  };
+
   const run=async query=>{
     const q=String(query||'').trim();
     const key=intentFor(q);
     intentButtons.forEach(b=>b.classList.toggle('active',b.dataset.discoveryIntent===key));
-    results.innerHTML='<div class="discovery-loading">Connecting discovery pathways…</div>';
+    results.innerHTML='<div class="discovery-loading">Searching live Market entities and connected ecosystem pathways…</div>';
     let catalog=[];
     try{catalog=await searchCatalog(q);}catch(_){catalog=[];}
     render(catalog,q);
-    if(['products','services','solutions','partners','knowledge'].includes(key) && !catalog.length) routeToWorld(key);
-    document.getElementById('discovery-engine')?.scrollIntoView({behavior:'smooth',block:'nearest'});
+    if(!catalog.length && ['products','services','solutions','partners'].includes(key)) routeToWorld(key);
   };
+
   form.addEventListener('submit',e=>{e.preventDefault();run(input.value);});
   intentButtons.forEach(button=>button.addEventListener('click',()=>{const key=button.dataset.discoveryIntent||'discovery';input.value=key==='discovery'?'':key;run(input.value||key);}));
   document.querySelectorAll('[data-discovery-route]').forEach(button=>button.addEventListener('click',()=>routeToWorld(button.dataset.discoveryRoute)));

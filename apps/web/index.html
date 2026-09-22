@@ -348,7 +348,7 @@ if(pillarKeys.includes(initialHash)){
 window.addEventListener('hashchange',()=>{const key=location.hash.replace('#','');if(pillarKeys.includes(key))activatePillar(key,false);});
 
 
-/* Market Center experience — live commercial catalog */
+/* Market Center experience — live entity catalog + detail experience */
 (() => {
   const catalog=document.getElementById('market-catalog');
   const search=document.getElementById('market-search');
@@ -356,34 +356,80 @@ window.addEventListener('hashchange',()=>{const key=location.hash.replace('#',''
   const clear=document.getElementById('market-search-clear');
   if(!catalog)return;
   const state={filter:'all',query:'',sort:'featured',items:[],loading:false,error:''};
-  const configuredTenant=document.querySelector('meta[name="emeriona-market-tenant"]')?.getAttribute('content')?.trim() || window.EMERIONA_MARKET_TENANT_ID || '';
-  const escapeHtml=(value)=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+  const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const labelForType=type=>({product:'Product',service:'Service',offer:'Offer'})[type]||'Market Offering';
   const render=()=>{
-    if(state.loading){catalog.innerHTML='<div class="market-empty"><strong>Loading Market.</strong><span>Connecting to the EMERIONA commercial catalog…</span></div>';return;}
+    if(state.loading){catalog.innerHTML='<div class="market-empty"><strong>Loading Market.</strong><span>Connecting to the live EMERIONA commercial catalog…</span></div>';return;}
     if(state.error){catalog.innerHTML='<div class="market-empty"><strong>Market catalog unavailable.</strong><span>'+escapeHtml(state.error)+'</span></div>';return;}
-    let items=state.items.filter(item=>state.filter==='all'||item.type===state.filter||(state.filter==='partners'&&item.partner&&item.partner!=='EMERIONA GLOBAL'));
+    let items=state.items.filter(item=>state.filter==='all'||item.type===({products:'product',services:'service',offers:'offer'}[state.filter]||'')||(state.filter==='partners'&&item.partner&&item.partner!=='EMERIONA GLOBAL'));
     if(state.sort==='name')items.sort((a,b)=>String(a.name).localeCompare(String(b.name)));
     if(state.sort==='new')items.sort((a,b)=>Number(Boolean(b.isNew))-Number(Boolean(a.isNew)));
     catalog.innerHTML=items.length?items.map(item=>{
-      const type=escapeHtml(item.type||'offering'), name=escapeHtml(item.name||'Untitled offering'), partner=escapeHtml(item.partner||'EMERIONA GLOBAL');
-      const detail='?marketItem='+encodeURIComponent(String(item.id));
-      return '<article class="market-card" data-market-item-id="'+escapeHtml(item.id)+'"><div class="market-card-media"><span>'+type.toUpperCase()+'</span></div><div class="market-card-body"><small>'+escapeHtml(item.category||'EMERIONA MARKET')+'</small><h4>'+name+'</h4><p>Published and commercially eligible inside EMERIONA MARKET CENTER.</p><div class="market-card-meta"><span>'+partner+'</span><a href="#commercial-journey" data-market-detail="'+escapeHtml(item.id)+'">View details →</a></div></div></article>';
-    }).join(''):'<div class="market-empty"><strong>Market catalog ready.</strong><span>No published and commercially eligible items match the current selection. Real products, services and partner offerings appear automatically from the commercial catalog when eligible.</span></div>';
+      const type=escapeHtml(labelForType(item.type)),name=escapeHtml(item.name||'Untitled offering'),partner=escapeHtml(item.partner||'EMERIONA GLOBAL');
+      return '<article class="market-card" data-market-item-id="'+escapeHtml(item.id)+'"><div class="market-card-media"><span>'+type.toUpperCase()+'</span></div><div class="market-card-body"><small>'+partner+'</small><h4>'+name+'</h4><p>Live commercial entity published through the EMERIONA Market catalog.</p><div class="market-card-meta"><span>'+escapeHtml(item.status||'PUBLISHED')+'</span><button type="button" data-market-detail="'+escapeHtml(item.id)+'">View details →</button></div></div></article>';
+    }).join(''):'<div class="market-empty"><strong>Market catalog ready.</strong><span>No published and commercially eligible entities match the current selection. Real products, services and partner offerings appear automatically from the live commercial catalog.</span></div>';
+    catalog.querySelectorAll('[data-market-detail]').forEach(button=>button.addEventListener('click',()=>{
+      const item=state.items.find(candidate=>String(candidate.id)===button.dataset.marketDetail);
+      if(item)openDetail(item);
+    }));
   };
+
+  const openDetail=item=>{
+    let panel=document.getElementById('market-item-detail');
+    if(!panel){
+      panel=document.createElement('div');
+      panel.id='market-item-detail';
+      panel.className='market-item-detail';
+      panel.setAttribute('role','dialog');
+      panel.setAttribute('aria-modal','true');
+      panel.innerHTML='<div class="market-item-detail-backdrop" data-market-detail-close></div><div class="market-item-detail-panel"><button type="button" class="market-item-detail-close" data-market-detail-close aria-label="Close">×</button><div id="market-item-detail-content"></div></div>';
+      document.body.appendChild(panel);
+      panel.querySelectorAll('[data-market-detail-close]').forEach(el=>el.addEventListener('click',()=>panel.classList.remove('open')));
+    }
+    const content=panel.querySelector('#market-item-detail-content');
+    const type=escapeHtml(labelForType(item.type)),name=escapeHtml(item.name||'Untitled offering'),partner=escapeHtml(item.partner||'EMERIONA GLOBAL');
+    content.innerHTML='<div class="section-label"><span>LIVE ENTITY</span><p class="eyebrow">EMERIONA MARKET</p></div><h3>'+name+'</h3><div class="market-item-detail-meta"><span>'+type+'</span><span>'+escapeHtml(item.status||'PUBLISHED')+'</span><span>'+partner+'</span></div><p>This is a real catalog entity returned by the EMERIONA Market API. Its publication and partner visibility are governed by the commercial catalog.</p><div class="market-item-detail-actions"><a href="#contact" data-market-inquiry>Make an inquiry →</a><button type="button" data-market-detail-close>Return to Market</button></div>';
+    content.querySelector('[data-market-inquiry]')?.addEventListener('click',()=>panel.classList.remove('open'));
+    content.querySelector('[data-market-detail-close]')?.addEventListener('click',()=>panel.classList.remove('open'));
+    panel.classList.add('open');
+  };
+
+  window.addEventListener('emeriona:market-item',event=>openDetail(event.detail));
+
   const load=async()=>{
-    if(!configuredTenant){state.items=[];state.error='Market API is connected and waiting for the production tenant context. No commercial data is fabricated or inserted.';render();return;}
     state.loading=true;state.error='';render();
     try{
       const params=new URLSearchParams({filter:'all',limit:'100'});
-      const response=await fetch('/api/v1/market/catalog?'+params.toString(),{headers:{'x-tenant-id':configuredTenant,'accept':'application/json'}});
+      const response=await fetch('/api/v1/market/catalog?'+params.toString(),{headers:{accept:'application/json'}});
       const payload=await response.json();
       if(!response.ok)throw new Error(payload?.error?.message||'Market catalog request failed');
       state.items=Array.isArray(payload?.data?.items)?payload.data.items:[];
     }catch(error){state.items=[];state.error=error instanceof Error?error.message:'Market catalog request failed';}
     finally{state.loading=false;render();}
   };
-  document.querySelectorAll('[data-market-filter]').forEach(el=>el.addEventListener('click',e=>{const f=e.currentTarget.dataset.marketFilter;if(!f)return;e.preventDefault();state.filter=f;document.querySelectorAll('.market-filter').forEach(b=>b.classList.toggle('active',b.dataset.marketFilter===f));render();document.getElementById('market-catalog')?.scrollIntoView({behavior:'smooth',block:'start'});}));
-  search?.addEventListener('input',async e=>{state.query=e.target.value;state.loading=true;render();if(!configuredTenant){state.loading=false;render();return;}try{const params=new URLSearchParams({filter:state.filter==='partners'?'partners':state.filter,q:state.query,limit:'100'});const response=await fetch('/api/v1/market/catalog?'+params.toString(),{headers:{'x-tenant-id':configuredTenant,'accept':'application/json'}});const payload=await response.json();if(!response.ok)throw new Error(payload?.error?.message||'Market search failed');state.items=Array.isArray(payload?.data?.items)?payload.data.items:[];state.error='';}catch(error){state.error=error instanceof Error?error.message:'Market search failed';}finally{state.loading=false;render();}});
+
+  const loadFiltered=async()=>{
+    state.loading=true;state.error='';render();
+    try{
+      const apiFilter=state.filter==='partners'?'partners':state.filter;
+      const params=new URLSearchParams({filter:apiFilter,q:state.query,limit:'100'});
+      const response=await fetch('/api/v1/market/catalog?'+params.toString(),{headers:{accept:'application/json'}});
+      const payload=await response.json();
+      if(!response.ok)throw new Error(payload?.error?.message||'Market search failed');
+      state.items=Array.isArray(payload?.data?.items)?payload.data.items:[];
+    }catch(error){state.items=[];state.error=error instanceof Error?error.message:'Market search failed';}
+    finally{state.loading=false;render();}
+  };
+
+  document.querySelectorAll('[data-market-filter]').forEach(el=>el.addEventListener('click',e=>{
+    const f=e.currentTarget.dataset.marketFilter;if(!f)return;
+    e.preventDefault();state.filter=f;
+    document.querySelectorAll('.market-filter').forEach(b=>b.classList.toggle('active',b.dataset.marketFilter===f));
+    loadFiltered();
+    document.getElementById('market-catalog')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }));
+  search?.addEventListener('input',e=>{state.query=e.target.value;loadFiltered();});
   sort?.addEventListener('change',e=>{state.sort=e.target.value;render();});
   clear?.addEventListener('click',()=>{state.query='';if(search)search.value='';load();search?.focus();});
   load();
