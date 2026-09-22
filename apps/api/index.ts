@@ -19,7 +19,7 @@ if (path === "/api/health/ready") { if (request.method !== "GET") return errorRe
 if (!hasApiPath(path)) return errorResponse("not_found", "API route not found", 404); if (!route || route.route.kind !== "USE_CASE" || !route.route.useCaseId) return errorResponse("method_not_allowed", "Method not allowed", 405);
 const useCaseId = route.route.useCaseId as UseCaseId; let runtimeContext; try { runtimeContext = createRuntimeHttpContext({ request, service: "emeriona-global-api", environment: "PRODUCTION", version: RUNTIME_HTTP_VERSION, defaultTenantId: request.method === "GET" && (path === "/api/v1/market/catalog" || path === "/api/v1/catalog/categories") ? "emeriona-global" : undefined }); validateRuntimeHttpPolicy(request); } catch (error) { return errorResponse("invalid_runtime_context", error instanceof Error ? error.message : "Invalid runtime context", 400); }
 const actorId = runtimeContext.actorId; const requestContext = { requestId: runtimeContext.requestId, correlationId: runtimeContext.correlationId };
-if (request.method === "GET" && path === "/api/v1/market/catalog") {
+if (request.method === "GET" && (path === "/api/v1/market/catalog" || path === "/api/v1/catalog/categories")) {
   const filter = url.searchParams.get("filter") ?? "all";
   const categoryKind = url.searchParams.get("kind") ?? "PRODUCT";
   const query = url.searchParams.get("q") ?? undefined;
