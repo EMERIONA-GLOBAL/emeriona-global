@@ -3,6 +3,8 @@ export { REPOSITORY_PORT_VERSION } from "./repositories.js";
 export type { CustomerId, CustomerStatus, CustomerProfile, CustomerRepositoryPort, CustomerCapabilityContract } from "./customer.js";
 export { CUSTOMER_DOMAIN_VERSION } from "./customer.js";
 export type { ProductId, ServiceId, CatalogId, CatalogOwnerId, Product, Service, Catalog, CatalogRepositoryPort } from "./catalog.js";
+export type { CatalogCategoryKind, CatalogCategoryStatus, CatalogCategoryId, CatalogCategory, CatalogCategoryRepositoryPort } from "./catalog-taxonomy.js";
+export { CATALOG_TAXONOMY_VERSION } from "./catalog-taxonomy.js";
 export { CATALOG_DOMAIN_VERSION } from "./catalog.js";
 export type { PartnerId, PartnerOfferId, SettlementId, PartnerAccount, PartnerStore, PartnerProduct, PartnerService, PartnerOffer, PartnerSettlement, PartnerAccessPolicy, PartnerRepositoryPort } from "./partner.js";
 export { PARTNER_ECOSYSTEM_DOMAIN_VERSION } from "./partner.js";
