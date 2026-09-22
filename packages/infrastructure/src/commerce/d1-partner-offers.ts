@@ -15,7 +15,7 @@ export class D1PartnerOffersAdapter implements PartnerOfferRepositoryPortV1 {
     const existing=current.results[0]; if(!existing) throw new Error("Partner offer not found for tenant");
     const nextName=patch.name??existing.name; const nextStatus=patch.status??existing.status;
     if(["ACTIVE","PAUSED"].includes(nextStatus) && !(await this.isVerified(existing.partnerId,tenantId))) throw new Error("Partner must be verified before activating an offer");
-    const updated=await this.db.prepare("UPDATE offers SET name=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND tenant_id=? RETURNING id,partner_id AS partnerId,name,status").bind(nextName,nextStatus,id,tenantId).all<{id:string;partnerId:string;name:string;status:PartnerOffer["status"]}>();
+    const updated=await this.db.prepare("UPDATE offers SET name=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND tenant_id=? RETURNING id,partner_id AS partnerId,name,status").bind(nextName,nextStatus,id,tenantId).all<{id:string;partnerId:string;name:string;status:PartnerOffer["status"];productId?:string;serviceId?:string}>();
     const result=updated.results[0]; if(!result) throw new Error("Partner offer update failed");
     return {id:result.id as PartnerOfferId,partnerId:result.partnerId as PartnerOffer["partnerId"],name:result.name,productId:result.productId??undefined,serviceId:result.serviceId??undefined,status:result.status};
   }
