@@ -1,5 +1,5 @@
 (() => {
-  const form=document.getElementById('discovery-search');
+  if(!document.getElementById('solution-composer-style')){const style=document.createElement('style');style.id='solution-composer-style';style.textContent='.solution-composer{margin-top:1.25rem;padding:1.25rem;border:1px solid rgba(212,175,55,.22);border-radius:18px;background:rgba(255,255,255,.025)}.solution-composer-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem;margin-top:1rem}.solution-composer-item{display:flex;gap:.7rem;align-items:flex-start;padding:.8rem;border:1px solid rgba(255,255,255,.09);border-radius:12px;cursor:pointer}.solution-composer-item input{margin-top:.25rem}.solution-composer-item strong{display:block}.solution-composer-item small{display:block;margin-top:.2rem;opacity:.65}.solution-composer-actions{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:1rem}.solution-composer-actions span{opacity:.65;font-size:.85rem}@media(max-width:700px){.solution-composer-list{grid-template-columns:1fr}.solution-composer-actions{flex-direction:column;align-items:flex-start}}';document.head.appendChild(style);}\n  const form=document.getElementById('discovery-search');
   const input=document.getElementById('discovery-input');
   const results=document.getElementById('discovery-results');
   const intentButtons=[...document.querySelectorAll('[data-discovery-intent]')];
@@ -59,7 +59,7 @@
       if(!items.length){resultsHost.innerHTML='<div class="discovery-empty"><strong>No live capabilities are published yet.</strong><span>The solution path is ready. Published products, services and partner offerings will become selectable automatically when real commercial entities are added.</span></div>';return;}
       resultsHost.innerHTML='<div class="solution-composer-list">'+items.slice(0,24).map(item=>'<label class="solution-composer-item"><input type="checkbox" value="'+escape(item.id)+'"><span><strong>'+escape(item.name||'Market capability')+'</strong><small>'+escape(item.type||'offering')+' · '+escape(item.partner||'EMERIONA GLOBAL')+' · '+escape(item.status||'PUBLISHED')+'</small></span></label>').join('')+'</div><div class="solution-composer-actions"><button type="button" class="discovery-result-action" data-solution-submit>Start solution inquiry →</button><span data-solution-count>0 capabilities selected</span></div>';
       const checks=[...resultsHost.querySelectorAll('input[type="checkbox"]')],count=resultsHost.querySelector('[data-solution-count]');
-      const sync=()=>{const n=checks.filter(c=>c.checked).length;if(count)count.textContent=n+' capability'+(n===1?'':'ies')+' selected';};
+      const sync=()=>{const n=checks.filter(c=>c.checked).length;if(count)count.textContent=n+' '+(n===1?'capability':'capabilities')+' selected';};
       checks.forEach(c=>c.addEventListener('change',sync));
       resultsHost.querySelector('[data-solution-submit]')?.addEventListener('click',()=>{
         const selected=checks.filter(c=>c.checked).map(c=>items.find(item=>String(item.id)===c.value)).filter(Boolean);
