@@ -42,15 +42,44 @@
     const catalog=Array.isArray(payload?.data?.items)?payload.data.items:[];
     return catalog.map(item=>({key:'market',label:item.type||'Market',title:item.name||'Market offering',description:'Published and commercially eligible in EMERIONA MARKET CENTER.',href:'#commercial-journey'}));
   };
+  const routeMap={
+    products:{selector:'#market-products',filter:'products'},
+    services:{selector:'#market-services',filter:'services'},
+    solutions:{selector:'#market-solutions',filter:'solutions'},
+    partners:{selector:'#market-partners'},
+    knowledge:{selector:'#knowledge'},
+    opportunities:{selector:'#contact',subject:'Digital Opportunity'},
+    projects:{selector:'#contact',subject:'Digital Project'}
+  };
+  const activateMarketFilter=filter=>{
+    const button=document.querySelector('.market-filter[data-market-filter="'+filter+'"]');
+    if(button)button.click();
+  };
+  const routeToWorld=key=>{
+    const route=routeMap[key]; if(!route)return;
+    if(route.filter)activateMarketFilter(route.filter);
+    const target=document.querySelector(route.selector);
+    if(!target)return;
+    if(route.subject){
+      const email='emeriona.global@gmail.com';
+      const subject=encodeURIComponent(route.subject);
+      target.querySelector('a[href^="mailto:"]')?.setAttribute('href','mailto:'+email+'?subject='+subject);
+    }
+    target.scrollIntoView({behavior:'smooth',block:'start'});
+    if(history.replaceState)history.replaceState(null,'',route.selector);
+  };
   const run=async query=>{
     const q=String(query||'').trim();
-    intentButtons.forEach(b=>b.classList.toggle('active',b.dataset.discoveryIntent===intentFor(q)));
+    const key=intentFor(q);
+    intentButtons.forEach(b=>b.classList.toggle('active',b.dataset.discoveryIntent===key));
     results.innerHTML='<div class="discovery-loading">Connecting discovery pathways…</div>';
     let catalog=[];
     try{catalog=await searchCatalog(q);}catch(_){catalog=[];}
     render(catalog,q);
+    if(['products','services','solutions','partners','knowledge'].includes(key) && !catalog.length) routeToWorld(key);
     document.getElementById('discovery-engine')?.scrollIntoView({behavior:'smooth',block:'nearest'});
   };
   form.addEventListener('submit',e=>{e.preventDefault();run(input.value);});
   intentButtons.forEach(button=>button.addEventListener('click',()=>{const key=button.dataset.discoveryIntent||'discovery';input.value=key==='discovery'?'':key;run(input.value||key);}));
+  document.querySelectorAll('[data-discovery-route]').forEach(button=>button.addEventListener('click',()=>routeToWorld(button.dataset.discoveryRoute)));
 })();

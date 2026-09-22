@@ -314,3 +314,16 @@ html{scroll-padding-top:76px}.site-header{padding:12px 20px}.brand{margin-right:
 .discovery-empty span{display:block;margin-top:5px;color:#95a2a9;font-size:10px;line-height:1.6}
 .discovery-loading{padding:16px;color:#aeb9be;font-size:11px}
 @media(max-width:700px){.discovery-engine{padding:15px;border-radius:18px}.discovery-engine-head{display:block}.discovery-engine-head small{margin-top:8px}.discovery-result{grid-template-columns:1fr;gap:6px}.discovery-result a{justify-self:start}.discovery-result>span{min-width:0}}
+
+/* Discovery → ecosystem world connectors */
+.discovery-bridge{margin:22px auto 0;max-width:980px;padding:18px;border-top:1px solid rgba(255,255,255,.08)}
+.discovery-bridge-head{display:grid;gap:5px;margin-bottom:12px}
+.discovery-bridge-head span{color:var(--gold);font-size:8px;font-weight:800;letter-spacing:.18em}
+.discovery-bridge-head strong{color:#fff;font-size:16px}
+.discovery-bridge-head small{max-width:700px;color:#8f9da4;font-size:10px;line-height:1.6}
+.discovery-bridge-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.discovery-bridge-grid button{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025);color:#d6dde0;font:inherit;font-size:10px;text-align:left;cursor:pointer}
+.discovery-bridge-grid button:hover,.discovery-bridge-grid button:focus-visible{border-color:rgba(215,181,109,.5);background:rgba(215,181,109,.08);outline:none}
+.discovery-bridge-grid button span{color:#9e8b5c;font-size:8px;white-space:nowrap}
+@media(max-width:700px){.discovery-bridge-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.discovery-bridge-grid{grid-template-columns:1fr}}
