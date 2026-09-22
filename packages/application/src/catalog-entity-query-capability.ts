@@ -1,10 +1,12 @@
 import type { Product, ProductId, Service, ServiceId } from "../../domains/src/catalog.js";
 import type { CatalogCategory } from "../../domains/src/catalog-taxonomy.js";
+import type { PartnerOffer } from "../../domains/src/partner.js";
 import type { ProductRepositoryPortV1, ServiceRepositoryPortV1 } from "../../domains/src/ports.js";
 import type { UseCaseHandler, UseCaseRequest, UseCaseResponse } from "./index.js";
 
 export interface CatalogEntityQueryInput { readonly id: string; }
-export interface ProductQueryOutput { readonly product: Product | null; readonly categories: readonly CatalogCategory[]; }
+export interface ProductQueryOutput { readonly product: Product | null; readonly categories: readonly CatalogCategory[];
+  partnerOfferings: readonly PartnerOffer[]; }
 export interface ServiceQueryOutput { readonly service: Service | null; readonly categories: readonly CatalogCategory[]; }
 
 export class QueryProductHandler implements UseCaseHandler<CatalogEntityQueryInput,ProductQueryOutput>{
