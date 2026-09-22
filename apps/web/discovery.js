@@ -8,7 +8,7 @@
   const pathways=[
     {key:'products',label:'Products',title:'Digital Products',description:'Explore software, platforms, applications, SaaS, AI products and digital assets.',href:'#commerce'},
     {key:'services',label:'Services',title:'Digital Services',description:'Find technology, business, creative, AI, integration and digital capability pathways.',href:'#contact'},
-    {key:'solutions',label:'Solutions',title:'Digital Solutions',description:'Connect a real need with combinations of products, services, expertise and partner capabilities.',href:'#solutions'},
+    {key:'solutions',label:'Solutions',title:'Digital Solutions',description:'Connect a real need with combinations of products, services, expertise and partner capabilities.',href:'#market-solutions'},
     {key:'knowledge',label:'Knowledge',title:'Digital Knowledge',description:'Explore research, guides, insights, reports, resources and practical knowledge.',href:'#knowledge'},
     {key:'opportunities',label:'Opportunities',title:'Digital Opportunities',description:'Explore business, partnership, project, collaboration and innovation opportunity paths.',href:'#contact'},
     {key:'projects',label:'Projects',title:'Digital Projects',description:'Move from idea through discovery, assessment, design, development, launch and impact.',href:'#contact'},
