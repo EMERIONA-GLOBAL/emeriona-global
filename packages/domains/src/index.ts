@@ -39,4 +39,6 @@ export type { PricingRequestId, PricingRequestStatus, PricingRequest, PricingReq
 export { PRICING_REQUEST_DOMAIN_VERSION } from "./pricing-request.js";
 export type { PricingDecision, PricingDecisionId, PricingDecisionStatus, PricingDecisionInput, PricingDecisionRepositoryPortV1, PricingInputDirection } from "./pricing-decision.js";
 export { GOVERNED_PRICING_DOMAIN_VERSION } from "./pricing-decision.js";
-export const DOMAIN_LAYER_VERSION = "2.2.0" as const;
+export type { CommercialOfferId, CommercialOfferStatus, CommercialOffer, CommercialOfferRepositoryPortV1 } from "./commercial-offer.js";
+export { COMMERCIAL_OFFER_DOMAIN_VERSION } from "./commercial-offer.js";
+export const DOMAIN_LAYER_VERSION = "2.3.0" as const;
