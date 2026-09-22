@@ -43,6 +43,34 @@
     projects:{selector:'#contact',subject:'Digital Project'}
   };
 
+  const activateSolutionExperience=async target=>{
+    if(!target||target.dataset.solutionExperience==='ready')return;
+    target.dataset.solutionExperience='ready';
+    const host=document.createElement('div');
+    host.className='solution-composer';
+    host.innerHTML='<div class="discovery-bridge-head"><span>SOLUTION COMPOSER</span><strong>Build from real capabilities.</strong><small>Select live products, services or partner offerings when they exist. Nothing is invented; your selection becomes a structured solution inquiry.</small></div><div class="solution-composer-results"><div class="discovery-loading">Loading live Market capabilities…</div></div>';
+    target.appendChild(host);
+    const resultsHost=host.querySelector('.solution-composer-results');
+    try{
+      const response=await fetch('/api/v1/market/catalog?'+new URLSearchParams({filter:'all',limit:'100'}).toString(),{headers:{accept:'application/json'}});
+      if(!response.ok)throw new Error('Live Market capabilities are unavailable');
+      const payload=await response.json();
+      const items=Array.isArray(payload?.data?.items)?payload.data.items:[];
+      if(!items.length){resultsHost.innerHTML='<div class="discovery-empty"><strong>No live capabilities are published yet.</strong><span>The solution path is ready. Published products, services and partner offerings will become selectable automatically when real commercial entities are added.</span></div>';return;}
+      resultsHost.innerHTML='<div class="solution-composer-list">'+items.slice(0,24).map(item=>'<label class="solution-composer-item"><input type="checkbox" value="'+escape(item.id)+'"><span><strong>'+escape(item.name||'Market capability')+'</strong><small>'+escape(item.type||'offering')+' · '+escape(item.partner||'EMERIONA GLOBAL')+' · '+escape(item.status||'PUBLISHED')+'</small></span></label>').join('')+'</div><div class="solution-composer-actions"><button type="button" class="discovery-result-action" data-solution-submit>Start solution inquiry →</button><span data-solution-count>0 capabilities selected</span></div>';
+      const checks=[...resultsHost.querySelectorAll('input[type="checkbox"]')],count=resultsHost.querySelector('[data-solution-count]');
+      const sync=()=>{const n=checks.filter(c=>c.checked).length;if(count)count.textContent=n+' capability'+(n===1?'':'ies')+' selected';};
+      checks.forEach(c=>c.addEventListener('change',sync));
+      resultsHost.querySelector('[data-solution-submit]')?.addEventListener('click',()=>{
+        const selected=checks.filter(c=>c.checked).map(c=>items.find(item=>String(item.id)===c.value)).filter(Boolean);
+        if(!selected.length){count.textContent='Select at least one live capability first.';return;}
+        const summary=selected.map(item=>item.name+' ['+item.type+']').join(', ');
+        const href='mailto:emeriona.global@gmail.com?subject='+encodeURIComponent('Digital Solution Inquiry')+'&body='+encodeURIComponent('I would like to explore a solution built from these live EMERIONA capabilities:\\n\\n'+summary+'\\n\\nPlease help assess the appropriate combination, scope and next steps.');
+        window.location.href=href;
+      });
+    }catch(error){resultsHost.innerHTML='<div class="discovery-empty"><strong>Solution composition is ready.</strong><span>'+escape(error instanceof Error?error.message:'Live Market capabilities are unavailable')+'. You can still submit a solution inquiry through the connection path.</span></div>';}
+  };
+
   const routeToWorld=key=>{
     const route=routeMap[key]; if(!route)return;
     if(route.filter)document.querySelector('.market-filter[data-market-filter="'+route.filter+'"]')?.click();
@@ -51,7 +79,7 @@
       const subject=encodeURIComponent(route.subject);
       target.querySelector('a[href^="mailto:"]')?.setAttribute('href','mailto:emeriona.global@gmail.com?subject='+subject);
     }
-    target.scrollIntoView({behavior:'smooth',block:'start'});
+    if(key==='solutions')activateSolutionExperience(target);\n    target.scrollIntoView({behavior:'smooth',block:'start'});
     if(history.replaceState)history.replaceState(null,'',route.selector);
   };
 
