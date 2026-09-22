@@ -8,11 +8,12 @@
   const pathways=[
     {key:'products',label:'Products',title:'Digital Products',description:'Explore published products from the live EMERIONA commercial catalog.',href:'#commerce'},
     {key:'services',label:'Services',title:'Digital Services',description:'Explore published services from the live EMERIONA commercial catalog.',href:'#commerce'},
-    {key:'solutions',label:'Solutions',title:'Digital Solutions',description:'Connect a real need with products, services, expertise and partner capabilities.',href:'#market-solutions'},
+    {key:'offers',label:'Partner & Market Offers',title:'Live Offers',description:'Explore active offers that are genuinely published and commercially eligible.',href:'#commerce'},
+    {key:'solutions',label:'Solutions',title:'Digital Solutions',description:'Connect a real need with live products, services, expertise and partner capabilities.',href:'#market-solutions'},
     {key:'knowledge',label:'Knowledge',title:'Digital Knowledge',description:'Explore research, guides, insights, reports, resources and practical knowledge.',href:'#knowledge'},
     {key:'opportunities',label:'Opportunities',title:'Digital Opportunities',description:'Explore business, partnership, project, collaboration and innovation opportunity paths.',href:'#contact'},
     {key:'projects',label:'Projects',title:'Digital Projects',description:'Move from idea through discovery, assessment, design, development, launch and impact.',href:'#contact'},
-    {key:'partners',label:'Partners',title:'Digital Partners',description:'Explore approved partner offerings published in the live Market catalog.',href:'#partnerships'},
+    {key:'partners',label:'Partners',title:'Digital Partners',description:'Explore verified partner products, services and active offerings published in the live Market catalog.',href:'#partnerships'},
     {key:'discovery',label:'Discovery',title:'EMERIONA Discovery',description:'Let the discovery engine route your need across the connected ecosystem.',href:'#discovery'}
   ];
 
@@ -22,6 +23,7 @@
     const q=normalize(query);
     if(/product|software|app|saas|tool|منتج|برنامج|تطبيق/.test(q))return'products';
     if(/service|consult|support|technology|خدمة|استشار|تقني/.test(q))return'services';
+    if(/offer|deal|discount|bundle|عرض|عروض|خصم|باقة/.test(q))return'offers';
     if(/solution|solve|problem|حل|مشكلة/.test(q))return'solutions';
     if(/knowledge|research|guide|report|learn|معرف|بحث|دليل|تقرير|تعلم/.test(q))return'knowledge';
     if(/opportunit|career|collab|فرص|فرصة|تعاون/.test(q))return'opportunities';
@@ -33,7 +35,8 @@
   const routeMap={
     products:{selector:'#commerce',filter:'products'},
     services:{selector:'#commerce',filter:'services'},
-    solutions:{selector:'#market-solutions',filter:'solutions'},
+    offers:{selector:'#commerce',filter:'offers'},
+    solutions:{selector:'#market-solutions'},
     partners:{selector:'#market-partners',filter:'partners'},
     knowledge:{selector:'#knowledge'},
     opportunities:{selector:'#contact',subject:'Digital Opportunity'},
@@ -70,13 +73,15 @@
       return;
     }
     const key=intentFor(message);
-    const routes=pathways.filter(p=>p.key===key||p.key==='discovery'||(key==='partners'&&p.key==='products')).slice(0,4);
+    const routes=pathways.filter(p=>p.key===key||p.key==='discovery'||(key==='partners'&&p.key==='offers')).slice(0,4);
     results.innerHTML=routes.map(p=>'<article class="discovery-result"><span>'+escape(p.label)+'</span><div><strong>'+escape(p.title)+'</strong><small>'+escape(p.description)+'</small></div><a href="'+p.href+'" data-discovery-fallback="'+p.key+'">Open path →</a></article>').join('');
     results.querySelectorAll('[data-discovery-fallback]').forEach(a=>a.addEventListener('click',e=>{const key=a.dataset.discoveryFallback;if(routeMap[key]){e.preventDefault();routeToWorld(key);}}));
   };
 
-  const searchCatalog=async query=>{
-    const response=await fetch('/api/v1/market/catalog?'+new URLSearchParams({filter:'all',q:String(query||''),limit:'20'}).toString(),{headers:{accept:'application/json'}});
+  const searchCatalog=async(query,intent)=>{
+    const filter=intent==='products'||intent==='services'||intent==='offers'||intent==='partners'?intent==='partners'?'partners':intent:'all';
+    const params={filter,q:String(query||''),limit:'20'};
+    const response=await fetch('/api/v1/market/catalog?'+new URLSearchParams(params).toString(),{headers:{accept:'application/json'}});
     if(!response.ok)throw new Error('Market catalog request failed');
     const payload=await response.json();
     return Array.isArray(payload?.data?.items)?payload.data.items:[];
@@ -88,9 +93,13 @@
     intentButtons.forEach(b=>b.classList.toggle('active',b.dataset.discoveryIntent===key));
     results.innerHTML='<div class="discovery-loading">Searching live Market entities and connected ecosystem pathways…</div>';
     let catalog=[];
-    try{catalog=await searchCatalog(q);}catch(_){catalog=[];}
+    if(key!=='solutions'&&key!=='knowledge'&&key!=='opportunities'&&key!=='projects'&&key!=='discovery'){
+      try{catalog=await searchCatalog(q,key);}catch(_){catalog=[];}
+    }else if(key==='discovery'&&q){
+      try{catalog=await searchCatalog(q,key);}catch(_){catalog=[];}
+    }
     render(catalog,q);
-    if(!catalog.length && ['products','services','solutions','partners'].includes(key)) routeToWorld(key);
+    if(!catalog.length&&['products','services','offers','solutions','partners'].includes(key))routeToWorld(key);
   };
 
   form.addEventListener('submit',e=>{e.preventDefault();run(input.value);});
