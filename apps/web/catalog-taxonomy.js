@@ -38,6 +38,7 @@
     panel.appendChild(host);
     host.querySelectorAll("[data-taxonomy-filter]").forEach(link=>link.addEventListener("click",()=>{document.querySelector('[data-market-filter="'+(kind==="PRODUCT"?"products":"services")+'"]')?.click();}));
   };
-  render("#market-products","Explore the Product World",productCategories,"PRODUCT");
-  render("#market-services","Explore the Service World",serviceCategories,"SERVICE");
+  const load=(selector,title,kind)=>fetch("/api/v1/catalog/categories?kind="+encodeURIComponent(kind),{headers:{accept:"application/json"}}).then(r=>r.ok?r.json():Promise.reject(new Error("Category request failed"))).then(payload=>{const categories=(payload?.data?.categories||[]).map(item=>[item.slug,item.name,item.description||""]);render(selector,title,categories,kind);}).catch(()=>render(selector,title,[],kind));
+  load("#market-products","Explore the Product World","PRODUCT");
+  load("#market-services","Explore the Service World","SERVICE");
 })();
