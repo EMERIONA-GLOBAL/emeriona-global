@@ -375,24 +375,23 @@ window.addEventListener('hashchange',()=>{const key=location.hash.replace('#',''
     }));
   };
 
-  const openDetail=item=>{
+  const openDetail=async item=>{
     let panel=document.getElementById('market-item-detail');
     if(!panel){
-      panel=document.createElement('div');
-      panel.id='market-item-detail';
-      panel.className='market-item-detail';
-      panel.setAttribute('role','dialog');
-      panel.setAttribute('aria-modal','true');
+      panel=document.createElement('div'); panel.id='market-item-detail'; panel.className='market-item-detail'; panel.setAttribute('role','dialog'); panel.setAttribute('aria-modal','true');
       panel.innerHTML='<div class="market-item-detail-backdrop" data-market-detail-close></div><div class="market-item-detail-panel"><button type="button" class="market-item-detail-close" data-market-detail-close aria-label="Close">×</button><div id="market-item-detail-content"></div></div>';
-      document.body.appendChild(panel);
-      panel.querySelectorAll('[data-market-detail-close]').forEach(el=>el.addEventListener('click',()=>panel.classList.remove('open')));
+      document.body.appendChild(panel); panel.querySelectorAll('[data-market-detail-close]').forEach(el=>el.addEventListener('click',()=>panel.classList.remove('open')));
     }
-    const content=panel.querySelector('#market-item-detail-content');
-    const type=escapeHtml(labelForType(item.type)),name=escapeHtml(item.name||'Untitled offering'),partner=escapeHtml(item.partner||'EMERIONA GLOBAL');
-    content.innerHTML='<div class="section-label"><span>LIVE ENTITY</span><p class="eyebrow">EMERIONA MARKET</p></div><h3>'+name+'</h3><div class="market-item-detail-meta"><span>'+type+'</span><span>'+escapeHtml(item.status||'PUBLISHED')+'</span><span>'+partner+'</span></div><p>This is a real catalog entity returned by the EMERIONA Market API. Its publication and partner visibility are governed by the commercial catalog.</p><div class="market-item-detail-actions"><a href="#contact" data-market-inquiry>Make an inquiry →</a><button type="button" data-market-detail-close>Return to Market</button></div>';
-    content.querySelector('[data-market-inquiry]')?.addEventListener('click',()=>panel.classList.remove('open'));
-    content.querySelector('[data-market-detail-close]')?.addEventListener('click',()=>panel.classList.remove('open'));
-    panel.classList.add('open');
+    const content=panel.querySelector('#market-item-detail-content'); const type=escapeHtml(labelForType(item.type)),name=escapeHtml(item.name||'Untitled offering'),partner=escapeHtml(item.partner||'EMERIONA GLOBAL');
+    content.innerHTML='<div class="section-label"><span>LIVE ENTITY</span><p class="eyebrow">EMERIONA MARKET</p></div><h3>'+name+'</h3><div class="market-item-detail-meta"><span>'+type+'</span><span>'+escapeHtml(item.status||'PUBLISHED')+'</span><span>'+partner+'</span></div><p>Loading the persisted entity relationships…</p>'; panel.classList.add('open');
+    try{
+      const endpoint=item.type==='product'?'/api/v1/products/query?id=':'/api/v1/services/query?id='; const response=await fetch(endpoint+encodeURIComponent(item.id),{headers:{accept:'application/json'}}); const payload=await response.json();
+      if(!response.ok)throw new Error(payload?.error?.message||'Entity query failed');
+      const entity=payload?.data?.product||payload?.data?.service; const categories=Array.isArray(payload?.data?.categories)?payload.data.categories:[];
+      const categoryHtml=categories.length?categories.map(category=>'<span>'+escapeHtml(category.name)+'</span>').join(''):'<span>Category not assigned yet</span>'; const partnerHtml=entity?.partnerId?'<span>Partner-linked · '+escapeHtml(entity.partnerId)+'</span>':'<span>EMERIONA-managed entity</span>';
+      content.innerHTML='<div class="section-label"><span>LIVE ENTITY</span><p class="eyebrow">EMERIONA MARKET</p></div><h3>'+escapeHtml(entity?.name||item.name||'Untitled offering')+'</h3><div class="market-item-detail-meta"><span>'+type+'</span><span>'+escapeHtml(entity?.status||item.status||'PUBLISHED')+'</span>'+partnerHtml+'</div><div class="market-item-detail-relations"><strong>Commercial relationships</strong><div>'+categoryHtml+'</div></div><p>This detail view is backed by the persisted catalog entity and governed category relationships. Partner offerings and Solution relationships will be activated when their real data relations are available.</p><div class="market-item-detail-actions"><a href="#contact" data-market-inquiry>Make an inquiry →</a><button type="button" data-market-detail-close>Return to Market</button></div>';
+      content.querySelector('[data-market-inquiry]')?.addEventListener('click',()=>panel.classList.remove('open')); content.querySelector('[data-market-detail-close]')?.addEventListener('click',()=>panel.classList.remove('open'));
+    }catch(error){ content.innerHTML='<div class="section-label"><span>LIVE ENTITY</span><p class="eyebrow">EMERIONA MARKET</p></div><h3>'+name+'</h3><p>Entity details could not be loaded from the live commercial API.</p><small>'+escapeHtml(error instanceof Error?error.message:'Entity query failed')+'</small>'; }
   };
 
   window.addEventListener('emeriona:market-item',event=>openDetail(event.detail));
