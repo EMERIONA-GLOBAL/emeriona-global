@@ -1,7 +1,7 @@
 import type { UseCaseHandler, UseCaseRequest, UseCaseResponse } from "./index.js";
 import type { PartnerOffer, PartnerOfferId, PartnerOfferRepositoryPortV1 } from "../../domains/src/index.js";
 
-export interface CreatePartnerOfferInput { partnerId: string; name: string; }
+export interface CreatePartnerOfferInput { partnerId: string; name: string; productId?: string; serviceId?: string; }
 export interface UpdatePartnerOfferInput { offerId: string; name?: string; status?: PartnerOffer["status"]; }
 function required(value:string,field:string):string { if(!value.trim()) throw new Error(`${field} is required`); return value.trim(); }
 function response<T>(request:UseCaseRequest<unknown>,output:T):UseCaseResponse<T>{return {useCaseId:request.useCaseId,correlationId:request.context.correlationId,output};}
@@ -11,7 +11,8 @@ export class CreatePartnerOfferHandler implements UseCaseHandler<CreatePartnerOf
   async handle(request:UseCaseRequest<CreatePartnerOfferInput>):Promise<UseCaseResponse<PartnerOffer>>{
     const partnerId=required(request.input.partnerId,"partnerId");
     const name=required(request.input.name,"name");
-    const offer:PartnerOffer={id:`off_${crypto.randomUUID()}` as PartnerOfferId,partnerId:partnerId as PartnerOffer["partnerId"],name,status:"DRAFT"};
+    if ((request.input.productId?.trim() ? 1 : 0) + (request.input.serviceId?.trim() ? 1 : 0) !== 1) throw new Error("Exactly one productId or serviceId is required");
+    const offer:PartnerOffer={id:`off_${crypto.randomUUID()}` as PartnerOfferId,partnerId:partnerId as PartnerOffer["partnerId"],name,productId:request.input.productId?.trim(),serviceId:request.input.serviceId?.trim(),status:"DRAFT"};
     return response(request,await this.repository.create(offer,request.context.tenantId));
   }
 }

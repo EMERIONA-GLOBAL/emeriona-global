@@ -28,6 +28,8 @@ export interface PartnerOffer {
   readonly id: PartnerOfferId;
   readonly partnerId: PartnerId;
   readonly name: string;
+  readonly productId?: string;
+  readonly serviceId?: string;
   readonly status: "DRAFT" | "ACTIVE" | "PAUSED" | "EXPIRED";
 }
 
