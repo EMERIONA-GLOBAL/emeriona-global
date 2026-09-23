@@ -149,6 +149,7 @@ CREATE TABLE IF NOT EXISTS order_items (
   quantity REAL NOT NULL CHECK (quantity > 0),
   unit_amount REAL NOT NULL CHECK (unit_amount >= 0),
   currency TEXT NOT NULL,
+  commercial_offer_id TEXT REFERENCES commercial_offers(id),
   CHECK ((product_id IS NOT NULL AND service_id IS NULL) OR (product_id IS NULL AND service_id IS NOT NULL))
 );
 CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
