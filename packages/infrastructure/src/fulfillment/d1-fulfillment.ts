@@ -6,7 +6,7 @@ export class D1FulfillmentAdapter {
  constructor(private readonly db:D1DatabaseLike,private readonly tenantId:string,private readonly correlationId:string){}
  async create(input:{orderId:string}):Promise<FulfillmentRecord>{
   const order=await one<{id:string;status:string}>(this.db,"SELECT id,status FROM orders WHERE id=? AND tenant_id=?",[input.orderId,this.tenantId]);
-  if(!order)throw new Error("Order not found for tenant"); if(order.status!=="CONFIRMED"&&order.status!=="PENDING")throw new Error("Order is not eligible for fulfillment");
+  if(!order)throw new Error("Order not found for tenant"); if(order.status!=="CONFIRMED")throw new Error("Order must be CONFIRMED before fulfillment can be created");
   const existing=await one<{id:string;fulfillment_reference:string|null;status:FulfillmentStatus}>(this.db,"SELECT id,fulfillment_reference,status FROM fulfillments WHERE order_id=? AND tenant_id=? LIMIT 1",[input.orderId,this.tenantId]);
   if(existing)return{id:existing.id,orderId:input.orderId as FulfillmentRecord["orderId"],status:existing.status,reference:existing.fulfillment_reference??existing.id};
   const id=`ful_${crypto.randomUUID()}`,reference=`FUL-${new Date().toISOString().slice(0,10).replaceAll("-","")}-${id.slice(-12).toUpperCase()}`,event=`fev_${crypto.randomUUID()}`;
@@ -29,4 +29,4 @@ export class D1FulfillmentAdapter {
   return{id:updated.id,orderId:updated.order_id as FulfillmentRecord["orderId"],status:updated.status,reference:updated.fulfillment_reference};
  }
 }
-export const D1_FULFILLMENT_ADAPTER_VERSION="1.0.0" as const;
+export const D1_FULFILLMENT_ADAPTER_VERSION="1.1.0" as const;
