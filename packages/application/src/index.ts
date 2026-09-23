@@ -73,3 +73,6 @@ export type { CatalogEntityQueryInput, ProductQueryOutput, ServiceQueryOutput } 
 
 export type { AcceptCommercialOfferInput } from "./commercial-offer-acceptance-capability.js";
 export { AcceptCommercialOfferHandler, COMMERCIAL_OFFER_ACCEPTANCE_APPLICATION_VERSION } from "./commercial-offer-acceptance-capability.js";
+
+export type { AddAcceptedCommercialOfferToCartInput } from "./accepted-commercial-offer-to-cart-capability.js";
+export { AddAcceptedCommercialOfferToCartHandler, ACCEPTED_COMMERCIAL_OFFER_TO_CART_APPLICATION_VERSION } from "./accepted-commercial-offer-to-cart-capability.js";
