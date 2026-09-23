@@ -11,3 +11,12 @@
 .discovery-zone{padding-top:78px;background:linear-gradient(180deg,#f1eee6 0%,#fff 100%)}
 @media(max-width:900px){.site-header{position:sticky;min-height:70px;padding:11px 20px}.primary-nav{top:calc(100% + 8px)}.hero-visual{height:64vw;min-height:300px}.hero-content{padding:45px 24px 48px}.hero h1{font-size:clamp(26px,6vw,40px)}}
 @media(max-width:600px){.site-header{padding:10px 16px}.brand-name{font-size:12px}.hero-visual{height:62vw;min-height:230px}.hero-content{padding:38px 20px 42px}.hero-kicker{font-size:9px;letter-spacing:.18em}.hero h1{font-size:30px}.hero-lead{font-size:13px;margin:15px auto 22px}.hero-actions{flex-direction:row;justify-content:center}.button{width:auto}.hero-meta{font-size:8px;margin-top:23px}.discovery-zone{padding-top:62px}}
+/* Final approved homepage controls — visual reference only */
+.header-register{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:8px 12px;border:1px solid rgba(215,181,109,.34);border-radius:12px;background:linear-gradient(180deg,rgba(215,181,109,.11),rgba(255,255,255,.025));color:#f7f5f0;font-size:10px;letter-spacing:.08em;text-transform:uppercase;transition:.2s}
+.header-register svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.header-register:hover,.header-register:focus-visible{border-color:rgba(215,181,109,.7);background:rgba(215,181,109,.16);color:#fff;transform:translateY(-1px);outline:none;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.hero-actions{gap:12px}
+.hero-story-button{display:inline-flex;align-items:center;gap:8px}
+.play-icon{display:inline-grid;place-items:center;width:18px;height:18px;border:1px solid currentColor;border-radius:50%;font-size:7px;line-height:1;padding-left:1px}
+@media(max-width:900px){.header-register span{display:none}.header-register{width:42px;padding:8px}.header-register svg{width:17px;height:17px}}
+@media(max-width:600px){.header-register{min-height:38px;width:38px;padding:7px}.hero-actions{gap:9px}.hero-story-button{gap:6px}}
