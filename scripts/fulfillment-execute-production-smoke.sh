@@ -12,8 +12,8 @@ curl -fsS "${COMMON[@]}" -H "idempotency-key: fulfillment-order-${RUN_ID}" -X PO
 ORDER_ID=$(jq -r '.data.id' /tmp/fulfillment-order.json)
 curl -fsS "${COMMON[@]}" -H "idempotency-key: fulfillment-payment-${RUN_ID}" -X POST "$BASE/api/v1/payments" -d "{\"orderId\":\"${ORDER_ID}\",\"amount\":{\"amount\":90,\"currency\":\"USD\"}}" | tee /tmp/fulfillment-payment.json
 PAYMENT_ID=$(jq -r '.data.id' /tmp/fulfillment-payment.json)
-curl -fsS "${COMMON[@]}" -H "idempotency-key: fulfillment-authorize-${RUN_ID}" -X POST "$BASE/api/v1/payments/authorize" -d '{}' >/tmp/fulfillment-authorize.json
-curl -fsS "${COMMON[@]}" -H "idempotency-key: fulfillment-capture-${RUN_ID}" -X POST "$BASE/api/v1/payments/capture" -d '{}' >/tmp/fulfillment-capture.json
+curl -fsS "${COMMON[@]}" -H "idempotency-key: fulfillment-authorize-${RUN_ID}" -X POST "$BASE/api/v1/payments/authorize" -d "{\"paymentId\":\"${PAYMENT_ID}\"}" >/tmp/fulfillment-authorize.json
+curl -fsS "${COMMON[@]}" -H "idempotency-key: fulfillment-capture-${RUN_ID}" -X POST "$BASE/api/v1/payments/capture" -d "{\"paymentId\":\"${PAYMENT_ID}\"}" >/tmp/fulfillment-capture.json
 curl -fsS "${COMMON[@]}" -H "idempotency-key: fulfillment-execute-${RUN_ID}" -X POST "$BASE/api/v1/fulfillments" -d "{\"orderId\":\"${ORDER_ID}\"}" | tee /tmp/fulfillment-result.json
 FULFILLMENT_ID=$(jq -r '.data.id' /tmp/fulfillment-result.json)
 test "$(jq -r '.meta.useCaseId' /tmp/fulfillment-result.json)" = 'fulfillment.execute'
