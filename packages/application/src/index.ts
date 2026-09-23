@@ -70,3 +70,6 @@ export const STEP_69={name:'Application Layer & Use-Case Orchestration Foundatio
 
 export { QueryProductHandler, QueryServiceHandler, CATALOG_ENTITY_QUERY_APPLICATION_VERSION } from "./catalog-entity-query-capability.js";
 export type { CatalogEntityQueryInput, ProductQueryOutput, ServiceQueryOutput } from "./catalog-entity-query-capability.js";
+
+export type { AcceptCommercialOfferInput } from "./commercial-offer-acceptance-capability.js";
+export { AcceptCommercialOfferHandler, COMMERCIAL_OFFER_ACCEPTANCE_APPLICATION_VERSION } from "./commercial-offer-acceptance-capability.js";
