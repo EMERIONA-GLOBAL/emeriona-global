@@ -87,6 +87,13 @@ export class D1ProviderNeutralPaymentAdapter implements PaymentProviderPort {
     if (!existing) throw new Error("Payment intent not found for tenant");
     if (existing.status === "CAPTURED") return { id:existing.id as PaymentId, orderId:existing.order_id as OrderId, amount:{amount:Number(existing.amount),currency:existing.currency}, status:"CAPTURED", providerReference:existing.provider_reference ?? undefined };
     assertPaymentTransition(existing.status,"CAPTURED");
+    const order = await one<{ id:string; status:"PENDING"|"CONFIRMED"|"FULFILLING"|"FULFILLED"|"CANCELLED" }>(
+      this.db,
+      "SELECT id,status FROM orders WHERE id=? AND tenant_id=?",
+      [existing.order_id,this.tenantId],
+    );
+    if (!order) throw new Error("Order not found for tenant");
+    if (order.status === "CANCELLED") throw new Error("Cancelled order cannot be captured");
     const eventId=`pev_${crypto.randomUUID()}`;
     const updated=await one<{id:string;order_id:string;status:PaymentIntent["status"];amount:number;currency:string;provider_reference:string|null}>(
       this.db,
@@ -94,6 +101,18 @@ export class D1ProviderNeutralPaymentAdapter implements PaymentProviderPort {
       [paymentId,this.tenantId]);
     if(!updated) throw new Error("Payment capture persistence failed");
     await this.db.prepare("UPDATE revenue_entries SET status='RECOGNIZED' WHERE tenant_id=? AND payment_intent_id=? AND status='PENDING'").bind(this.tenantId,paymentId).all();
+    if (order.status === "PENDING") {
+      const orderEventId = `oev_${crypto.randomUUID()}`;
+      const confirmed = await one<{ id:string }>(
+        this.db,
+        "UPDATE orders SET status='CONFIRMED',updated_at=CURRENT_TIMESTAMP WHERE id=? AND tenant_id=? AND status='PENDING' RETURNING id",
+        [order.id,this.tenantId],
+      );
+      if (!confirmed) throw new Error("Order confirmation persistence failed");
+      await this.db.prepare(
+        "INSERT INTO order_events (id,tenant_id,order_id,from_status,to_status,correlation_id) VALUES (?,?,?,?,?,?)",
+      ).bind(orderEventId,this.tenantId,order.id,"PENDING","CONFIRMED",this.correlationId).all();
+    }
     await this.db.prepare("INSERT INTO payment_events (id,tenant_id,payment_intent_id,from_status,to_status,provider,correlation_id) VALUES (?,?,?,?,?,?,?)").bind(eventId,this.tenantId,paymentId,"AUTHORIZED","CAPTURED","provider-neutral",this.correlationId).all();
     return { id:updated.id as PaymentId, orderId:updated.order_id as OrderId, amount:{amount:Number(updated.amount),currency:updated.currency}, status:updated.status, providerReference:updated.provider_reference ?? undefined };
   }
@@ -140,4 +159,4 @@ export class D1ProviderNeutralPaymentAdapter implements PaymentProviderPort {
   }
 }
 
-export const D1_PROVIDER_NEUTRAL_PAYMENT_VERSION = "1.0.0" as const;
+export const D1_PROVIDER_NEUTRAL_PAYMENT_VERSION = "1.1.0" as const;
