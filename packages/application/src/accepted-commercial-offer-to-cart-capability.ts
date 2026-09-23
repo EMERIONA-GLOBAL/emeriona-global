@@ -1,6 +1,6 @@
 import type { CommercialOffer, CommercialOfferId, CommercialOfferRepositoryPortV1 } from "../../domains/src/commercial-offer.js";
 import type { CommercialInquiryId, CommercialInquiryRepositoryPortV1 } from "../../domains/src/commercial-inquiry.js";
-import type { CartRepositoryPortV1 } from "../../domains/src/commerce.js";
+import type { CartRepositoryPortV1 } from "../../domains/src/ports.js";
 import type { UseCaseHandler, UseCaseRequest, UseCaseResponse } from "./index.js";
 import type { CartItemResult, OperationalCommercePort } from "./operational-commerce.js";
 
