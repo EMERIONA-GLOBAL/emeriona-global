@@ -1,5 +1,6 @@
 import type { CommercialOffer, CommercialOfferId, CommercialOfferRepositoryPortV1 } from "../../domains/src/commercial-offer.js";
 import type { CommercialInquiryId, CommercialInquiryRepositoryPortV1 } from "../../domains/src/commercial-inquiry.js";
+import type { CartId } from "../../domains/src/commerce.js";
 import type { CartRepositoryPortV1 } from "../../domains/src/ports.js";
 import type { UseCaseHandler, UseCaseRequest, UseCaseResponse } from "./index.js";
 import type { CartItemResult, OperationalCommercePort } from "./operational-commerce.js";
@@ -27,7 +28,7 @@ export class AddAcceptedCommercialOfferToCartHandler implements UseCaseHandler<A
 
     const inquiry=await this.inquiries.findById(offer.inquiryId as CommercialInquiryId);
     if(!inquiry)throw new Error("Commercial inquiry not found for tenant");
-    const cart=await this.carts.findById(required(request.input.cartId,"cartId"));
+    const cart=await this.carts.findById(required(request.input.cartId,"cartId") as CartId);
     if(!cart)throw new Error("Cart not found for tenant");
     if(inquiry.customerId!==cart.customerId)throw new Error("Commercial offer customer does not match cart customer");
 
