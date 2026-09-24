@@ -1,0 +1,54 @@
+name: EMERIONA GLOBAL Production Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: emeriona-global-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy production Worker and static assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install
+        run: npm install --no-audit --no-fund
+
+      - name: Deploy Worker and static assets
+        run: npx wrangler deploy --config wrangler.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Verify production health
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health | tee /tmp/health.json
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"service":"emeriona-global"' /tmp/health.json
+
+      - name: Verify homepage cover asset is live
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS https://emeriona-global.emerionaglobal.workers.dev/ | tee /tmp/homepage.html
+          grep -q 'hero-reference' /tmp/homepage.html
+          curl -fsS https://emeriona-global.emerionaglobal.workers.dev/homepage-top.css | tee /tmp/homepage-top.css
+          grep -q 'HOMEPAGE REFERENCE FIX' /tmp/homepage-top.css
+          grep -q 'data:image/webp;base64,' /tmp/homepage-top.css
