@@ -87,3 +87,42 @@
 .hero-reference .hero-cover-image{position:absolute !important;inset:0 !important;width:100% !important;height:100% !important;display:block !important;visibility:visible !important;opacity:1 !important;object-fit:cover !important;object-position:center center !important;z-index:0 !important;}
 .hero-reference .hero-visual:after{z-index:1 !important;}
 .hero-reference .hero-content,.hero-reference .hero-side-note{z-index:3 !important;}
+
+/* EMERIONA OFFICIAL COVER + HOMEPAGE REFERENCE V2 — 2026-09-25 */
+.hero-reference{height:calc(min(40vw,760px) + 245px);min-height:760px;padding:0;display:block;position:relative;overflow:hidden;background:#061019}
+.hero-reference .hero-visual{position:absolute;top:0;left:0;right:0;bottom:auto;width:100%;height:min(40vw,760px);z-index:1;background:#061019}
+.hero-reference .hero-visual .hero-cover-image{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;object-fit:fill;object-position:center top;opacity:1;visibility:visible}
+.hero-reference .hero-visual:after{background:linear-gradient(90deg,rgba(3,10,17,.10) 0%,rgba(3,10,17,.03) 55%,rgba(3,10,17,.04) 100%),linear-gradient(0deg,rgba(3,10,17,.16) 0%,rgba(3,10,17,0) 30%)}
+.hero-reference-overlay{z-index:2;background:linear-gradient(0deg,rgba(6,16,25,.98) 0%,rgba(6,16,25,.78) 8%,rgba(6,16,25,0) 30%),radial-gradient(circle at 76% 45%,rgba(44,201,232,.05),transparent 24%),radial-gradient(circle at 84% 40%,rgba(215,181,109,.08),transparent 30%)}
+.hero-reference .hero-content{position:absolute;z-index:3;top:calc(min(40vw,760px) + 18px);left:0;right:0;width:min(1240px,100%);margin:0 auto;padding:0 24px 34px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;background:transparent}
+.hero-reference .hero-lockup{margin:0 0 12px;gap:12px}
+.hero-reference .hero-lockup-mark{width:58px;height:58px;border-width:1px}
+.hero-reference .hero-lockup-copy strong{font-size:18px;letter-spacing:.04em}
+.hero-reference .hero-lockup-copy small{font-size:8px;letter-spacing:.16em}
+.hero-reference h1{max-width:700px;margin:0;font-size:clamp(38px,4.4vw,62px);line-height:.98;letter-spacing:-.04em}
+.hero-reference .hero-lead{max-width:640px;margin:14px 0 20px;font-size:15px;line-height:1.6}
+.hero-reference .hero-actions{justify-content:flex-start}
+.hero-reference .hero-side-note{bottom:42px}
+.hero-reference .hero-curve{z-index:4;height:54px}
+@media (max-width:900px){
+.hero-reference{height:760px;min-height:760px}
+.hero-reference .hero-visual{height:360px}
+.hero-reference .hero-content{top:378px;padding:0 20px 42px}
+.hero-reference h1{font-size:clamp(34px,7vw,52px)}
+.hero-reference .hero-lead{font-size:14px;max-width:560px}
+.hero-reference .hero-side-note{display:none}
+}
+@media (max-width:560px){
+.hero-reference{height:720px;min-height:720px}
+.hero-reference .hero-visual{height:270px}
+.hero-reference .hero-content{top:288px;padding:0 18px 36px}
+.hero-reference .hero-lockup{margin-bottom:10px}
+.hero-reference .hero-lockup-mark{width:48px;height:48px}
+.hero-reference .hero-lockup-copy strong{font-size:16px}
+.hero-reference h1{font-size:34px;line-height:1}
+.hero-reference .hero-lead{font-size:13px;line-height:1.55;margin:12px 0 18px}
+.hero-reference .hero-lead .desktop-only{display:none}
+.hero-reference .hero-actions{gap:10px}
+.hero-reference .hero-actions .button{min-height:46px}
+.hero-reference .hero-curve{height:42px}
+}
