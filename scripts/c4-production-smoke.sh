@@ -4,10 +4,16 @@ BASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="c4-smoke-${GITHUB_RUN_ID}"; C="c4-customer-${GITHUB_RUN_ID}"; P="c4-partner-${GITHUB_RUN_ID}"; R="c4-product-${GITHUB_RUN_ID}"; O="c4-order-${GITHUB_RUN_ID}"; I="c4-item-${GITHUB_RUN_ID}"
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','C4 Smoke ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO customers (id,tenant_id,display_name,status) VALUES ('${C}','${T}','C4 Customer','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','C4 Partner','VERIFIED'); INSERT INTO products (id,tenant_id,owner_id,name,status) VALUES ('${R}','${T}','${C}','C4 Product','PUBLISHED'); INSERT INTO orders (id,tenant_id,customer_id,status,total_amount,currency) VALUES ('${O}','${T}','${C}','PENDING',50,'USD'); INSERT INTO order_items (id,order_id,product_id,partner_id,quantity,unit_amount,currency) VALUES ('${I}','${O}','${R}','${P}',1,50,'USD');"
 COMMON=(-H "x-tenant-id: ${T}" -H 'x-actor-id: c4-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
-curl -fsS "${COMMON[@]}" -H "idempotency-key: c4-payment-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/payment-intents" -d "{\"orderId\":\"${O}\",\"amount\":{\"amount\":50,\"currency\":\"USD\"}}" > payment.json
+curl -fsS "${COMMON[@]}" -H "idempotency-key: c4-payment-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/payments" -d "{\"orderId\":\"${O}\",\"amount\":{\"amount\":50,\"currency\":\"USD\"}}" > payment.json
 PAYMENT_ID=$(jq -r '.data.id' payment.json)
 curl -fsS "${COMMON[@]}" -H "idempotency-key: c4-invoice-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/invoices" -d "{\"orderId\":\"${O}\",\"paymentIntentId\":\"${PAYMENT_ID}\",\"amount\":{\"amount\":50,\"currency\":\"USD\"}}" > invoice.json
 INVOICE_ID=$(jq -r '.data.id' invoice.json)
+curl -fsS "${COMMON[@]}" -H "idempotency-key: c4-authorize-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/payments/authorize" -d "{\"paymentId\":\"${PAYMENT_ID}\"}" > authorize.json
+curl -fsS "${COMMON[@]}" -H "idempotency-key: c4-capture-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/payments/capture" -d "{\"paymentId\":\"${PAYMENT_ID}\"}" > capture.json
+curl -fsS "${COMMON[@]}" -H "idempotency-key: c4-fulfillment-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/fulfillments" -d "{\"orderId\":\"${O}\"}" > fulfillment.json
+FULFILLMENT_ID=$(jq -r '.data.id' fulfillment.json)
+curl -fsS "${COMMON[@]}" -H "idempotency-key: c4-fulfillment-progress-start-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/fulfillments/progress" -d "{\"fulfillmentId\":\"${FULFILLMENT_ID}\",\"status\":\"IN_PROGRESS\"}" > fulfillment-start.json
+curl -fsS "${COMMON[@]}" -H "idempotency-key: c4-fulfillment-progress-complete-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/fulfillments/progress" -d "{\"fulfillmentId\":\"${FULFILLMENT_ID}\",\"status\":\"FULFILLED\"}" > fulfillment-complete.json
 curl -fsS "${COMMON[@]}" -H "idempotency-key: c4-settlement-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/settlements" -d "{\"orderId\":\"${O}\",\"partnerId\":\"${P}\",\"grossAmount\":{\"amount\":50,\"currency\":\"USD\"},\"commissionAmount\":{\"amount\":5,\"currency\":\"USD\"},\"netAmount\":{\"amount\":45,\"currency\":\"USD\"}}" > settlement.json
 SETTLEMENT_ID=$(jq -r '.data.id' settlement.json)
 curl -fsS "${COMMON[@]}" -H "idempotency-key: c4-invoice-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/invoices" -d "{\"orderId\":\"${O}\",\"paymentIntentId\":\"${PAYMENT_ID}\",\"amount\":{\"amount\":50,\"currency\":\"USD\"}}" | jq -e --arg id "$INVOICE_ID" '.data.id == $id'

@@ -19,8 +19,12 @@ export class D1BillingAdapter {
     return {id:inserted.id,orderId:input.orderId as InvoiceRecord["orderId"],paymentIntentId:input.paymentIntentId as InvoiceRecord["paymentIntentId"],number:inserted.invoice_number,amount:{amount:Number(inserted.amount),currency:inserted.currency},status:inserted.status};
   }
   async createSettlement(input: CreateSettlementInput): Promise<SettlementRecord> {
+    const order=await one<{id:string;status:string}>(this.db,"SELECT id,status FROM orders WHERE id=? AND tenant_id=?",[input.orderId,this.tenantId]);
+    if(!order) throw new Error("Settlement order not found for tenant"); if(order.status!=="FULFILLED") throw new Error("Settlement requires a FULFILLED order");
+    const fulfillment=await one<{id:string;status:string}>(this.db,"SELECT id,status FROM fulfillments WHERE order_id=? AND tenant_id=? AND status='FULFILLED' LIMIT 1",[input.orderId,this.tenantId]);
+    if(!fulfillment) throw new Error("Settlement requires completed fulfillment");
     const revenue=await one<{id:string;order_id:string;amount:number;currency:string;status:string}>(this.db,"SELECT id,order_id,amount,currency,status FROM revenue_entries WHERE order_id=? AND tenant_id=? LIMIT 1",[input.orderId,this.tenantId]);
-    if(!revenue) throw new Error("Revenue entry not found for order"); if(revenue.status === "REVERSED") throw new Error("Reversed revenue cannot be settled"); assertSettlementAmounts(input.grossAmount,input.commissionAmount,input.netAmount); if(Number(revenue.amount)!==input.grossAmount.amount||revenue.currency!==input.grossAmount.currency) throw new Error("Settlement gross amount does not match revenue");
+    if(!revenue) throw new Error("Revenue entry not found for order"); if(revenue.status==="REVERSED") throw new Error("Reversed revenue cannot be settled"); if(revenue.status!=="RECOGNIZED") throw new Error("Settlement requires recognized revenue"); assertSettlementAmounts(input.grossAmount,input.commissionAmount,input.netAmount); if(Number(revenue.amount)!==input.grossAmount.amount||revenue.currency!==input.grossAmount.currency) throw new Error("Settlement gross amount does not match revenue");
     const partner=await one<{id:string}>(this.db,"SELECT id FROM partners WHERE id=? AND tenant_id=?",[input.partnerId,this.tenantId]); if(!partner) throw new Error("Settlement partner not found for tenant"); const linked=await one<{ok:number}>(this.db,"SELECT 1 AS ok FROM order_items WHERE order_id=? AND partner_id=? LIMIT 1",[input.orderId,input.partnerId]); if(!linked) throw new Error("Partner is not associated with order");
     const existing=await one<{id:string;commission_amount:number;net_amount:number;currency:string;status:SettlementRecord["status"]}>(this.db,"SELECT id,commission_amount,net_amount,currency,status FROM settlements WHERE partner_id=? AND order_id=? AND tenant_id=? LIMIT 1",[input.partnerId,input.orderId,this.tenantId]);
     if(existing) return {id:existing.id,orderId:input.orderId as SettlementRecord["orderId"],partnerId:input.partnerId,revenueEntryId:revenue.id,grossAmount:{amount:Number(existing.commission_amount)+Number(existing.net_amount),currency:existing.currency},commissionAmount:{amount:Number(existing.commission_amount),currency:existing.currency},netAmount:{amount:Number(existing.net_amount),currency:existing.currency},status:existing.status};
@@ -36,4 +40,4 @@ export class D1BillingAdapter {
     return rows.results.map(row=>({id:row.id,orderId:row.order_id as InvoiceRecord["orderId"],paymentIntentId:row.payment_intent_id as InvoiceRecord["paymentIntentId"],number:row.invoice_number??`INV-${row.id}`,amount:{amount:Number(row.amount),currency:row.currency},status:row.status}));
   }
 }
-export const D1_BILLING_ADAPTER_VERSION = "1.1.0" as const;
+export const D1_BILLING_ADAPTER_VERSION = "1.2.0" as const;
