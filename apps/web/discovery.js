@@ -3,6 +3,7 @@
   const input=document.getElementById('discovery-input');
   const results=document.getElementById('discovery-results');
   const intentButtons=[...document.querySelectorAll('[data-discovery-intent]')];
+  const categoryButtons=[...document.querySelectorAll('[data-discovery-category]')];
   if(!form||!input||!results)return;
 
   const pathways=[
@@ -82,6 +83,20 @@
     return Array.isArray(payload?.data?.items)?payload.data.items:[];
   };
 
+  const runCategory=async key=>{
+    const label=key==='all'?'':key;
+    categoryButtons.forEach(b=>b.classList.toggle('active',b.dataset.discoveryCategory===key));
+    results.innerHTML='<div class="discovery-loading">Searching live Market entities and connected ecosystem pathways…</div>';
+    let catalog=[];
+    try{
+      const response=await fetch('/api/v1/market/catalog?'+new URLSearchParams({filter:key,q:'',limit:'20'}).toString(),{headers:{accept:'application/json'}});
+      if(!response.ok)throw new Error('Market catalog request failed');
+      const payload=await response.json();
+      catalog=Array.isArray(payload?.data?.items)?payload.data.items:[];
+    }catch(_){catalog=[];}
+    render(catalog,label);
+  };
+
   const run=async query=>{
     const q=String(query||'').trim();
     const key=intentFor(q);
@@ -94,6 +109,11 @@
   };
 
   form.addEventListener('submit',e=>{e.preventDefault();run(input.value);});
+  categoryButtons.forEach(button=>button.addEventListener('click',()=>{
+    const key=button.dataset.discoveryCategory||'all';
+    input.value='';
+    runCategory(key);
+  }));
   intentButtons.forEach(button=>button.addEventListener('click',()=>{const key=button.dataset.discoveryIntent||'discovery';input.value=key==='discovery'?'':key;run(input.value||key);}));
   document.querySelectorAll('[data-discovery-route]').forEach(button=>button.addEventListener('click',()=>routeToWorld(button.dataset.discoveryRoute)));
 })();
