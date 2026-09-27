@@ -54,8 +54,18 @@ jobs:
           grep -Fq 'class="hero hero-reference"' /tmp/homepage.html
           grep -Fq 'emeriona-global-cover-en.webp' /tmp/homepage.html
           grep -Fq 'id="commerce"' /tmp/homepage.html
-          grep -Fq 'EMERIONA GLOBAL MARKET CENTER' /tmp/homepage.html
-          grep -Fq 'One Search. Connected Market.' /tmp/homepage.html
+          grep -Fq 'id="market-center-title"' /tmp/homepage.html
+          grep -Fq 'Discover. Connect. Trade. Grow.' /tmp/homepage.html
+          grep -Fq 'ONE SEARCH. CONNECTED MARKET.' /tmp/homepage.html
+          grep -Fq 'mc-category-grid' /tmp/homepage.html
+          grep -Fq 'mc-two-level' /tmp/homepage.html
+          grep -Fq 'mc-featured' /tmp/homepage.html
+          grep -Fq 'mc-connected' /tmp/homepage.html
+          grep -Fq 'mc-feature-grid' /tmp/homepage.html
+          grep -Fq 'mc-journey' /tmp/homepage.html
+          grep -Fq 'mc-seller' /tmp/homepage.html
+          grep -Fq 'market-recommendations' /tmp/homepage.html
+          grep -Fq 'market-commercial' /tmp/homepage.html
           grep -Fq 'market-center.css' /tmp/homepage.html
 
           # The homepage must reference the deployed Market Center stylesheet; the repository/deploy
