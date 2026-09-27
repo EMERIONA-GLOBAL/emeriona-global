@@ -62,10 +62,13 @@ jobs:
           # gate separately guarantees that the stylesheet is included in the Worker assets bundle.
           grep -q 'market-center.css?v=20260927-market-center-v1' /tmp/homepage.html
 
-          curl -fsS "$BASE_URL/api/v1/market/catalog?filter=all&limit=1" \
+          market_status="$(curl -sS -o /tmp/market-catalog.json -w '%{http_code}' "$BASE_URL/api/v1/market/catalog?filter=all&limit=1" \
             -H 'x-tenant-id: emeriona-global' \
             -H 'x-actor-id: production-market-center-smoke' \
-            -H 'x-currency: USD' | tee /tmp/market-catalog.json
+            -H 'x-currency: USD')"
+          echo "Market catalog HTTP status: $market_status"
+          cat /tmp/market-catalog.json
+          test "$market_status" = "200"
           grep -q '"data"' /tmp/market-catalog.json
           grep -q '"items"' /tmp/market-catalog.json
 
