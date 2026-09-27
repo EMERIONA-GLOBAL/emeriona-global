@@ -40,8 +40,8 @@ jobs:
         run: |
           set -euo pipefail
           curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health | tee /tmp/health.json
-          grep -q '"status":"ok"' /tmp/health.json
-          grep -q '"service":"emeriona-global"' /tmp/health.json
+          grep -Fq '"status":"ok"' /tmp/health.json
+          grep -Fq '"service":"emeriona-global"' /tmp/health.json
 
       - name: Verify homepage and Market Center assets are live
         shell: bash
@@ -51,12 +51,12 @@ jobs:
           BASE_URL="https://emeriona-global.emerionaglobal.workers.dev"
 
           curl -fsS "$BASE_URL/" | tee /tmp/homepage.html
-          grep -q 'class="hero hero-reference"' /tmp/homepage.html
-          grep -q 'emeriona-global-cover-en.webp' /tmp/homepage.html
-          grep -q 'id="commerce"' /tmp/homepage.html
-          grep -q 'EMERIONA GLOBAL MARKET CENTER' /tmp/homepage.html
-          grep -q 'One Search. Connected Market.' /tmp/homepage.html
-          grep -q 'market-center.css' /tmp/homepage.html
+          grep -Fq 'class="hero hero-reference"' /tmp/homepage.html
+          grep -Fq 'emeriona-global-cover-en.webp' /tmp/homepage.html
+          grep -Fq 'id="commerce"' /tmp/homepage.html
+          grep -Fq 'EMERIONA GLOBAL MARKET CENTER' /tmp/homepage.html
+          grep -Fq 'One Search. Connected Market.' /tmp/homepage.html
+          grep -Fq 'market-center.css' /tmp/homepage.html
 
           # The homepage must reference the deployed Market Center stylesheet; the repository/deploy
           # gate separately guarantees that the stylesheet is included in the Worker assets bundle.
