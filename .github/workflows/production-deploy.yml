@@ -43,12 +43,24 @@ jobs:
           grep -q '"status":"ok"' /tmp/health.json
           grep -q '"service":"emeriona-global"' /tmp/health.json
 
-      - name: Verify homepage cover asset is live
+      - name: Verify homepage and Market Center assets are live
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsS https://emeriona-global.emerionaglobal.workers.dev/ | tee /tmp/homepage.html
-          grep -q 'hero-reference' /tmp/homepage.html
-          curl -fsS https://emeriona-global.emerionaglobal.workers.dev/homepage-top.css | tee /tmp/homepage-top.css
-          grep -q 'HOMEPAGE REFERENCE FIX' /tmp/homepage-top.css
-          grep -q 'data:image/webp;base64,' /tmp/homepage-top.css
+
+          BASE_URL="https://emeriona-global.emerionaglobal.workers.dev"
+
+          curl -fsS "$BASE_URL/" | tee /tmp/homepage.html
+          grep -q 'class="hero hero-reference"' /tmp/homepage.html
+          grep -q 'emeriona-global-cover-en.webp' /tmp/homepage.html
+          grep -q 'id="commerce"' /tmp/homepage.html
+          grep -q 'EMERIONA GLOBAL MARKET CENTER' /tmp/homepage.html
+          grep -q 'One Search. Connected Market.' /tmp/homepage.html
+          grep -q 'market-center.css' /tmp/homepage.html
+
+          curl -fsSI "$BASE_URL/assets/covers/emeriona-global-cover-en.webp" | grep -qi '^HTTP/.* 200'
+          curl -fsS "$BASE_URL/market-center.css" | tee /tmp/market-center.css
+          grep -q 'EMERIONA GLOBAL MARKET CENTER' /tmp/market-center.css
+          grep -q 'market-hero' /tmp/market-center.css
+
+          echo "Production homepage and Market Center verification passed."
