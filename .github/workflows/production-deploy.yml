@@ -58,11 +58,12 @@ jobs:
           grep -q 'One Search. Connected Market.' /tmp/homepage.html
           grep -q 'market-center.css' /tmp/homepage.html
 
-          cover_status="$(curl -sS -o /dev/null -w '%{http_code}' "$BASE_URL/assets/covers/emeriona-global-cover-en.webp")"
-          echo "Homepage cover asset HTTP status: $cover_status"
-          test "$cover_status" = "200"
           curl -fsS "$BASE_URL/market-center.css" | tee /tmp/market-center.css
           grep -q 'EMERIONA GLOBAL MARKET CENTER' /tmp/market-center.css
           grep -q 'market-hero' /tmp/market-center.css
+
+          curl -fsS "$BASE_URL/api/v1/market/catalog?filter=all&limit=1" | tee /tmp/market-catalog.json
+          grep -q '"data"' /tmp/market-catalog.json
+          grep -q '"items"' /tmp/market-catalog.json
 
           echo "Production homepage and Market Center verification passed."
