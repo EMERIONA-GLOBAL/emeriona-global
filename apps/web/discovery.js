@@ -4,7 +4,7 @@
   const results=document.getElementById('discovery-results');
   const intentButtons=[...document.querySelectorAll('[data-discovery-intent]')];
   const categoryButtons=[...document.querySelectorAll('[data-discovery-category]')];
-  if(!form||!input||!results)return;
+  if(!results && !intentButtons.length && !document.querySelectorAll('[data-discovery-route]').length)return;
 
   const pathways=[
     {key:'products',label:'Products',title:'Digital Products',description:'Explore published products from the live EMERIONA commercial catalog.',href:'#commerce'},
@@ -108,12 +108,12 @@
     if(!catalog.length && ['products','services','solutions','partners'].includes(key)) routeToWorld(key);
   };
 
-  form.addEventListener('submit',e=>{e.preventDefault();run(input.value);});
+  if(form&&input)form.addEventListener('submit',e=>{e.preventDefault();run(input.value);});
   categoryButtons.forEach(button=>button.addEventListener('click',()=>{
     const key=button.dataset.discoveryCategory||'all';
     input.value='';
     runCategory(key);
   }));
-  intentButtons.forEach(button=>button.addEventListener('click',()=>{const key=button.dataset.discoveryIntent||'discovery';input.value=key==='discovery'?'':key;run(input.value||key);}));
+  intentButtons.forEach(button=>button.addEventListener('click',()=>{const key=button.dataset.discoveryIntent||'discovery';if(input)input.value=key==='discovery'?'':key;if(form)run(input?.value||key);else routeToWorld(key);}));
   document.querySelectorAll('[data-discovery-route]').forEach(button=>button.addEventListener('click',()=>routeToWorld(button.dataset.discoveryRoute)));
 })();
