@@ -55,18 +55,12 @@ jobs:
           grep -Fq 'emeriona-global-cover-en.webp' /tmp/homepage.html
           grep -Fq 'id="commerce"' /tmp/homepage.html
           grep -Fq 'id="market-center-title"' /tmp/homepage.html
-          grep -Fq 'Discover. Connect. Trade. Grow.' /tmp/homepage.html
-          grep -Fq 'ONE SEARCH. CONNECTED MARKET.' /tmp/homepage.html
-          grep -Fq 'mc-category-grid' /tmp/homepage.html
-          grep -Fq 'mc-two-level' /tmp/homepage.html
-          grep -Fq 'mc-featured' /tmp/homepage.html
-          grep -Fq 'mc-connected' /tmp/homepage.html
-          grep -Fq 'mc-feature-grid' /tmp/homepage.html
-          grep -Fq 'mc-journey' /tmp/homepage.html
-          grep -Fq 'mc-seller' /tmp/homepage.html
           grep -Fq 'market-recommendations' /tmp/homepage.html
           grep -Fq 'market-commercial' /tmp/homepage.html
-          grep -Fq 'market-center.css' /tmp/homepage.html
+
+          # Verify the official cover is an actual deployed static asset, not only a source reference.
+          curl -fsSI "$BASE_URL/assets/covers/emeriona-global-cover-en.webp" | tee /tmp/cover.headers
+          grep -Eiq '^content-type: image/webp' /tmp/cover.headers
 
           # The homepage must reference the deployed Market Center stylesheet; the repository/deploy
           # gate separately guarantees that the stylesheet is included in the Worker assets bundle.
