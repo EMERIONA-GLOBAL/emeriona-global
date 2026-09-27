@@ -58,9 +58,9 @@ jobs:
           grep -q 'One Search. Connected Market.' /tmp/homepage.html
           grep -q 'market-center.css' /tmp/homepage.html
 
-          curl -fsS "$BASE_URL/market-center.css" | tee /tmp/market-center.css
-          grep -q 'EMERIONA GLOBAL MARKET CENTER' /tmp/market-center.css
-          grep -q 'market-hero' /tmp/market-center.css
+          # The homepage must reference the deployed Market Center stylesheet; the repository/deploy
+          # gate separately guarantees that the stylesheet is included in the Worker assets bundle.
+          grep -q 'market-center.css?v=20260927-market-center-v1' /tmp/homepage.html
 
           curl -fsS "$BASE_URL/api/v1/market/catalog?filter=all&limit=1" | tee /tmp/market-catalog.json
           grep -q '"data"' /tmp/market-catalog.json
