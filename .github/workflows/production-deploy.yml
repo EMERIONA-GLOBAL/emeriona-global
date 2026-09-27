@@ -58,7 +58,7 @@ jobs:
           grep -q 'One Search. Connected Market.' /tmp/homepage.html
           grep -q 'market-center.css' /tmp/homepage.html
 
-          curl -fsSI "$BASE_URL/assets/covers/emeriona-global-cover-en.webp" | grep -qi '^HTTP/.* 200'
+          test "$(curl -fsS -o /dev/null -w '%{http_code}' "$BASE_URL/assets/covers/emeriona-global-cover-en.webp")" = "200"
           curl -fsS "$BASE_URL/market-center.css" | tee /tmp/market-center.css
           grep -q 'EMERIONA GLOBAL MARKET CENTER' /tmp/market-center.css
           grep -q 'market-hero' /tmp/market-center.css
