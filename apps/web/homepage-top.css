@@ -169,8 +169,26 @@ html{scroll-padding-top:0!important;}
 
 /* EMERIONA DISCOVERY — approved visual reference implementation / 2026-09-28
    Scope: #discovery only. No homepage/market/core section styling is changed. */
-.discovery-reference{position:relative;overflow:hidden;background:linear-gradient(180deg,#f7fafc 0%,#fff 48%,#f8fbfd 100%);color:#102f57;padding:22px 30px 42px;isolation:isolate}
-.discovery-reference::before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(circle at 76% 11%,rgba(218,235,246,.8),transparent 29%),linear-gradient(180deg,rgba(255,255,255,.35),rgba(248,251,253,.9))}
+.discovery-reference{position:relative;overflow:hidden;background:
+  radial-gradient(ellipse at 78% 22%,rgba(91,164,209,.20) 0%,rgba(91,164,209,.08) 24%,transparent 46%),
+  radial-gradient(ellipse at 18% 8%,rgba(255,255,255,.98) 0%,rgba(244,249,252,.92) 34%,transparent 58%),
+  linear-gradient(115deg,#f8fbfd 0%,#eef5f9 46%,#e8f3f9 72%,#f7fafc 100%);
+color:#0b315b;padding:22px 30px 42px;isolation:isolate}
+.discovery-reference::before{content:"";position:absolute;inset:0;z-index:-2;
+background:
+  radial-gradient(circle at 84% 18%,rgba(255,255,255,.96) 0 1px,transparent 2px),
+  radial-gradient(circle at 76% 31%,rgba(255,255,255,.82) 0 1px,transparent 2px),
+  radial-gradient(circle at 69% 15%,rgba(255,255,255,.72) 0 1px,transparent 2px),
+  linear-gradient(105deg,rgba(255,255,255,.54),rgba(255,255,255,0) 55%);
+background-size:auto,auto,auto,100% 100%;opacity:.8}
+.discovery-reference::after{content:"";position:absolute;z-index:-1;left:35%;right:0;top:0;height:100%;
+background:linear-gradient(90deg,rgba(248,251,253,.98) 0%,rgba(248,251,253,.76) 20%,rgba(232,243,249,.18) 58%,rgba(10,45,78,.08) 100%);
+pointer-events:none}
+.discovery-reference-hero-copy{position:relative;z-index:3;padding:44px 24px 36px 52px}
+.discovery-reference-hero-copy .discovery-reference-kicker{color:#ad7b1f}
+.discovery-reference-hero-copy>p{color:#536b84}
+.discovery-reference-hero h2{color:#062d57;text-shadow:0 1px 0 rgba(255,255,255,.65)}
+.discovery-reference-subtitle{color:#344f6e}
 .discovery-reference-breadcrumb{width:min(1120px,100%);margin:0 auto 18px;display:flex;align-items:center;gap:12px;color:#68788b;font-size:12px}
 .discovery-reference-breadcrumb a{color:#4e6177;text-decoration:none}
 .discovery-reference-breadcrumb a:hover{color:#c18f27}
