@@ -8,7 +8,7 @@
 <meta property="og:description" content="A global ecosystem for empowerment, innovation and impact.">
 <title>EMERIONA GLOBAL™ — Empowerment • Elevation • Impact</title>
 <link rel="stylesheet" href="./styles.css">
-<link rel="stylesheet" href="./homepage-top.css?v=20260925-cover-reference-v2">
+<link rel="stylesheet" href="./homepage-top.css?v=20260928-discovery-reference-v1">
 </head>
 <body>
 <header class="site-header" id="site-header">
@@ -67,18 +67,82 @@
 </div>
 </section>
 
-<section id="discovery" class="home-reference-discovery" aria-labelledby="gateway-home-title" dir="rtl">
-  <div class="home-reference-discovery-inner">
-    <div class="home-reference-discovery-kicker"><span></span> بوابة الاكتشاف الرئيسية للنظام <i></i></div>
-    <h2 id="gateway-home-title">بحث واحد. مسارات متصلة.</h2>
-    <p>من خلال بحث واحد، يمكنك الوصول إلى كل ما تحتاجه من منتجات وخدمات وحلول وفرص ومعرفة، ضمن منظومة متكاملة تربطك بالعالم.</p>
-    <div class="home-reference-discovery-grid">
-      <a href="#commerce" data-discovery-route="products" class="home-discovery-card product-card"><span class="home-card-icon">◇</span><h3>المنتجات</h3><p>اكتشف المنتجات الرقمية والمادية بجودة عالية وأسعار مناسبة.</p><b>تصفح المنتجات ←</b></a>
-      <a href="#commerce" data-discovery-route="services" class="home-discovery-card service-card"><span class="home-card-icon">⚙</span><h3>الخدمات</h3><p>احصل على خدمات احترافية تلبي احتياجاتك وتوفر وقتك وجهدك.</p><b>تصفح الخدمات ←</b></a>
-      <a href="#market-solutions" data-discovery-route="solutions" class="home-discovery-card solution-card"><span class="home-card-icon">♧</span><h3>الحلول</h3><p>اكتشف حلولاً مبتكرة لمشاكلك وتحدياتك وتحقق أهدافك.</p><b>تصفح الحلول ←</b></a>
-      <a href="#knowledge" data-discovery-route="knowledge" class="home-discovery-card knowledge-card"><span class="home-card-icon">▤</span><h3>المعرفة</h3><p>استفد من المحتوى التعليمي والمعلومات القيمة.</p><b>تصفح المعرفة ←</b></a>
-      <a href="#contact" data-discovery-route="opportunities" class="home-discovery-card opportunity-card"><span class="home-card-icon">♢</span><h3>الفرص</h3><p>اكتشف الفرص الاستثمارية والمهنية وشارك في بناء المستقبل.</p><b>تصفح الفرص ←</b></a>
-      <a href="#contact" data-discovery-route="projects" class="home-discovery-card project-card"><span class="home-card-icon">🚀</span><h3>المشاريع</h3><p>تعرف على المشاريع والمبادرات التي تصنع التغيير.</p><b>تصفح المشاريع ←</b></a>
+<section id="discovery" class="discovery-reference" aria-labelledby="discovery-reference-title" dir="ltr">
+  <div class="discovery-reference-breadcrumb" aria-label="Breadcrumb">
+    <a href="#top">Home</a><span aria-hidden="true">›</span><span>Discovery</span>
+  </div>
+
+  <div class="discovery-reference-hero">
+    <div class="discovery-reference-hero-copy">
+      <div class="discovery-reference-kicker"><span></span> EMERIONA DISCOVERY</div>
+      <h2 id="discovery-reference-title">Discovery Gateway</h2>
+      <div class="discovery-reference-subtitle"><span></span> One Search. Connected Paths.</div>
+      <p>Explore products, services, solutions, projects, opportunities and knowledge within the EMERIONA GLOBAL ecosystem.</p>
+    </div>
+    <div class="discovery-reference-hero-art" aria-hidden="true">
+      <div class="discovery-reference-globe"></div>
+      <div class="discovery-reference-art-glow"></div>
+      <div class="discovery-reference-art-note"><strong>More than a platform...</strong><span>a global ecosystem for your growth.</span></div>
+    </div>
+  </div>
+
+  <form class="discovery-reference-search" id="discovery-search" role="search">
+    <span class="discovery-reference-search-icon" aria-hidden="true">⌕</span>
+    <input id="discovery-input" type="search" placeholder="Search products, services, solutions, projects, opportunities, knowledge..." aria-label="Search EMERIONA Discovery">
+    <button type="submit">Search <span aria-hidden="true">→</span></button>
+  </form>
+  <div class="discovery-reference-results" id="discovery-results" aria-live="polite"></div>
+
+  <div class="discovery-reference-categories" role="tablist" aria-label="Discovery categories">
+    <button type="button" role="tab" data-discovery-category="all" class="active"><span class="discovery-reference-category-icon">◇</span>All</button>
+    <button type="button" role="tab" data-discovery-category="products"><span class="discovery-reference-category-icon">□</span>Products</button>
+    <button type="button" role="tab" data-discovery-category="services"><span class="discovery-reference-category-icon">⚙</span>Services</button>
+    <button type="button" role="tab" data-discovery-category="solutions"><span class="discovery-reference-category-icon">♧</span>Solutions</button>
+    <button type="button" role="tab" data-discovery-category="projects"><span class="discovery-reference-category-icon">▱</span>Projects</button>
+    <button type="button" role="tab" data-discovery-category="opportunities"><span class="discovery-reference-category-icon">◎</span>Opportunities</button>
+    <button type="button" role="tab" data-discovery-category="knowledge"><span class="discovery-reference-category-icon">▤</span>Knowledge</button>
+  </div>
+
+  <div class="discovery-reference-ecosystem">
+    <div class="discovery-reference-ecosystem-heading">
+      <div>
+        <div class="discovery-reference-kicker"><span></span> TURN DISCOVERY INTO ACTION</div>
+        <h3>Explore Our Ecosystem</h3>
+        <p>Find what you need, connect with the right opportunities, and move forward with confidence.</p>
+      </div>
+      <a href="#discovery-search" class="discovery-reference-journey-link"><span>◈</span><strong>Your journey<br>starts with discovery</strong><b>→</b></a>
+    </div>
+
+    <div class="discovery-reference-card-grid">
+      <a href="#commerce" data-discovery-route="products" class="discovery-reference-card discovery-reference-card-products">
+        <div class="discovery-reference-card-visual"><span>□</span></div>
+        <h4>Products</h4><p>Discover high-quality products from global markets.</p><b>Browse Products <span>→</span></b>
+      </a>
+      <a href="#commerce" data-discovery-route="services" class="discovery-reference-card discovery-reference-card-services">
+        <div class="discovery-reference-card-visual"><span>⚙</span></div>
+        <h4>Services</h4><p>Professional services to support your goals and growth.</p><b>Browse Services <span>→</span></b>
+      </a>
+      <a href="#market-solutions" data-discovery-route="solutions" class="discovery-reference-card discovery-reference-card-solutions">
+        <div class="discovery-reference-card-visual"><span>♧</span></div>
+        <h4>Solutions</h4><p>Smart solutions for real challenges and sustainable results.</p><b>Browse Solutions <span>→</span></b>
+      </a>
+      <a href="#contact" data-discovery-route="projects" class="discovery-reference-card discovery-reference-card-projects">
+        <div class="discovery-reference-card-visual"><span>▱</span></div>
+        <h4>Projects</h4><p>Explore innovative projects and investment opportunities.</p><b>Browse Projects <span>→</span></b>
+      </a>
+      <a href="#contact" data-discovery-route="opportunities" class="discovery-reference-card discovery-reference-card-opportunities">
+        <div class="discovery-reference-card-visual"><span>◎</span></div>
+        <h4>Opportunities</h4><p>Find new opportunities for partnership and collaboration.</p><b>Browse Opportunities <span>→</span></b>
+      </a>
+      <a href="#knowledge" data-discovery-route="knowledge" class="discovery-reference-card discovery-reference-card-knowledge">
+        <div class="discovery-reference-card-visual"><span>▤</span></div>
+        <h4>Knowledge</h4><p>Access valuable knowledge, insights and resources.</p><b>Browse Knowledge <span>→</span></b>
+      </a>
+    </div>
+
+    <div class="discovery-reference-cta">
+      <div><span class="discovery-reference-cta-icon">◈</span><div><strong>Discover Today ... Build Tomorrow</strong><small>EMERIONA GLOBAL — Connecting People, Ideas and Opportunities Worldwide.</small></div></div>
+      <a href="#discovery-search">Start Exploring <span>→</span></a>
     </div>
   </div>
 </section>
