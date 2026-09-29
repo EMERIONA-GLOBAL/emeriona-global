@@ -165,3 +165,390 @@
 .site-header{position:absolute!important;top:0!important;left:0!important;right:0!important;}
 .site-header.is-scrolled{position:absolute!important;}
 html{scroll-padding-top:0!important;}
+
+
+/* =========================================================
+   EMERIONA GLOBAL — FINAL HOMEPAGE HERO + ECOSYSTEM PORTALS
+   Reference implementation: approved homepage image + supplied
+   official cover asset. This layer is intentionally last so it
+   wins over historical homepage experiments above it.
+   ========================================================= */
+
+.hero-reference{
+  position:relative!important;
+  height:clamp(500px,34.5vw,532px)!important;
+  min-height:500px!important;
+  padding:0!important;
+  display:block!important;
+  overflow:hidden!important;
+  background:#06111c!important;
+  isolation:isolate!important;
+}
+.hero-reference .hero-visual{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  z-index:0!important;
+  overflow:hidden!important;
+  background:#06111c!important;
+}
+.hero-reference .hero-cover-image{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  opacity:1!important;
+  visibility:visible!important;
+  object-fit:cover!important;
+  object-position:72% center!important;
+  filter:none!important;
+  z-index:0!important;
+}
+.hero-reference .hero-visual:after{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:1!important;
+  background:
+    linear-gradient(90deg,rgba(3,13,24,.92) 0%,rgba(3,13,24,.76) 31%,rgba(3,13,24,.30) 58%,rgba(3,13,24,.08) 100%),
+    linear-gradient(0deg,rgba(3,13,24,.42) 0%,rgba(3,13,24,.04) 52%,rgba(3,13,24,.12) 100%)!important;
+  pointer-events:none!important;
+}
+.hero-reference-overlay{
+  position:absolute!important;
+  inset:0!important;
+  z-index:2!important;
+  pointer-events:none!important;
+  background:
+    radial-gradient(circle at 78% 42%,rgba(39,190,229,.09),transparent 25%),
+    radial-gradient(circle at 89% 30%,rgba(226,177,71,.14),transparent 23%)!important;
+}
+.hero-reference .hero-content{
+  position:absolute!important;
+  z-index:3!important;
+  top:0!important;
+  left:0!important;
+  right:0!important;
+  width:min(1240px,100%)!important;
+  height:100%!important;
+  margin:0 auto!important;
+  padding:112px 42px 54px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:flex-start!important;
+  background:transparent!important;
+  text-align:left!important;
+  overflow:visible!important;
+}
+.hero-reference .hero-lockup{
+  display:flex!important;
+  align-items:center!important;
+  gap:14px!important;
+  margin:0 0 22px!important;
+}
+.hero-reference .hero-lockup-mark{
+  width:62px!important;
+  height:62px!important;
+  flex:0 0 62px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid rgba(222,181,88,.88)!important;
+  border-radius:50%!important;
+  color:#e5b84f!important;
+  background:rgba(4,20,36,.32)!important;
+  box-shadow:0 8px 28px rgba(0,0,0,.2)!important;
+}
+.hero-reference .hero-lockup-mark span{
+  font-size:18px!important;
+  font-weight:900!important;
+  letter-spacing:.04em!important;
+}
+.hero-reference .hero-lockup-copy{
+  display:flex!important;
+  flex-direction:column!important;
+  line-height:1!important;
+}
+.hero-reference .hero-lockup-copy strong{
+  color:#fff!important;
+  font-size:27px!important;
+  font-weight:900!important;
+  letter-spacing:.035em!important;
+}
+.hero-reference .hero-lockup-copy strong span{color:#e2b247!important}
+.hero-reference .hero-lockup-copy small{
+  margin-top:8px!important;
+  color:#f0d17d!important;
+  font-size:9px!important;
+  letter-spacing:.19em!important;
+  text-transform:uppercase!important;
+}
+.hero-reference h1{
+  max-width:650px!important;
+  margin:0!important;
+  color:#fff!important;
+  font-size:clamp(38px,4.25vw,61px)!important;
+  line-height:1.02!important;
+  letter-spacing:-.035em!important;
+  font-weight:850!important;
+  text-align:left!important;
+  text-transform:none!important;
+}
+.hero-reference h1 span{display:block!important;color:#f7f7f4!important}
+.hero-reference h1 em{
+  display:block!important;
+  color:#f0b83c!important;
+  font-style:normal!important;
+}
+.hero-reference .hero-lead{
+  max-width:610px!important;
+  margin:15px 0 22px!important;
+  color:#f1f4f5!important;
+  font-size:15px!important;
+  line-height:1.62!important;
+  text-align:left!important;
+}
+.hero-reference .hero-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:16px!important;
+}
+.hero-reference .hero-actions .button{
+  min-height:48px!important;
+  padding:0 24px!important;
+  border-radius:26px!important;
+}
+.hero-reference .hero-actions .button.primary{
+  background:linear-gradient(135deg,#f5c84e,#d99e20)!important;
+  color:#071b2c!important;
+  border:1px solid rgba(255,225,139,.75)!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.22)!important;
+}
+.hero-reference .hero-actions .button.secondary{
+  background:rgba(5,20,34,.25)!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.78)!important;
+  backdrop-filter:blur(5px)!important;
+}
+.hero-reference .hero-side-note{display:none!important}
+.hero-reference .hero-curve{
+  position:absolute!important;
+  z-index:4!important;
+  left:-5%!important;
+  right:-5%!important;
+  bottom:-1px!important;
+  height:28px!important;
+  background:#fff!important;
+  border-radius:50% 50% 0 0/100% 100% 0 0!important;
+  transform:scaleX(1.06)!important;
+}
+
+/* Six ecosystem portals: compact, functional entry points. */
+.ecosystem-portals{
+  position:relative!important;
+  background:#fff!important;
+  color:#17232b!important;
+  padding:22px 24px 0!important;
+  overflow:hidden!important;
+}
+.ecosystem-portals-inner{
+  width:min(1240px,100%)!important;
+  max-width:none!important;
+  margin:0 auto!important;
+}
+.portals-heading{
+  text-align:center!important;
+  margin:0 0 18px!important;
+}
+.portal-kicker{
+  display:block!important;
+  color:#b28a32!important;
+  font-size:9px!important;
+  font-weight:850!important;
+  letter-spacing:.28em!important;
+  margin-bottom:6px!important;
+}
+.portals-heading h2{
+  margin:0!important;
+  color:#12345d!important;
+  font-size:clamp(27px,3vw,40px)!important;
+  line-height:1!important;
+  letter-spacing:-.035em!important;
+  font-weight:900!important;
+}
+.portal-heading-line{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  margin:8px auto 5px!important;
+}
+.portal-heading-line i{
+  display:block!important;
+  width:72px!important;
+  height:1px!important;
+  background:#d8b15a!important;
+}
+.portal-heading-line b{
+  color:#d2a43d!important;
+  font-size:13px!important;
+  line-height:1!important;
+}
+.portals-heading p{
+  margin:0!important;
+  color:#566d86!important;
+  font-size:11px!important;
+  line-height:1.4!important;
+}
+.portal-grid{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:0!important;
+  border-top:1px solid #e5e8eb!important;
+  border-bottom:1px solid #e5e8eb!important;
+}
+.portal-card{
+  position:relative!important;
+  min-height:150px!important;
+  padding:15px 13px 16px!important;
+  border:0!important;
+  border-right:1px solid #e2e6e9!important;
+  border-radius:0!important;
+  background:transparent!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  text-align:center!important;
+  box-shadow:none!important;
+  transition:background .18s ease,transform .18s ease!important;
+}
+.portal-card:last-child{border-right:0!important}
+.portal-card:hover{
+  transform:translateY(-2px)!important;
+  background:linear-gradient(180deg,#fff,#fbfaf6)!important;
+  border-color:#e2e6e9!important;
+  box-shadow:none!important;
+}
+.portal-icon{
+  width:46px!important;
+  height:46px!important;
+  margin:0 0 9px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid #d7a93b!important;
+  border-radius:50%!important;
+  color:#0b315b!important;
+  background:linear-gradient(145deg,#0a2d50,#123e68)!important;
+  box-shadow:0 5px 14px rgba(9,39,70,.12)!important;
+}
+.portal-icon svg{
+  width:25px!important;
+  height:25px!important;
+  fill:none!important;
+  stroke:#f0c65a!important;
+  stroke-width:2!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+.portal-card strong{
+  font-size:12px!important;
+  line-height:1.2!important;
+  letter-spacing:.11em!important;
+  color:#17385f!important;
+  font-weight:900!important;
+}
+.portal-card small{
+  max-width:170px!important;
+  margin-top:6px!important;
+  color:#65778a!important;
+  font-size:9px!important;
+  line-height:1.45!important;
+}
+.portal-card i{
+  position:static!important;
+  width:32px!important;
+  height:2px!important;
+  margin-top:10px!important;
+  color:transparent!important;
+  background:#d8aa3d!important;
+  font-size:0!important;
+  font-style:normal!important;
+}
+.portal-motto{
+  margin-top:0!important;
+  padding:12px 0 16px!important;
+  border-top:0!important;
+  text-align:center!important;
+  color:#c29a42!important;
+  font-size:8px!important;
+  font-weight:850!important;
+  letter-spacing:.30em!important;
+}
+.portal-motto span{
+  display:inline-block!important;
+  width:48px!important;
+  height:1px!important;
+  margin:0 10px!important;
+  vertical-align:middle!important;
+  background:#d8b15a!important;
+}
+
+/* Prevent the hero from becoming excessively tall on short desktop screens. */
+@media (max-width:1100px){
+  .hero-reference .hero-content{padding-left:30px!important;padding-right:30px!important}
+  .hero-reference .hero-lockup-copy strong{font-size:23px!important}
+  .portal-grid{grid-template-columns:repeat(3,1fr)!important}
+  .portal-card:nth-child(3){border-right:0!important}
+  .portal-card:nth-child(n+4){border-top:1px solid #e5e8eb!important}
+}
+@media (max-width:700px){
+  .hero-reference{
+    height:590px!important;
+    min-height:590px!important;
+  }
+  .hero-reference .hero-visual .hero-cover-image{
+    object-position:68% center!important;
+  }
+  .hero-reference .hero-content{
+    padding:82px 20px 38px!important;
+  }
+  .hero-reference .hero-lockup{margin-bottom:16px!important}
+  .hero-reference .hero-lockup-mark{width:50px!important;height:50px!important;flex-basis:50px!important}
+  .hero-reference .hero-lockup-copy strong{font-size:19px!important}
+  .hero-reference .hero-lockup-copy small{font-size:7px!important}
+  .hero-reference h1{font-size:34px!important}
+  .hero-reference .hero-lead{font-size:12px!important;line-height:1.55!important}
+  .hero-reference .hero-actions{gap:9px!important;flex-wrap:wrap!important}
+  .hero-reference .hero-actions .button{min-height:43px!important;padding:0 17px!important;font-size:11px!important}
+  .ecosystem-portals{padding:18px 12px 0!important}
+  .portals-heading{margin-bottom:13px!important}
+  .portal-grid{grid-template-columns:repeat(2,1fr)!important}
+  .portal-card{min-height:132px!important;padding:13px 8px!important}
+  .portal-card:nth-child(3){border-right:1px solid #e2e6e9!important}
+  .portal-card:nth-child(even){border-right:0!important}
+  .portal-card:nth-child(n+3){border-top:1px solid #e5e8eb!important}
+  .portal-icon{width:40px!important;height:40px!important}
+  .portal-icon svg{width:22px!important;height:22px!important}
+  .portal-card strong{font-size:10px!important}
+  .portal-card small{font-size:8px!important;line-height:1.4!important}
+  .portal-card i{margin-top:7px!important;width:25px!important}
+}
+@media (max-width:430px){
+  .hero-reference{height:555px!important;min-height:555px!important}
+  .hero-reference .hero-content{padding:76px 16px 28px!important}
+  .hero-reference h1{font-size:30px!important}
+  .hero-reference .hero-lead{font-size:11px!important}
+  .hero-reference .hero-actions .button{font-size:10px!important;padding:0 13px!important}
+  .portals-heading h2{font-size:29px!important}
+  .portal-card{min-height:126px!important}
+  .portal-card small{font-size:7.5px!important}
+}
+
+/* Ensure the official cover remains a real image element for deploy/asset verification. */
+.hero-reference .hero-cover-image[src$="emeriona-global-cover-en.webp"]{
+  content-visibility:auto!important;
+}
