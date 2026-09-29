@@ -552,3 +552,269 @@ html{scroll-padding-top:0!important;}
 .hero-reference .hero-cover-image[src$="emeriona-global-cover-en.webp"]{
   content-visibility:auto!important;
 }
+
+
+/* =========================================================
+   HOMEPAGE FINAL COMPOSITION — THREE VISUAL ZONES
+   1) Official cover
+   2) Existing hero copy / CTAs
+   3) Compact functional ecosystem portals
+   The overall homepage footprint stays close to the current
+   implementation; the cover no longer consumes the full hero.
+   ========================================================= */
+
+.hero-reference{
+  position:relative!important;
+  height:auto!important;
+  min-height:0!important;
+  padding:0!important;
+  display:block!important;
+  overflow:hidden!important;
+  background:#061525!important;
+  isolation:isolate!important;
+}
+
+/* Zone 1 — official cover */
+.hero-cover-band{
+  position:relative!important;
+  height:clamp(245px,18.2vw,285px)!important;
+  min-height:245px!important;
+  overflow:hidden!important;
+  background:#020c17!important;
+  z-index:1!important;
+}
+.hero-cover-image{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  opacity:1!important;
+  visibility:visible!important;
+  object-fit:cover!important;
+  object-position:72% center!important;
+  filter:none!important;
+}
+.hero-cover-gradient{
+  position:absolute!important;
+  inset:0!important;
+  z-index:2!important;
+  pointer-events:none!important;
+  background:
+    linear-gradient(180deg,rgba(2,10,19,.03) 0%,rgba(2,10,19,.02) 58%,rgba(5,18,32,.55) 100%),
+    linear-gradient(90deg,rgba(3,13,24,.12) 0%,rgba(3,13,24,.02) 55%,rgba(3,13,24,.10) 100%)!important;
+}
+.hero-cover-band:after{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:-1px!important;
+  height:58px!important;
+  z-index:3!important;
+  background:linear-gradient(180deg,rgba(6,21,37,0) 0%,#071a2c 92%)!important;
+  pointer-events:none!important;
+}
+
+/* Zone 2 — the existing text area, now blended directly from the cover */
+.hero-copy-band{
+  position:relative!important;
+  min-height:235px!important;
+  margin-top:-1px!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 78% 0%,rgba(22,122,169,.22),transparent 28%),
+    radial-gradient(circle at 15% 5%,rgba(218,170,65,.10),transparent 23%),
+    linear-gradient(180deg,#071a2c 0%,#061525 54%,#081c30 100%)!important;
+  z-index:2!important;
+}
+.hero-copy-band:before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  background:
+    linear-gradient(90deg,rgba(3,13,24,.18),transparent 48%,rgba(3,13,24,.10)),
+    linear-gradient(180deg,rgba(7,26,44,.10),transparent 45%,rgba(3,13,24,.20))!important;
+  pointer-events:none!important;
+}
+.hero-copy-band:after{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  height:1px!important;
+  background:linear-gradient(90deg,transparent,rgba(218,174,72,.72),transparent)!important;
+}
+.hero-copy-band .hero-content{
+  position:relative!important;
+  z-index:3!important;
+  width:min(1240px,100%)!important;
+  min-height:235px!important;
+  height:auto!important;
+  margin:0 auto!important;
+  padding:30px 42px 34px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  background:transparent!important;
+  text-align:left!important;
+}
+.hero-copy-band .hero-lockup{
+  display:none!important;
+}
+.hero-copy-band h1{
+  max-width:650px!important;
+  margin:0!important;
+  color:#fff!important;
+  font-size:clamp(32px,3.3vw,48px)!important;
+  line-height:1.02!important;
+  letter-spacing:-.035em!important;
+  font-weight:850!important;
+  text-align:left!important;
+}
+.hero-copy-band h1 span{display:inline!important;color:#fff!important}
+.hero-copy-band h1 em{
+  display:inline!important;
+  margin-left:.18em!important;
+  color:#f0b83c!important;
+  font-style:normal!important;
+}
+.hero-copy-band .hero-lead{
+  max-width:690px!important;
+  margin:10px 0 15px!important;
+  color:#eef3f6!important;
+  font-size:13px!important;
+  line-height:1.48!important;
+  text-align:left!important;
+}
+.hero-copy-band .hero-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:12px!important;
+}
+.hero-copy-band .hero-actions .button{
+  min-height:43px!important;
+  padding:0 21px!important;
+  border-radius:24px!important;
+}
+.hero-copy-band .hero-actions .button.primary{
+  background:linear-gradient(135deg,#f5c84e,#d99e20)!important;
+  color:#071b2c!important;
+  border:1px solid rgba(255,225,139,.75)!important;
+  box-shadow:0 8px 20px rgba(0,0,0,.18)!important;
+}
+.hero-copy-band .hero-actions .button.secondary{
+  background:rgba(4,17,30,.30)!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.72)!important;
+  backdrop-filter:blur(5px)!important;
+}
+.hero-reference .hero-side-note,
+.hero-reference .hero-curve,
+.hero-reference-overlay{
+  display:none!important;
+}
+
+/* Zone 3 — compact portal gateway, visually separated but connected */
+.ecosystem-portals{
+  position:relative!important;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(220,176,72,.07),transparent 30%),
+    linear-gradient(180deg,#fbfcfd 0%,#f6f8fa 100%)!important;
+  color:#17232b!important;
+  padding:17px 24px 0!important;
+  overflow:hidden!important;
+}
+.ecosystem-portals-inner{
+  width:min(1240px,100%)!important;
+  max-width:none!important;
+  margin:0 auto!important;
+}
+.portals-heading{
+  text-align:center!important;
+  margin:0 0 13px!important;
+}
+.portal-kicker{
+  margin-bottom:4px!important;
+  font-size:8px!important;
+  letter-spacing:.30em!important;
+}
+.portals-heading h2{
+  font-size:clamp(24px,2.4vw,34px)!important;
+}
+.portal-heading-line{margin:6px auto 4px!important}
+.portal-heading-line i{width:62px!important}
+.portals-heading p{font-size:10px!important}
+.portal-grid{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:0!important;
+  border-top:1px solid #e0e5e9!important;
+  border-bottom:1px solid #e0e5e9!important;
+}
+.portal-card{
+  min-height:132px!important;
+  padding:12px 10px 12px!important;
+}
+.portal-icon{
+  width:42px!important;
+  height:42px!important;
+  margin-bottom:7px!important;
+}
+.portal-icon svg{width:23px!important;height:23px!important}
+.portal-card strong{font-size:11px!important}
+.portal-card small{margin-top:5px!important;font-size:8.5px!important;line-height:1.38!important}
+.portal-card i{margin-top:8px!important;width:27px!important;height:2px!important}
+.portal-motto{padding:9px 0 12px!important;font-size:7px!important}
+
+/* Responsive: preserve the three-zone composition without allowing the cover to dominate. */
+@media (max-width:1100px){
+  .hero-cover-band{height:245px!important}
+  .hero-copy-band{min-height:245px!important}
+  .hero-copy-band .hero-content{min-height:245px!important;padding-left:30px!important;padding-right:30px!important}
+  .portal-grid{grid-template-columns:repeat(3,1fr)!important}
+  .portal-card:nth-child(3){border-right:0!important}
+  .portal-card:nth-child(n+4){border-top:1px solid #e0e5e9!important}
+}
+@media (max-width:700px){
+  .hero-cover-band{
+    height:215px!important;
+    min-height:215px!important;
+  }
+  .hero-cover-image{
+    object-position:69% center!important;
+  }
+  .hero-cover-gradient{
+    background:linear-gradient(180deg,rgba(2,10,19,.03),rgba(5,18,32,.66))!important;
+  }
+  .hero-cover-band:after{height:46px!important}
+  .hero-copy-band{min-height:275px!important}
+  .hero-copy-band .hero-content{
+    min-height:275px!important;
+    padding:27px 20px 29px!important;
+    justify-content:center!important;
+  }
+  .hero-copy-band h1{font-size:31px!important}
+  .hero-copy-band h1 span,.hero-copy-band h1 em{display:block!important}
+  .hero-copy-band h1 em{margin-left:0!important;margin-top:2px!important}
+  .hero-copy-band .hero-lead{font-size:11px!important;line-height:1.55!important;margin:10px 0 15px!important}
+  .hero-copy-band .hero-actions{gap:8px!important;flex-wrap:wrap!important}
+  .hero-copy-band .hero-actions .button{min-height:41px!important;padding:0 15px!important;font-size:10px!important}
+  .ecosystem-portals{padding:15px 12px 0!important}
+  .portal-grid{grid-template-columns:repeat(2,1fr)!important}
+  .portal-card{min-height:124px!important}
+  .portal-card:nth-child(3){border-right:1px solid #e0e5e9!important}
+  .portal-card:nth-child(even){border-right:0!important}
+  .portal-card:nth-child(n+3){border-top:1px solid #e0e5e9!important}
+}
+@media (max-width:430px){
+  .hero-cover-band{height:195px!important;min-height:195px!important}
+  .hero-copy-band{min-height:265px!important}
+  .hero-copy-band .hero-content{min-height:265px!important;padding-left:16px!important;padding-right:16px!important}
+  .hero-copy-band h1{font-size:28px!important}
+  .hero-copy-band .hero-lead{font-size:10px!important}
+  .hero-copy-band .hero-actions .button{font-size:9px!important;padding:0 12px!important}
+}
