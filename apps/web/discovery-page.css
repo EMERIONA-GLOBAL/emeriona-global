@@ -6,10 +6,10 @@
 #discovery-page .gateway-copy{grid-column:1;grid-row:1;padding:35px 0 0}
 #discovery-page .discovery-kicker{display:flex;align-items:center;gap:12px;color:#b18b32;font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
 #discovery-page .discovery-kicker i{display:none}
-#discovery-page .gateway-copy h1{margin:13px 0 9px;max-width:610px;font-size:clamp(48px,5.8vw,76px);line-height:.95;letter-spacing:-.055em;color:#12355f}
+#discovery-page .gateway-copy h1{margin:13px 0 8px;max-width:610px;font-size:clamp(48px,5.8vw,76px);line-height:.95;letter-spacing:-.055em;color:#12355f;font-weight:850}
 #discovery-page .gateway-copy h1 span{display:block;color:#12355f}
 #discovery-page .gateway-copy h1{color:#12355f}
-#discovery-page .gateway-copy h1:after{content:"";display:block;width:42px;height:2px;background:#c9a23f;margin-top:18px}
+#discovery-page .gateway-copy h1:after{content:"";display:block;width:42px;height:2px;background:#c9a23f;margin-top:18px}#discovery-page .gateway-subtitle{margin:0 0 18px;color:#314e6f;font-size:clamp(20px,2vw,27px);line-height:1.2;font-weight:500}
 #discovery-page .gateway-copy h1 span+*{}
 #discovery-page .gateway-copy h1{font-weight:850}
 #discovery-page .gateway-copy h1 span{font-size:1em}
