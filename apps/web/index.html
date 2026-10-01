@@ -52,36 +52,36 @@
   </div>
 </section>
 
-<section id="discovery-home-gateway" class="discovery-gateway" aria-labelledby="gateway-home-title">
-  <div class="gateway-glow gateway-glow-one" aria-hidden="true"></div><div class="gateway-glow gateway-glow-two" aria-hidden="true"></div>
-  <div class="gateway-shell">
-    <div class="gateway-copy">
-      <div class="discovery-kicker"><span>EMERIONA DISCOVERY</span><i></i><span>DISCOVERY GATEWAY</span></div>
-      <h2 id="gateway-home-title"><span>One Search.</span> Connected Paths.</h2>
-      <p class="gateway-lead">Discover the products, services, solutions, projects, opportunities and knowledge that connect your need to the wider EMERIONA GLOBAL ecosystem.</p>
+<section id="home-discovery" class="home-discovery-final" aria-labelledby="home-discovery-title">
+  <div class="hd-orbit hd-orbit-a" aria-hidden="true"></div>
+  <div class="hd-orbit hd-orbit-b" aria-hidden="true"></div>
+  <div class="home-discovery-inner">
+    <div class="hd-hero-copy">
+      <div class="hd-kicker"><span>HOME DISCOVERY</span><i></i></div>
+      <div class="hd-brand-line"><strong>EMERIONA DISCOVERY</strong><span>DISCOVERY GATEWAY</span></div>
+      <h2 id="home-discovery-title"><span>One Search.</span> Connected Paths.</h2>
+      <p class="hd-lead">Explore products, services, solutions, projects, opportunities and knowledge within the EMERIONA GLOBAL ecosystem.</p>
     </div>
-    <div class="gateway-visual" aria-label="Digital globe representing the connected discovery ecosystem">
-      <div class="digital-globe" aria-hidden="true">
-        <svg viewBox="0 0 520 520" role="presentation">
-          <defs><radialGradient id="homeGlobeCore" cx="35%" cy="30%"><stop offset="0%" stop-color="#21495b"/><stop offset="58%" stop-color="#0c2430"/><stop offset="100%" stop-color="#06131c"/></radialGradient><filter id="homeGlobeGlow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-          <circle cx="260" cy="260" r="184" fill="url(#homeGlobeCore)" stroke="rgba(215,181,109,.5)" stroke-width="1.5"/>
-          <g fill="none" stroke="#6baabd" stroke-opacity=".38" stroke-width="1"><ellipse cx="260" cy="260" rx="184" ry="72"/><ellipse cx="260" cy="260" rx="184" ry="132"/><ellipse cx="260" cy="260" rx="184" ry="170"/><ellipse cx="260" cy="260" rx="72" ry="184"/><ellipse cx="260" cy="260" rx="132" ry="184"/><ellipse cx="260" cy="260" rx="170" ry="184"/></g>
-          <g fill="none" stroke="#d7b56d" stroke-opacity=".42" stroke-width="1.2"><path d="M90 228 Q260 128 430 228"/><path d="M108 332 Q260 420 412 332"/><path d="M140 146 Q260 248 380 146"/></g>
-          <g fill="#d7b56d" filter="url(#homeGlobeGlow)"><circle cx="182" cy="188" r="4"/><circle cx="324" cy="174" r="3.5"/><circle cx="352" cy="278" r="4"/><circle cx="224" cy="328" r="3.5"/><circle cx="156" cy="282" r="3"/></g>
-          <g stroke="#d7b56d" stroke-opacity=".45" stroke-width="1"><path d="M182 188L324 174L352 278L224 328L156 282Z"/><path d="M182 188L224 328"/><path d="M324 174L156 282"/></g>
-        </svg>
-        <div class="globe-ring globe-ring-one"></div><div class="globe-ring globe-ring-two"></div>
+
+    <div class="hd-visual" aria-hidden="true">
+      <div class="hd-globe">
+        <div class="hd-globe-core"></div>
+        <span class="hd-node n1"></span><span class="hd-node n2"></span><span class="hd-node n3"></span>
+        <span class="hd-node n4"></span><span class="hd-node n5"></span><span class="hd-node n6"></span>
+        <i class="hd-path p1"></i><i class="hd-path p2"></i><i class="hd-path p3"></i>
+        <div class="hd-globe-ring r1"></div><div class="hd-globe-ring r2"></div>
       </div>
-      <div class="gateway-orbit-note note-one">PRODUCTS</div><div class="gateway-orbit-note note-two">SOLUTIONS</div><div class="gateway-orbit-note note-three">KNOWLEDGE</div>
+      <span class="hd-float-tag t1">PRODUCTS</span><span class="hd-float-tag t2">SOLUTIONS</span><span class="hd-float-tag t3">KNOWLEDGE</span>
     </div>
-    <div class="gateway-search-card">
-      <div class="gateway-search-heading"><span>DISCOVER</span><strong>Start with what you need.</strong><small>One search across connected ecosystem pathways.</small></div>
-      <form id="discovery-search" class="gateway-search" role="search">
-        <span class="gateway-search-icon" aria-hidden="true">⌕</span>
-        <input id="discovery-input" type="search" autocomplete="off" placeholder="What are you looking for?" aria-label="What are you looking for?">
-        <button type="submit">Explore <span>→</span></button>
+
+    <div class="hd-search-panel">
+      <div class="hd-search-title"><span>Q</span><div><strong>More than a platform....</strong><b>a global ecosystem for your growth.</b></div></div>
+      <form id="discovery-search" class="hd-search-form" role="search">
+        <span class="hd-search-icon" aria-hidden="true">⌕</span>
+        <input id="discovery-input" type="search" autocomplete="off" placeholder="Search products, services, solutions, projects, opportunities, knowledge..." aria-label="Search products, services, solutions, projects, opportunities, knowledge...">
+        <button type="submit">Search <span>→</span></button>
       </form>
-      <div class="discovery-categories" role="tablist" aria-label="Discovery categories">
+      <div class="hd-categories" role="tablist" aria-label="Discovery categories">
         <button type="button" class="active" data-discovery-category="all" role="tab" aria-selected="true">All</button>
         <button type="button" data-discovery-category="products" role="tab" aria-selected="false">Products</button>
         <button type="button" data-discovery-category="services" role="tab" aria-selected="false">Services</button>
@@ -90,30 +90,50 @@
         <button type="button" data-discovery-category="opportunities" role="tab" aria-selected="false">Opportunities</button>
         <button type="button" data-discovery-category="knowledge" role="tab" aria-selected="false">Knowledge</button>
       </div>
-      <div class="gateway-results" id="discovery-results" aria-live="polite"><div class="gateway-empty"><strong>Choose a pathway or search the ecosystem.</strong><span>Commercial results appear only when real catalog entities are available.</span></div></div>
+      <div class="hd-results" id="discovery-results" aria-live="polite"></div>
+    </div>
+
+    <div class="hd-action-section">
+      <div class="hd-action-heading">
+        <span>TURN DISCOVERY INTO ACTION</span>
+        <h3>Explore Our <em>Ecosystem</em></h3>
+        <p>Find what you need, connect with the right opportunities, and move forward with confidence.</p>
+      </div>
+      <div class="hd-journey-note">Your journey starts with discovery <span>→</span></div>
+      <div class="hd-path-grid">
+        <a class="hd-path-card" href="#commerce" data-discovery-route="products">
+          <span class="hd-card-number">01</span><div class="hd-card-icon">◈</div><strong>Products</strong>
+          <p>Discover high-quality products from global markets.</p><b>Browse Products <span>→</span></b>
+        </a>
+        <a class="hd-path-card" href="#commerce" data-discovery-route="services">
+          <span class="hd-card-number">02</span><div class="hd-card-icon">◌</div><strong>Services</strong>
+          <p>Professional services to support your goals and growth.</p><b>Browse Services <span>→</span></b>
+        </a>
+        <a class="hd-path-card" href="#market-solutions" data-discovery-route="solutions">
+          <span class="hd-card-number">03</span><div class="hd-card-icon">◇</div><strong>Solutions</strong>
+          <p>Smart solutions for real challenges and sustainable results.</p><b>Browse Solutions <span>→</span></b>
+        </a>
+        <a class="hd-path-card" href="#contact" data-discovery-route="projects">
+          <span class="hd-card-number">04</span><div class="hd-card-icon">⌁</div><strong>Projects</strong>
+          <p>Explore innovative projects and investment opportunities.</p><b>Browse Projects <span>→</span></b>
+        </a>
+        <a class="hd-path-card" href="#contact" data-discovery-route="opportunities">
+          <span class="hd-card-number">05</span><div class="hd-card-icon">✦</div><strong>Opportunities</strong>
+          <p>Find new opportunities for partnership and collaboration.</p><b>Browse Opportunities <span>→</span></b>
+        </a>
+        <a class="hd-path-card" href="#knowledge" data-discovery-route="knowledge">
+          <span class="hd-card-number">06</span><div class="hd-card-icon">▤</div><strong>Knowledge</strong>
+          <p>Access valuable knowledge. insights and resources.</p><b>Browse Knowledge <span>→</span></b>
+        </a>
+      </div>
+      <div class="hd-closing">
+        <strong>Discover Today <i>...</i> Build Tomorrow</strong>
+        <p>EMERIONA GLOBAL-Connecting People, Ideas and Opportunities Worldwide.</p>
+        <a href="#home-discovery">Start Exploring <span>→</span></a>
+      </div>
     </div>
   </div>
 </section>
-
-<section id="discovery-ecosystem-home" class="ecosystem-explore" aria-labelledby="ecosystem-home-title">
-  <div class="ecosystem-explore-shell">
-    <div class="ecosystem-heading">
-      <div class="section-label"><span>DISCOVERY</span><p class="eyebrow">EXPLORE OUR ECOSYSTEM</p></div>
-      <div class="ecosystem-heading-grid"><div><p class="eyebrow accent">TURN DISCOVERY INTO ACTION</p><h2 id="ecosystem-home-title">Explore Our <em>Ecosystem</em></h2></div><p>Move from discovery to the right world inside EMERIONA GLOBAL. Each pathway leads to an existing experience, capability or future-ready route without inventing inventory.</p></div>
-    </div>
-    <div class="ecosystem-path-grid">
-      <a class="ecosystem-path-card featured" href="#commerce" data-path="products"><span class="path-index">01</span><div class="path-icon">◈</div><strong>Products</strong><p>Discover published products when real offerings are available.</p><b>Explore Products <span>→</span></b></a>
-      <a class="ecosystem-path-card" href="#commerce" data-path="services"><span class="path-index">02</span><div class="path-icon">◌</div><strong>Services</strong><p>Find professional and scalable services connected to the Market.</p><b>Explore Services <span>→</span></b></a>
-      <a class="ecosystem-path-card" href="#market-solutions" data-path="solutions"><span class="path-index">03</span><div class="path-icon">◇</div><strong>Solutions</strong><p>Connect real needs with solutions, capabilities and partner pathways.</p><b>Explore Solutions <span>→</span></b></a>
-      <a class="ecosystem-path-card" href="#contact" data-path="projects"><span class="path-index">04</span><div class="path-icon">⌁</div><strong>Projects</strong><p>Move ideas through discovery, design, development, activation and impact.</p><b>Explore Projects <span>→</span></b></a>
-      <a class="ecosystem-path-card" href="#contact" data-path="opportunities"><span class="path-index">05</span><div class="path-icon">✦</div><strong>Opportunities</strong><p>Open routes for collaboration, business, innovation and contribution.</p><b>Explore Opportunities <span>→</span></b></a>
-      <a class="ecosystem-path-card" href="#knowledge" data-path="knowledge"><span class="path-index">06</span><div class="path-icon">▤</div><strong>Knowledge</strong><p>Explore research, guides, insights, resources and connected intelligence.</p><b>Explore Knowledge <span>→</span></b></a>
-    </div>
-    <div class="ecosystem-close"><span>DISCOVERY → PATHWAY → ACTION</span><strong>Discover Today <i>…</i> Build Tomorrow.</strong><p>EMERIONA DISCOVERY is the gateway; the ecosystem is where discovery becomes meaningful action.</p><a class="return-home" href="./discovery.html">Open Full Discovery <span>→</span></a></div>
-  </div>
-</section>
-
-
 
 <section id="ecosystem-portals" class="ecosystem-portals" aria-labelledby="ecosystem-portals-title">
 <div class="ecosystem-portals-inner">
