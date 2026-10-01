@@ -104,3 +104,13 @@
 #discovery-page .ecosystem-close{margin-top:28px;padding-top:22px}
 @media(max-width:900px){#discovery-page .discovery-gateway{padding:38px 22px 62px}#discovery-page .gateway-shell{grid-template-columns:1fr;gap:0}#discovery-page .gateway-copy{padding-top:18px}#discovery-page .gateway-visual{min-height:330px;margin:0 -22px;background-position:center right}#discovery-page .digital-globe{right:5%;width:min(360px,76%)}#discovery-page .note-one{right:20%;top:12%}.note-two{right:3%;top:52%}.note-three{right:20%;bottom:10%}#discovery-page .gateway-search-card{margin-top:-22px;position:relative;z-index:4}#discovery-page .ecosystem-heading-grid{grid-template-columns:1fr}#discovery-page .ecosystem-explore-shell{padding:30px 24px}}
 @media(max-width:560px){#discovery-page .discovery-gateway{padding:25px 14px 48px}#discovery-page .gateway-copy h1{font-size:44px}#discovery-page .gateway-subtitle{font-size:20px}#discovery-page .gateway-lead{font-size:13px}#discovery-page .gateway-visual{min-height:255px;margin:0 -14px}#discovery-page .digital-globe{right:0;width:92%}#discovery-page .gateway-orbit-note{font-size:8px;padding:6px 8px}.note-one{right:18%;top:8%}.note-two{right:1%;top:52%}.note-three{right:18%;bottom:6%}#discovery-page .gateway-search{height:auto;min-height:62px}#discovery-page .ecosystem-explore{padding:28px 12px 46px}#discovery-page .ecosystem-explore-shell{padding:24px 14px 18px}#discovery-page .ecosystem-path-card{min-height:270px}}
+
+
+/* FINAL APPROVED DISCOVERY REFERENCE — cache-safe visual lock — 2026-10-01 */
+#discovery-page{background:#f3f7fa!important;color:#173557!important}
+#discovery-page .discovery-gateway{background:linear-gradient(135deg,#f8fbfd 0%,#eef4f8 54%,#f8fbfd 100%)!important}
+#discovery-page .gateway-visual{background-image:linear-gradient(90deg,rgba(248,251,253,.98) 0%,rgba(248,251,253,.42) 28%,rgba(248,251,253,0) 52%),url("./assets/covers/emeriona-global-cover-en.webp")!important;background-size:cover!important;background-position:center right!important}
+#discovery-page .digital-globe,#discovery-page .gateway-orbit-note{display:none!important}
+#discovery-page .ecosystem-explore{background:#f8fafc!important}
+#discovery-page .ecosystem-path-grid{display:grid!important}
+#discovery-page .ecosystem-path-card{display:block!important;visibility:visible!important;opacity:1!important}
