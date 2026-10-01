@@ -38,7 +38,7 @@
       input.placeholder='Search '+categoryLabels[key]+'...';
       input.value='';
     }else{
-      input.placeholder='What are you looking for?';
+      input.placeholder='Search products, services, solutions, projects, opportunities, knowledge...';
     }
   };
 
