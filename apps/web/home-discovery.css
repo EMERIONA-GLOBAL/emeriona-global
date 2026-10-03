@@ -331,3 +331,39 @@
   .hd-journey-note{justify-content:flex-start}
   .hd-path-card{min-height:320px}
 }
+
+
+/* DISCOVERY SYMBOLIC CARD IMAGERY — 2026-10-03
+   Visual-only assets. No catalog records, prices, products or services are introduced. */
+.hd-card-image{
+  position:relative;
+  z-index:1;
+  height:148px;
+  margin:0 -24px;
+  overflow:hidden;
+  border-bottom:1px solid #e3e7e8;
+  background:#eef5f7;
+}
+.hd-card-image img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  transition:transform .35s ease,filter .35s ease;
+}
+.hd-path-card:hover .hd-card-image img{
+  transform:scale(1.035);
+  filter:saturate(1.04);
+}
+.hd-path-card .hd-card-icon{
+  z-index:4;
+  font-family:"Noto Sans","Noto Sans Symbols 2",sans-serif;
+  font-size:22px;
+  line-height:1;
+}
+.hd-path-card .hd-card-icon::first-letter{font-size:1em}
+@media(max-width:700px){
+  .hd-card-image{height:132px}
+  .hd-card-icon{transform:translateY(103px)}
+}
