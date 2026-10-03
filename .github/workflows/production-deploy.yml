@@ -71,7 +71,7 @@ jobs:
           # Verify the official cover is an actual deployed static asset, not only a source reference.
           curl -fsS "$BASE_URL/assets/covers/emeriona-global-cover-en.webp" -o /tmp/cover.webp
           test -s /tmp/cover.webp
-          file --mime-type /tmp/cover.webp | grep -Eiq 'image/(webp|png|jpeg)'
+          node -e "const fs=require('fs');const b=fs.readFileSync('/tmp/cover.webp');const webp=b.length>=12&&b.subarray(0,4).toString()==='RIFF'&&b.subarray(8,12).toString()==='WEBP';if(!webp)process.exit(1);"
 
           # The Market Center is data-driven: an empty catalog is a valid production state.
           # API lifecycle verification is covered by the dedicated commerce/catalog smoke suites.
