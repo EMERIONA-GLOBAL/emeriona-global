@@ -57,6 +57,11 @@ jobs:
           grep -Fq 'id="market-center-title"' /tmp/homepage.html
           grep -Fq 'market-recommendations' /tmp/homepage.html
           grep -Fq 'market-commercial' /tmp/homepage.html
+          grep -Fq 'discovery-page.css?v=20261004-visual-rebuild-v1' <(curl -fsS "$BASE_URL/discovery.html?v=${GITHUB_SHA}")
+          grep -Fq 'Discovery Gateway' <(curl -fsS "$BASE_URL/discovery.html?v=${GITHUB_SHA}")
+          curl -fsSI "$BASE_URL/discovery-page.css?v=${GITHUB_SHA}" | tee /tmp/discovery-css.headers
+          grep -Eiq '^content-type: text/css' /tmp/discovery-css.headers
+
 
           # Verify the official cover is an actual deployed static asset, not only a source reference.
           curl -fsSI "$BASE_URL/assets/covers/emeriona-global-cover-en.webp" | tee /tmp/cover.headers
