@@ -359,3 +359,9 @@ html{scroll-padding-top:76px}.site-header{padding:12px 20px}.brand{margin-right:
 main#top{width:100%;max-width:none;margin-left:0;margin-right:0}
 main#top>section{width:100%;max-width:none;margin-left:0;margin-right:0}
 @media(max-width:600px){main#top>section{width:100%;max-width:none;margin-left:0;margin-right:0}}
+
+/* FINAL COVER-ALIGNED OUTER FRAME — 2026-10-04 */
+html,body{width:100%;max-width:none;margin:0;padding:0}
+body{box-sizing:border-box}
+main#top{display:block;width:100%;max-width:none;margin:0;padding:0}
+main#top>section{box-sizing:border-box;width:100%;max-width:none;margin-left:0;margin-right:0}
