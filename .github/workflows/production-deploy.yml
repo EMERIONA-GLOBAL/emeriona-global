@@ -50,28 +50,28 @@ jobs:
 
           BASE_URL="https://emeriona-global.emerionaglobal.workers.dev"
 
-          curl -fsS "$BASE_URL/?v=${GITHUB_SHA}" | tee /tmp/homepage.html
-          grep -Fq 'class="hero hero-reference"' /tmp/homepage.html
-          grep -Fq 'emeriona-global-cover-en.webp' /tmp/homepage.html
-          grep -Fq 'id="commerce"' /tmp/homepage.html
-          grep -Fq 'id="market-center-title"' /tmp/homepage.html
-          grep -Fq 'market-recommendations' /tmp/homepage.html
-          grep -Fq 'market-commercial' /tmp/homepage.html
+          curl -fsS "$BASE_URL/?v=${GITHUB_SHA}" -o /tmp/homepage.html
+          for marker in 'class="hero hero-reference"' 'emeriona-global-cover-en.webp' 'id="commerce"' 'id="market-center-title"' 'market-recommendations' 'market-commercial'; do
+            grep -Fq "$marker" /tmp/homepage.html || { echo "Homepage verification failed: $marker"; exit 1; }
+          done
 
           curl -fsS "$BASE_URL/discovery.html?v=${GITHUB_SHA}" -o /tmp/discovery.html
-          grep -Fq 'discovery-page.css?v=20261004-visual-rebuild-v1' /tmp/discovery.html
-          grep -Fq 'Discovery Gateway' /tmp/discovery.html
+          for marker in 'discovery-page.css?v=20261004-visual-rebuild-v1' 'Discovery Gateway'; do
+            grep -Fq "$marker" /tmp/discovery.html || { echo "Discovery HTML verification failed: $marker"; exit 1; }
+          done
 
           curl -fsS -D /tmp/discovery-css.headers -o /tmp/discovery-page.css "$BASE_URL/discovery-page.css?v=${GITHUB_SHA}"
-          grep -Eiq '^content-type: text/css(;|[[:space:]])' /tmp/discovery-css.headers
-          grep -Fq '.discovery-gateway' /tmp/discovery-page.css
-          grep -Fq '.ecosystem-path-card' /tmp/discovery-page.css
-          grep -Fq '.gateway-results' /tmp/discovery-page.css
+          echo "Discovery CSS response headers:"
+          cat /tmp/discovery-css.headers
+          grep -Eiq '^content-type: text/css(;|[[:space:]])' /tmp/discovery-css.headers || { echo "Discovery CSS verification failed: unexpected Content-Type"; exit 1; }
+          for marker in '.discovery-gateway' '.ecosystem-path-card' '.gateway-results'; do
+            grep -Fq "$marker" /tmp/discovery-page.css || { echo "Discovery CSS verification failed: $marker"; exit 1; }
+          done
 
           # Verify the official cover is an actual deployed static asset, not only a source reference.
           curl -fsS "$BASE_URL/assets/covers/emeriona-global-cover-en.webp" -o /tmp/cover.webp
-          test -s /tmp/cover.webp
-          node -e "const fs=require('fs');const b=fs.readFileSync('/tmp/cover.webp');const webp=b.length>=12&&b.subarray(0,4).toString()==='RIFF'&&b.subarray(8,12).toString()==='WEBP';if(!webp)process.exit(1);"
+          test -s /tmp/cover.webp || { echo "Cover verification failed: empty payload"; exit 1; }
+          node -e "const fs=require('fs');const b=fs.readFileSync('/tmp/cover.webp');const webp=b.length>=12&&b.subarray(0,4).toString()==='RIFF'&&b.subarray(8,12).toString()==='WEBP';if(!webp){console.error('Cover verification failed: invalid WebP signature, first bytes:',b.subarray(0,16).toString('hex'));process.exit(1)}"
 
           # The Market Center is data-driven: an empty catalog is a valid production state.
           # API lifecycle verification is covered by the dedicated commerce/catalog smoke suites.
