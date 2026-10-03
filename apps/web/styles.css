@@ -350,3 +350,12 @@ html{scroll-padding-top:76px}.site-header{padding:12px 20px}.brand{margin-right:
 
 /* FULL-WIDTH PAGE FRAME — COVER-ALIGNED SECTIONS — 2026-10-04 */
 .section{max-width:none;width:100%;padding-left:max(24px,calc((100vw - var(--max))/2));padding-right:max(24px,calc((100vw - var(--max))/2))}.section> :not(.full-bleed){max-width:var(--max);margin-left:auto;margin-right:auto}@media(max-width:600px){.section{padding-left:20px;padding-right:20px}}
+
+
+/* UNIFIED HORIZONTAL PAGE FRAME — COVER REFERENCE — 2026-10-04 */
+/* The official cover establishes the page's outer horizontal frame. Every top-level
+   homepage section uses that same full-width frame; inner content widths remain
+   controlled by each section's existing max-width rules. */
+main#top{width:100%;max-width:none;margin-left:0;margin-right:0}
+main#top>section{width:100%;max-width:none;margin-left:0;margin-right:0}
+@media(max-width:600px){main#top>section{width:100%;max-width:none;margin-left:0;margin-right:0}}
