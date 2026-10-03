@@ -192,3 +192,142 @@
   .hd-action-section{margin-left:-16px;margin-right:-16px;padding:62px 16px 54px}.hd-action-heading h3{font-size:44px}.hd-path-grid{grid-template-columns:1fr}.hd-path-card{min-height:240px}
 }
 @media(max-width:420px){.hd-globe{width:310px}.hd-path-card{min-height:230px}.hd-action-heading h3{font-size:40px}}
+
+
+/* FINAL DISCOVERY VISUAL — LIGHT PREMIUM GLOBAL GATEWAY — 2026-10-03
+   Scope: #home-discovery only. No homepage/portal/market/API/catalog changes. */
+.home-discovery-final{
+  background:#fff !important;
+  color:#14232d !important;
+  border-top:1px solid #e7dfcf;
+  border-bottom:1px solid #e7dfcf;
+}
+.home-discovery-final:before{
+  background-image:
+    radial-gradient(circle at 78% 18%,rgba(65,151,178,.07),transparent 28%),
+    linear-gradient(rgba(20,60,78,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(20,60,78,.018) 1px,transparent 1px) !important;
+  background-size:auto,72px 72px,72px 72px !important;
+  mask-image:linear-gradient(to bottom,transparent,#000 10%,#000 90%,transparent) !important;
+}
+.home-discovery-final:after{border-color:rgba(215,181,109,.12);box-shadow:0 0 0 90px rgba(215,181,109,.018),0 0 120px rgba(44,170,196,.045)}
+.home-discovery-inner{padding-top:54px}
+.hd-orbit{border-color:rgba(215,181,109,.10)}
+.hd-hero-copy{max-width:650px;padding-top:20px}
+.hd-kicker{color:#a48a50}
+.hd-kicker i{background:#d7b56d}
+.hd-brand-line{color:#a48a50}
+.hd-brand-line strong{color:#17303d}
+.hd-brand-line span{border-left-color:#d8c99f}
+.hd-hero-copy h2{color:#132b38 !important;font-weight:850}
+.hd-hero-copy h2 span{color:#132b38}
+.hd-hero-copy h2:after{
+  content:"";display:block;width:54px;height:3px;margin-top:19px;
+  border-radius:3px;background:linear-gradient(90deg,#d7b56d,#f0d894);
+}
+.hd-lead{color:#61727c}
+.hd-visual{top:22px;right:0;width:53%;height:555px}
+.hd-globe{width:min(520px,42vw);filter:drop-shadow(0 18px 40px rgba(30,104,132,.12))}
+.hd-globe-core{
+  background:
+    radial-gradient(circle at 32% 25%,rgba(104,191,207,.82),rgba(48,119,143,.72) 25%,rgba(17,66,84,.92) 64%,#08212d 100%);
+  border-color:rgba(164,138,80,.55);
+}
+.hd-globe-core:before{
+  background:
+    radial-gradient(ellipse at 42% 37%,transparent 0 17%,rgba(180,226,232,.23) 18% 18.6%,transparent 19% 34%,rgba(180,226,232,.18) 34.5% 35.2%,transparent 36% 53%,rgba(180,226,232,.16) 53.5% 54.1%,transparent 55%),
+    repeating-linear-gradient(90deg,transparent 0 15%,rgba(180,226,232,.13) 15.2% 15.5%,transparent 15.7% 30%);
+}
+.hd-float-tag{
+  background:rgba(255,255,255,.86);color:#6f5a2d;border-color:rgba(164,138,80,.3);
+  box-shadow:0 12px 28px rgba(28,62,77,.10);
+}
+.hd-search-panel{
+  margin-top:30px;
+  padding:24px;
+  border:1px solid #e3dccf;
+  border-radius:24px;
+  background:rgba(255,255,255,.94);
+  box-shadow:0 20px 60px rgba(20,48,61,.09);
+  backdrop-filter:blur(16px);
+}
+.hd-search-title>span{border-color:#d9c89c;color:#a48a50;box-shadow:none}
+.hd-search-title strong{color:#17303d}
+.hd-search-title b{color:#a48a50}
+.hd-search-form{
+  border-color:#d9dfe1;background:#fff;box-shadow:0 5px 18px rgba(25,58,72,.05);
+}
+.hd-search-icon{color:#a48a50}
+.hd-search-form input{color:#17303d}
+.hd-search-form input::placeholder{color:#87959c}
+.hd-search-form button{background:linear-gradient(135deg,#f0ca73,#d7b15f);box-shadow:none}
+.hd-categories button{
+  border-color:#dce2e4;background:#fff;color:#38515e;
+}
+.hd-categories button:hover,.hd-categories button.active{
+  border-color:#173b4d;background:#173b4d;color:#fff;box-shadow:none;
+}
+.hd-action-section{
+  margin-top:82px;
+  background:linear-gradient(180deg,#fbfaf7 0%,#f2f5f6 100%) !important;
+  padding-top:82px;
+}
+.hd-action-heading>span{color:#a48a50}
+.hd-action-heading h3{color:#152b37}
+.hd-action-heading h3 em{color:#a48a50}
+.hd-action-heading p{color:#667680}
+.hd-journey-note{
+  display:flex;justify-content:flex-end;align-items:center;gap:7px;
+  color:#a48a50;
+}
+.hd-path-grid{gap:18px}
+.hd-path-card{
+  min-height:345px;padding:0 24px 24px;
+  border-color:#dce1e3;border-radius:20px;background:#fff;
+  box-shadow:0 8px 28px rgba(26,52,64,.055);
+}
+.hd-path-card:hover{border-color:#cdb77e;box-shadow:0 22px 48px rgba(26,52,64,.11)}
+.hd-path-card:before{
+  top:0;left:0;right:0;height:148px;inset:auto 0 auto 0;opacity:1;
+  background:
+    radial-gradient(circle at 72% 35%,rgba(255,255,255,.82),transparent 18%),
+    linear-gradient(135deg,rgba(24,87,111,.14),rgba(105,186,197,.28) 52%,rgba(244,239,224,.78));
+  border-bottom:1px solid #e3e7e8;
+}
+.hd-path-card:after{width:160px;height:160px;right:-90px;bottom:-95px;border-color:rgba(215,181,109,.16)}
+.hd-card-number{position:absolute;top:17px;right:20px;color:#8d7440}
+.hd-card-icon{
+  width:54px;height:54px;margin-top:0;transform:translateY(119px);
+  border-radius:50%;background:#fff;color:#a48a50;border:4px solid #fff;
+  box-shadow:0 7px 22px rgba(22,54,68,.13);
+}
+.hd-card-icon:before{inset:7px;border:1px solid rgba(164,138,80,.22);border-radius:50%}
+.hd-card-icon:after{display:none}
+.hd-path-card strong{margin-top:128px;color:#17303d;font-size:23px}
+.hd-path-card p{color:#70808a}
+.hd-path-card b{color:#80652f}
+.hd-path-card:nth-child(1) .hd-card-icon{color:#2b78a0}
+.hd-path-card:nth-child(2) .hd-card-icon{color:#159c9a}
+.hd-path-card:nth-child(3) .hd-card-icon{color:#8055a8}
+.hd-path-card:nth-child(4) .hd-card-icon{color:#159c9a}
+.hd-path-card:nth-child(5) .hd-card-icon{color:#c58b22}
+.hd-path-card:nth-child(6) .hd-card-icon{color:#2b78a0}
+.hd-closing{border-top-color:#d9ddde}
+.hd-closing strong{color:#17303d}
+.hd-closing strong i{color:#a48a50}
+.hd-closing p{color:#70808a}
+.hd-closing a{
+  background:#173b4d;color:#fff;border-color:#173b4d;
+  box-shadow:0 10px 24px rgba(23,59,77,.12);
+}
+.hd-closing a:hover{background:#102e3d;color:#fff;border-color:#102e3d}
+@media(max-width:900px){
+  .home-discovery-inner{padding-top:45px}
+  .hd-visual{height:410px;top:auto}
+}
+@media(max-width:700px){
+  .hd-hero-copy{padding-top:5px}
+  .hd-action-section{padding-top:62px}
+  .hd-journey-note{justify-content:flex-start}
+  .hd-path-card{min-height:320px}
+}
