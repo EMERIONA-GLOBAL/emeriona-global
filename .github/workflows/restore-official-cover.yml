@@ -22,6 +22,7 @@ jobs:
       - name: Download approved official cover
         run: |
           set -euo pipefail
+          python -m pip install --quiet pillow
           curl -fL --retry 3 --retry-all-errors \
             "https://raw.githubusercontent.com/emeriona/emeriona-website/main/assets/covers/emeriona-global-cover-en.png" \
             -o /tmp/emeriona-global-cover-en.png
@@ -37,7 +38,6 @@ jobs:
       - name: Convert to production WebP
         run: |
           set -euo pipefail
-          python -m pip install --quiet pillow
           python - <<'PY'
           from PIL import Image
           src = "/tmp/emeriona-global-cover-en.png"
