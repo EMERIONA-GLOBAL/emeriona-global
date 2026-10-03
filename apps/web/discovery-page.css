@@ -155,3 +155,98 @@
 @media(max-width:560px){
   #discovery-page .digital-globe{right:0;width:92%}
 }
+
+
+/* DISCOVERY — CONTEMPORARY EMERIONA VISUAL ALIGNMENT — 2026-10-03 */
+#discovery-page .gateway-visual{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:
+    radial-gradient(520px 300px at 76% 22%,rgba(44,201,232,.18),transparent 62%),
+    radial-gradient(430px 280px at 82% 78%,rgba(215,181,109,.13),transparent 64%),
+    linear-gradient(135deg,#071a28 0%,#0b3042 48%,#0a5260 100%)!important;
+}
+#discovery-page .gateway-visual:before{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  z-index:-1;
+  opacity:.42;
+  background:
+    linear-gradient(118deg,transparent 0 31%,rgba(92,225,235,.18) 31.2%,transparent 31.45%),
+    linear-gradient(147deg,transparent 0 57%,rgba(215,181,109,.18) 57.2%,transparent 57.45%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 58px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 1px,transparent 1px 58px);
+  transform:rotate(-3deg) scale(1.08);
+}
+#discovery-page .gateway-visual:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 24% 26%,rgba(255,255,255,.24) 0 2px,transparent 3px),
+    radial-gradient(circle at 63% 18%,rgba(215,181,109,.65) 0 2px,transparent 3px),
+    radial-gradient(circle at 77% 62%,rgba(92,225,235,.55) 0 2px,transparent 3px),
+    radial-gradient(circle at 47% 82%,rgba(255,255,255,.18) 0 1px,transparent 2px),
+    linear-gradient(90deg,rgba(248,251,253,.08),transparent 42%,rgba(2,18,29,.08));
+  background-size:auto,auto,auto,auto,100% 100%;
+  pointer-events:none;
+}
+#discovery-page .gateway-visual .digital-globe,
+#discovery-page .gateway-visual .gateway-orbit-note{
+  display:none!important;
+}
+
+#discovery-page .ecosystem-path-card{
+  min-height:315px!important;
+  border:1px solid rgba(29,75,104,.13)!important;
+  border-radius:20px!important;
+  background:linear-gradient(180deg,#fff 0%,#f8fbfc 100%)!important;
+  box-shadow:0 14px 34px rgba(18,53,80,.075)!important;
+}
+#discovery-page .ecosystem-path-card:before{
+  height:158px!important;
+  background-size:cover!important;
+  background-position:center!important;
+  filter:saturate(.96) contrast(1.02);
+}
+#discovery-page .ecosystem-path-card:after{
+  content:"";
+  display:block!important;
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:158px;
+  background:linear-gradient(180deg,rgba(4,26,50,0) 45%,rgba(4,26,50,.14) 100%);
+  pointer-events:none;
+}
+#discovery-page .path-icon{
+  z-index:2;
+  width:46px!important;
+  height:46px!important;
+  top:134px!important;
+  border:2px solid rgba(255,255,255,.96)!important;
+  box-shadow:0 7px 18px rgba(10,38,66,.22)!important;
+}
+#discovery-page .ecosystem-path-card strong,
+#discovery-page .ecosystem-path-card p,
+#discovery-page .ecosystem-path-card b{position:relative;z-index:2}
+#discovery-page .ecosystem-path-card:hover{
+  transform:translateY(-5px)!important;
+  border-color:rgba(201,162,63,.45)!important;
+  box-shadow:0 20px 42px rgba(18,53,80,.12)!important;
+}
+@media(max-width:900px){
+  #discovery-page .gateway-visual{min-height:330px!important}
+}
+@media(max-width:560px){
+  #discovery-page .gateway-visual{min-height:255px!important}
+  #discovery-page .ecosystem-path-card:before,
+  #discovery-page .ecosystem-path-card:after{height:145px!important}
+  #discovery-page .path-icon{top:121px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #discovery-page .ecosystem-path-card{transition:none!important}
+}
