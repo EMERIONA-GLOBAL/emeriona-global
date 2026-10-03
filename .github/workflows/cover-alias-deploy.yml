@@ -36,6 +36,11 @@ jobs:
         run: |
           set -euo pipefail
           BASE_URL="https://emerionaglobal.emerionaglobal.workers.dev"
-          curl -fsS "$BASE_URL/?v=${GITHUB_SHA}" | grep -Fq 'emeriona-global-cover-en.webp'
-          curl -fsSI "$BASE_URL/assets/covers/emeriona-global-cover-en.webp" | grep -Eiq '^content-type: image/webp'
+          TMP_HTML="$(mktemp)"
+          TMP_HEADERS="$(mktemp)"
+          trap 'rm -f "$TMP_HTML" "$TMP_HEADERS"' EXIT
+          curl -fsS -o "$TMP_HTML" "$BASE_URL/?v=${GITHUB_SHA}"
+          grep -Fq 'emeriona-global-cover-en.webp' "$TMP_HTML"
+          curl -fsSI -o "$TMP_HEADERS" "$BASE_URL/assets/covers/emeriona-global-cover-en.webp"
+          grep -Eiq '^content-type: image/webp' "$TMP_HEADERS"
           echo "Cover alias deployment verification passed."
