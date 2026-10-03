@@ -1,0 +1,41 @@
+name: EMERIONA GLOBAL Cover Alias Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: emeriona-global-cover-alias
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy current site to alias Worker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm install --no-audit --no-fund
+      - name: Deploy alias Worker and static assets
+        run: npx wrangler deploy --config wrangler.alias.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Verify homepage cover asset on alias
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_URL="https://emerionaglobal.emerionaglobal.workers.dev"
+          curl -fsS "$BASE_URL/?v=${GITHUB_SHA}" | grep -Fq 'emeriona-global-cover-en.webp'
+          curl -fsSI "$BASE_URL/assets/covers/emeriona-global-cover-en.webp" | grep -Eiq '^content-type: image/webp'
+          echo "Cover alias deployment verification passed."
