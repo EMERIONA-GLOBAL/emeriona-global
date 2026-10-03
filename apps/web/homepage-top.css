@@ -118,3 +118,10 @@
 @media(max-width:1050px){#ecosystem-portals{padding:32px 16px 46px!important}}
 @media(max-width:700px){#ecosystem-portals{padding:32px 16px 46px!important}}
 @media(max-width:420px){#ecosystem-portals{padding:32px 16px 46px!important}}
+
+
+/* COVER VISIBILITY DIAGNOSTIC — 2026-10-03 — homepage cover only */
+.hero-reference .hero-cover-band{z-index:10!important;background:#061426!important;}
+.hero-reference .hero-cover-image{z-index:11!important;opacity:1!important;visibility:visible!important;display:block!important;filter:none!important;mix-blend-mode:normal!important;}
+.hero-reference .hero-cover-gradient{display:none!important;opacity:0!important;visibility:hidden!important;}
+.hero-reference .hero-copy-band{z-index:12!important;}
