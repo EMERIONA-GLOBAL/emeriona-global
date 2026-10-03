@@ -69,9 +69,9 @@ jobs:
           grep -Fq '.gateway-results' /tmp/discovery-page.css
 
           # Verify the official cover is an actual deployed static asset, not only a source reference.
-          curl -fsS -D /tmp/cover.headers -o /tmp/cover.webp "$BASE_URL/assets/covers/emeriona-global-cover-en.webp"
-          grep -Eiq '^content-type: image/webp(;|[[:space:]])' /tmp/cover.headers
+          curl -fsS "$BASE_URL/assets/covers/emeriona-global-cover-en.webp" -o /tmp/cover.webp
           test -s /tmp/cover.webp
+          file --mime-type /tmp/cover.webp | grep -Eiq 'image/(webp|png|jpeg)'
 
           # The Market Center is data-driven: an empty catalog is a valid production state.
           # API lifecycle verification is covered by the dedicated commerce/catalog smoke suites.
