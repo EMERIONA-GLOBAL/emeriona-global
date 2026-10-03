@@ -399,3 +399,40 @@
 .home-discovery-final .hd-path-card:nth-child(6) .hd-card-image:after{width:80px;height:80px;right:60px;top:27px;border:1px solid rgba(215,181,109,.62);border-radius:50%;box-shadow:inset 0 0 0 12px rgba(105,186,205,.08);background:repeating-linear-gradient(90deg,transparent 0 19px,rgba(134,202,218,.24) 20px 21px),repeating-linear-gradient(0deg,transparent 0 19px,rgba(134,202,218,.24) 20px 21px)}
 /* Keep all symbolic scenes calm and corporate */
 .home-discovery-final .hd-path-card:nth-child(n) .hd-card-image:after{opacity:.78}
+
+
+/* FINAL REFERENCE LOCK — 2026-10-03
+   Discovery-only. Use the authored symbolic imagery; do not replace it with CSS scenes or emoji.
+*/
+.home-discovery-final .hd-card-image{
+  height:148px;
+  margin:0 -24px;
+  background:#eef4f6 !important;
+  border-bottom:1px solid #e0e6e8;
+}
+.home-discovery-final .hd-card-image img{
+  opacity:1 !important;
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  filter:none;
+}
+.home-discovery-final .hd-card-image:before,
+.home-discovery-final .hd-card-image:after{
+  display:none !important;
+  content:none !important;
+}
+.home-discovery-final .hd-path-card{
+  min-height:345px;
+  padding:0 24px 24px;
+}
+.home-discovery-final .hd-path-card strong{
+  margin-top:16px;
+}
+@media(max-width:700px){
+  .home-discovery-final .hd-card-image{height:132px}
+  .home-discovery-final .hd-path-card{min-height:320px}
+  .home-discovery-final .hd-path-card strong{margin-top:16px}
+}
