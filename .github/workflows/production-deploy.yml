@@ -56,7 +56,7 @@ jobs:
           done
 
           curl -fsS "$BASE_URL/discovery.html?v=${GITHUB_SHA}" -o /tmp/discovery.html
-          for marker in 'discovery-page.css?v=20261004-visual-rebuild-v1' 'Discovery Gateway'; do
+          for marker in 'discovery-page.css?v=20261004-visual-rebuild-v2' 'Discovery Gateway'; do
             grep -Fq "$marker" /tmp/discovery.html || { echo "Discovery HTML verification failed: $marker"; exit 1; }
           done
 
