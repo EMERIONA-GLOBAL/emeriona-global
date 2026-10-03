@@ -1,0 +1,64 @@
+name: Install Official Cover
+
+on:
+  push:
+    paths:
+      - ".github/workflows/install-official-cover.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install-cover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout EMERIONA GLOBAL
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Checkout approved cover source
+        uses: actions/checkout@v4
+        with:
+          repository: emeriona/emeriona-website
+          ref: main
+          path: approved-source
+          sparse-checkout: |
+            assets/covers/emeriona-global-cover-en.png
+          sparse-checkout-cone-mode: false
+
+      - name: Prepare official cover
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from PIL import Image, ImageEnhance
+          src = "approved-source/assets/covers/emeriona-global-cover-en.png"
+          dst = "apps/web/assets/covers/emeriona-global-cover-en.webp"
+          im = Image.open(src).convert("RGB")
+          print("approved source:", im.size, im.format)
+          assert im.width >= 1000 and im.height >= 300
+          # Gentle brightness lift only; preserve the approved artwork, composition and text.
+          im = ImageEnhance.Brightness(im).enhance(1.08)
+          im = ImageEnhance.Contrast(im).enhance(1.015)
+          im.save(dst, "WEBP", quality=96, method=6)
+          check = Image.open(dst)
+          print("production cover:", check.size, check.format)
+          assert check.size == im.size
+          PY
+          test -s apps/web/assets/covers/emeriona-global-cover-en.webp
+
+      - name: Commit cover asset
+        run: |
+          set -euo pipefail
+          git config user.name "EMERIONA GLOBAL"
+          git config user.email "emeriona.global@gmail.com"
+          git add apps/web/assets/covers/emeriona-global-cover-en.webp
+          if git diff --cached --quiet; then
+            echo "No cover asset change."
+            exit 0
+          fi
+          git commit -m "fix(assets): install official EMERIONA cover"
+          git push origin main
