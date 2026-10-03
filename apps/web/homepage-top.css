@@ -125,3 +125,137 @@
 .hero-reference .hero-cover-image{z-index:11!important;opacity:1!important;visibility:visible!important;display:block!important;filter:none!important;mix-blend-mode:normal!important;}
 .hero-reference .hero-cover-gradient{display:none!important;opacity:0!important;visibility:hidden!important;}
 .hero-reference .hero-copy-band{z-index:12!important;}
+
+
+/* HERO TEXT / COVER SEPARATION PASS — 2026-10-04
+   Preserve the official cover while preventing the overlay copy from colliding
+   with artwork on desktop and from stacking over the artwork on mobile. */
+@media(min-width:701px){
+  .hero-reference{
+    min-height:clamp(520px,40vw,780px)!important;
+    height:clamp(520px,40vw,780px)!important;
+    aspect-ratio:1536 / 614;
+  }
+  .hero-reference .hero-cover-image{
+    object-fit:cover!important;
+    object-position:center center!important;
+  }
+  .hero-reference .hero-content{
+    position:relative!important;
+    width:min(100%,1320px)!important;
+    height:100%!important;
+    max-width:none!important;
+    margin:0 auto!important;
+    padding:0 52px!important;
+  }
+  .hero-reference .hero-lockup{
+    position:absolute!important;
+    top:48px!important;
+    left:52px!important;
+    margin:0!important;
+    z-index:3!important;
+  }
+  .hero-reference h1{
+    position:absolute!important;
+    top:50%!important;
+    left:52px!important;
+    transform:translateY(-50%)!important;
+    margin:0!important;
+    max-width:650px!important;
+  }
+  .hero-reference .hero-lead{
+    position:absolute!important;
+    left:52px!important;
+    bottom:88px!important;
+    margin:0!important;
+    max-width:560px!important;
+    text-shadow:0 2px 10px rgba(0,0,0,.55)!important;
+  }
+  .hero-reference .hero-actions{
+    position:absolute!important;
+    left:52px!important;
+    bottom:28px!important;
+    margin:0!important;
+  }
+}
+
+@media(max-width:700px){
+  .hero-reference{
+    min-height:820px!important;
+    height:auto!important;
+    display:block!important;
+    background:#061426!important;
+    overflow:hidden!important;
+  }
+  .hero-reference .hero-cover-band{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    height:290px!important;
+    background:#061426!important;
+    overflow:hidden!important;
+  }
+  .hero-reference .hero-cover-image{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    object-fit:contain!important;
+    object-position:center center!important;
+    background:#061426!important;
+  }
+  .hero-reference .hero-copy-band{
+    position:relative!important;
+    width:100%!important;
+    min-height:530px!important;
+    display:block!important;
+    background:#061426!important;
+  }
+  .hero-reference .hero-content{
+    position:relative!important;
+    width:100%!important;
+    height:auto!important;
+    padding:34px 22px 42px!important;
+    margin:0!important;
+  }
+  .hero-reference .hero-lockup{
+    position:relative!important;
+    top:auto!important;
+    left:auto!important;
+    margin:0 0 24px!important;
+  }
+  .hero-reference h1{
+    position:relative!important;
+    top:auto!important;
+    left:auto!important;
+    transform:none!important;
+    margin:0!important;
+    font-size:clamp(40px,12vw,52px)!important;
+  }
+  .hero-reference .hero-lead{
+    position:relative!important;
+    left:auto!important;
+    bottom:auto!important;
+    margin:22px 0 28px!important;
+    max-width:100%!important;
+  }
+  .hero-reference .hero-actions{
+    position:relative!important;
+    left:auto!important;
+    bottom:auto!important;
+    margin:0!important;
+  }
+  .hero-reference .hero-cover-gradient{
+    display:none!important;
+  }
+}
+
+@media(max-width:420px){
+  .hero-reference{min-height:790px!important}
+  .hero-reference .hero-cover-band{height:245px!important}
+  .hero-reference .hero-copy-band{min-height:545px!important}
+  .hero-reference .hero-content{padding:28px 18px 38px!important}
+  .hero-reference .hero-lockup-copy strong{font-size:24px!important}
+  .hero-reference h1{font-size:40px!important}
+  .hero-reference .hero-lead{font-size:14px!important;line-height:1.6!important}
+}
