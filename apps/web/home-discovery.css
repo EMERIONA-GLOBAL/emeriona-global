@@ -436,3 +436,72 @@
   .home-discovery-final .hd-path-card{min-height:320px}
   .home-discovery-final .hd-path-card strong{margin-top:16px}
 }
+
+
+/* FINAL DISCOVERY VISUAL CORRECTION — 2026-10-03
+   Approved direction: no digital globe. Branded Discovery field + contemporary symbolic imagery.
+   Scope: EMERIONA DISCOVERY only. */
+.home-discovery-final{
+  background:
+    radial-gradient(900px 520px at 78% 18%,rgba(56,190,211,.14),transparent 60%),
+    radial-gradient(680px 520px at 18% 72%,rgba(20,103,132,.11),transparent 64%),
+    linear-gradient(135deg,#f8fbfc 0%,#edf5f7 46%,#f7f3e9 100%)!important;
+  border-top:1px solid rgba(215,181,109,.28)!important;
+  border-bottom:1px solid rgba(215,181,109,.24)!important;
+}
+.home-discovery-final:before{
+  background-image:
+    linear-gradient(118deg,transparent 0 30%,rgba(52,169,190,.10) 30.15%,transparent 30.5%),
+    linear-gradient(151deg,transparent 0 56%,rgba(215,181,109,.13) 56.15%,transparent 56.5%),
+    linear-gradient(rgba(23,70,91,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(23,70,91,.025) 1px,transparent 1px)!important;
+  background-size:auto,auto,72px 72px,72px 72px!important;
+  mask-image:linear-gradient(to bottom,transparent,#000 10%,#000 90%,transparent)!important;
+}
+.home-discovery-final:after{
+  width:820px;height:820px;right:-470px;top:-390px;
+  border-color:rgba(215,181,109,.16)!important;
+  box-shadow:0 0 0 90px rgba(215,181,109,.025),0 0 150px rgba(50,174,197,.08)!important;
+}
+.home-discovery-inner{padding-top:68px!important}
+.hd-hero-copy h2{color:#12364a!important}
+.hd-hero-copy h2 span{color:#12364a!important}
+.hd-lead{color:#58717d!important}
+.hd-kicker{color:#a17e36!important}
+.hd-brand-line strong{color:#173b4d!important}
+.hd-visual{
+  top:18px!important;right:0!important;width:53%!important;height:500px!important;
+  display:block!important;border-radius:34px;
+  overflow:hidden;
+  background:
+    radial-gradient(220px 160px at 72% 26%,rgba(82,219,226,.22),transparent 70%),
+    radial-gradient(180px 150px at 32% 70%,rgba(215,181,109,.16),transparent 72%),
+    linear-gradient(135deg,#071b2b 0%,#0b4053 48%,#0a6570 100%)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 22px 55px rgba(18,64,82,.12);
+}
+.hd-visual:before{
+  content:"";position:absolute;inset:-12%;
+  background:
+    linear-gradient(122deg,transparent 0 35%,rgba(91,226,232,.28) 35.15%,transparent 35.45%),
+    linear-gradient(151deg,transparent 0 57%,rgba(222,188,101,.28) 57.15%,transparent 57.45%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 54px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 54px);
+  transform:rotate(-3deg) scale(1.08);
+}
+.hd-visual:after{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 22% 27%,rgba(255,255,255,.45) 0 2px,transparent 3px),
+    radial-gradient(circle at 62% 19%,rgba(220,188,101,.85) 0 2px,transparent 3px),
+    radial-gradient(circle at 77% 65%,rgba(92,226,232,.75) 0 2px,transparent 3px),
+    linear-gradient(90deg,rgba(255,255,255,.10),transparent 44%,rgba(0,15,25,.12));
+}
+.hd-globe,.hd-float-tag{display:none!important}
+.hd-search-panel{margin-top:28px!important}
+.hd-path-card{background:#fff!important}
+@media(max-width:900px){
+  .hd-visual{width:100%!important;height:360px!important;margin:8px auto 0!important;border-radius:28px}
+}
+@media(max-width:700px){
+  .hd-visual{height:285px!important;border-radius:22px}
+}
