@@ -259,3 +259,24 @@
   .hero-reference h1{font-size:40px!important}
   .hero-reference .hero-lead{font-size:14px!important;line-height:1.6!important}
 }
+
+
+/* HERO TEXT PLACEMENT — APPROVED FINAL PASS — 2026-10-04 */
+@media(min-width:701px){
+.hero-reference .hero-lockup{top:48px!important;left:52px!important;max-width:560px!important}
+.hero-reference .hero-lead{left:52px!important;top:148px!important;bottom:auto!important;max-width:540px!important;margin:0!important;font-size:clamp(14px,1.15vw,17px)!important;line-height:1.55!important}
+.hero-reference h1{top:112px!important;left:auto!important;right:58px!important;transform:none!important;max-width:500px!important;font-size:clamp(34px,4vw,58px)!important;line-height:.98!important;text-align:right!important;text-shadow:0 2px 12px rgba(0,0,0,.35)!important}
+}
+@media(max-width:700px){
+.hero-reference .hero-copy-band{min-height:0!important}
+.hero-reference .hero-content{padding:30px 22px 40px!important}
+.hero-reference .hero-lockup{margin:0 0 16px!important}
+.hero-reference .hero-lead{margin:0 0 28px!important;max-width:560px!important;font-size:14px!important;line-height:1.6!important}
+.hero-reference h1{margin:0 0 26px!important;font-size:clamp(38px,11vw,50px)!important;line-height:.98!important;text-align:left!important}
+}
+@media(max-width:420px){
+.hero-reference .hero-content{padding:26px 18px 36px!important}
+.hero-reference .hero-lockup{margin-bottom:14px!important}
+.hero-reference .hero-lead{font-size:13.5px!important;line-height:1.55!important;margin-bottom:24px!important}
+.hero-reference h1{font-size:38px!important;margin-bottom:24px!important}
+}
