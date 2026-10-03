@@ -1,77 +1,31 @@
-/* EMERIONA DISCOVERY — approved light reference layout, 2026-10-01 */
-#discovery-page{background:#f3f7fa;color:#173557;overflow-x:hidden}
-#discovery-page .discovery-gateway{position:relative;min-height:500px;padding:42px 46px 82px;background:linear-gradient(135deg,#f8fbfd 0%,#eef4f8 54%,#f8fbfd 100%);overflow:hidden}
-#discovery-page .discovery-gateway:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 70% 22%,rgba(214,178,77,.14),transparent 26%),radial-gradient(circle at 42% 35%,rgba(72,160,205,.12),transparent 34%);pointer-events:none}
-#discovery-page .gateway-shell{position:relative;z-index:2;width:min(1180px,100%);margin:0 auto;display:grid;grid-template-columns:1.02fr .98fr;grid-template-rows:auto auto;gap:0 20px;align-items:center}
-#discovery-page .gateway-copy{grid-column:1;grid-row:1;padding:35px 0 0}
-#discovery-page .discovery-kicker{display:flex;align-items:center;gap:12px;color:#b18b32;font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
-#discovery-page .discovery-kicker i{display:none}
-#discovery-page .gateway-copy h1{margin:13px 0 8px;max-width:610px;font-size:clamp(48px,5.8vw,76px);line-height:.95;letter-spacing:-.055em;color:#12355f;font-weight:850}
-#discovery-page .gateway-copy h1 span{display:block;color:#12355f}
-#discovery-page .gateway-copy h1{color:#12355f}
-#discovery-page .gateway-copy h1:after{content:"";display:block;width:42px;height:2px;background:#c9a23f;margin-top:18px}#discovery-page .gateway-subtitle{margin:0 0 18px;color:#314e6f;font-size:clamp(20px,2vw,27px);line-height:1.2;font-weight:500}
-#discovery-page .gateway-copy h1 span+*{}
-#discovery-page .gateway-copy h1{font-weight:850}
-#discovery-page .gateway-copy h1 span{font-size:1em}
-#discovery-page .gateway-lead{max-width:590px;margin:19px 0 0;color:#5e7186;font-size:15px;line-height:1.65}
-#discovery-page .gateway-visual{grid-column:2;grid-row:1;position:relative;min-height:330px;display:block;margin:-42px -46px 0 0;overflow:hidden;background-image:linear-gradient(90deg,rgba(248,251,253,.98) 0%,rgba(248,251,253,.42) 28%,rgba(248,251,253,0) 52%),url("./assets/covers/emeriona-global-cover-en.webp");background-size:cover;background-position:center right}
-#discovery-page .gateway-visual:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.18));pointer-events:none}
-#discovery-page .digital-globe{display:none}
-#discovery-page .gateway-orbit-note{display:none}
-#discovery-page .gateway-search-card{grid-column:1 / -1;grid-row:2;margin:-2px 0 0;padding:0;border:0;background:transparent;box-shadow:none;backdrop-filter:none}
-#discovery-page .gateway-search-heading{display:none}
-#discovery-page .gateway-search{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:0 8px 0 20px;height:64px;border:1px solid #dce4eb;border-radius:34px;background:#fff;box-shadow:0 10px 28px rgba(20,54,87,.08)}
-#discovery-page .gateway-search-icon{color:#244d78;font-size:27px}
-#discovery-page .gateway-search input{min-width:0;border:0;outline:0;background:transparent;color:#1d3d61;font:inherit;font-size:14px}
-#discovery-page .gateway-search input::placeholder{color:#94a2b2}
-#discovery-page .gateway-search button{height:48px;padding:0 24px;border:1px solid #d4a93c;border-radius:28px;background:linear-gradient(135deg,#d8b252,#c7952d);color:#fff;font:inherit;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 5px 12px rgba(180,137,42,.16)}
-#discovery-page .discovery-categories{display:grid;grid-template-columns:repeat(7,1fr);gap:0;margin-top:32px;border:1px solid #dce4eb;border-radius:30px;background:#fff;box-shadow:0 7px 22px rgba(20,54,87,.05);overflow:hidden}
-#discovery-page .discovery-categories button{min-height:52px;border:0;border-right:1px solid #edf1f4;border-radius:0;padding:8px 10px;background:#fff;color:#284967;font:inherit;font-size:11px;cursor:pointer;transition:.2s}
-#discovery-page .discovery-categories button:last-child{border-right:0}
-#discovery-page .discovery-categories button:hover,#discovery-page .discovery-categories button.active{background:#173e69;color:#fff}
-#discovery-page .gateway-results{display:none}
-#discovery-page .ecosystem-explore{position:relative;background:#f8fafc;color:#173557;padding:32px 28px 58px;overflow:hidden}
-#discovery-page .ecosystem-explore:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 92% 12%,rgba(212,177,77,.12),transparent 18%),radial-gradient(circle at 8% 88%,rgba(62,136,177,.06),transparent 22%);pointer-events:none}
-#discovery-page .ecosystem-explore-shell{position:relative;z-index:2;max-width:940px;margin:auto;padding:30px 28px 26px;border:1px solid #dce5ed;border-radius:24px;background:rgba(255,255,255,.66);box-shadow:0 12px 38px rgba(20,54,87,.05)}
+/* EMERIONA DISCOVERY — clean visual architecture foundation — 2026-10-04 */
+#discovery-page{color:#173a5d;overflow-x:hidden}
+#discovery-page .discovery-gateway{position:relative;overflow:hidden}
+#discovery-page .gateway-shell{position:relative;z-index:2;margin:0 auto;display:grid;align-items:center}
+#discovery-page .gateway-copy{grid-column:1;grid-row:1}
+#discovery-page .discovery-kicker{display:flex;align-items:center;text-transform:uppercase}
+#discovery-page .gateway-copy h1{max-width:650px}
+#discovery-page .gateway-lead{max-width:600px}
+#discovery-page .gateway-visual{grid-column:2;grid-row:1;position:relative;display:block;overflow:hidden}
+#discovery-page .gateway-search-card{grid-column:1 / -1;grid-row:2}
+#discovery-page .gateway-search{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
+#discovery-page .gateway-search input{min-width:0;outline:0;background:transparent}
+#discovery-page .gateway-search button{cursor:pointer}
+#discovery-page .discovery-categories{display:grid;grid-template-columns:repeat(7,1fr);overflow:hidden}
+#discovery-page .discovery-categories button{border:0;cursor:pointer}
+#discovery-page .ecosystem-explore{position:relative;overflow:hidden}
+#discovery-page .ecosystem-explore-shell{position:relative;z-index:2;margin:auto}
 #discovery-page .ecosystem-heading{margin-bottom:27px}
-#discovery-page .ecosystem-heading .section-label{display:none}
-#discovery-page .ecosystem-heading-grid{display:block}
-#discovery-page .ecosystem-heading-grid .eyebrow{display:none}
-#discovery-page .ecosystem-heading h2{margin:0;font-size:clamp(40px,5vw,62px);line-height:.98;letter-spacing:-.05em;color:#12355f}
-#discovery-page .ecosystem-heading h2 em{font-style:normal;color:#12355f}
-#discovery-page .ecosystem-heading h2:before{content:"TURN DISCOVERY INTO ACTION";display:block;color:#b18b32;font-size:10px;letter-spacing:.18em;font-weight:800;margin-bottom:13px}
-#discovery-page .ecosystem-heading-grid>p{margin:11px 0 0;max-width:620px;color:#61758b;font-size:14px;line-height:1.65}
-#discovery-page .ecosystem-path-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-#discovery-page .ecosystem-path-card{position:relative;min-height:260px;padding:0 0 20px;border:1px solid #e0e7ed;border-radius:16px;background:#fff;color:#173557;text-decoration:none;overflow:hidden;transition:.2s;box-shadow:0 7px 18px rgba(20,54,87,.04)}
-#discovery-page .ecosystem-path-card:after{display:none}
-#discovery-page .ecosystem-path-card:hover{transform:translateY(-3px);border-color:#d5bd78;box-shadow:0 14px 28px rgba(20,54,87,.09)}
-#discovery-page .ecosystem-path-card:before{content:"";display:block;height:128px;background-image:linear-gradient(180deg,rgba(4,26,50,.02),rgba(4,26,50,.14)),url("./assets/covers/emeriona-global-cover-en.webp");background-size:cover;background-position:center}
-#discovery-page .ecosystem-path-card:nth-child(2):before{background-position:65% 30%}
-#discovery-page .ecosystem-path-card:nth-child(3):before{background-position:30% 60%}
-#discovery-page .ecosystem-path-card:nth-child(4):before{background-position:78% 72%}
-#discovery-page .ecosystem-path-card:nth-child(5):before{background-position:45% 78%}
-#discovery-page .ecosystem-path-card:nth-child(6):before{background-position:20% 20%}
-#discovery-page .path-index{display:none}
-#discovery-page .path-icon{position:absolute;left:17px;top:104px;width:42px;height:42px;display:grid;place-items:center;border-radius:50%;border:2px solid #fff;background:#173f70;color:#fff;font-size:19px;box-shadow:0 3px 9px rgba(10,38,66,.2)}
-#discovery-page .ecosystem-path-card:nth-child(2) .path-icon{background:#158d88}
-#discovery-page .ecosystem-path-card:nth-child(3) .path-icon{background:#7041ce}
-#discovery-page .ecosystem-path-card:nth-child(4) .path-icon{background:#158d88}
-#discovery-page .ecosystem-path-card:nth-child(5) .path-icon{background:#e59c1e}
-#discovery-page .ecosystem-path-card:nth-child(6) .path-icon{background:#244fc1}
-#discovery-page .ecosystem-path-card strong{display:block;margin:19px 16px 0;font-size:20px;letter-spacing:-.02em}
-#discovery-page .ecosystem-path-card p{margin:7px 16px 0;color:#718296;font-size:12px;line-height:1.5}
-#discovery-page .ecosystem-path-card b{position:static;display:block;margin:16px 16px 0;color:#1e73c7;font-size:11px}
-#discovery-page .ecosystem-path-card:nth-child(2) b{color:#168c88}#discovery-page .ecosystem-path-card:nth-child(3) b{color:#7041ce}#discovery-page .ecosystem-path-card:nth-child(4) b{color:#168c88}#discovery-page .ecosystem-path-card:nth-child(5) b{color:#d99018}#discovery-page .ecosystem-path-card:nth-child(6) b{color:#244fc1}
-#discovery-page .ecosystem-close{margin-top:22px;padding:18px 0 0;border-top:1px solid #dce5ed;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:20px}
-#discovery-page .ecosystem-close>span{display:none}
-#discovery-page .ecosystem-close strong{display:block;margin:0;font-size:15px;letter-spacing:0;color:#173557}
-#discovery-page .ecosystem-close strong i{font-style:normal;color:#b18b32}
-#discovery-page .ecosystem-close p{margin:3px 0 0;color:#8090a0;font-size:10px}
-#discovery-page .return-home{margin:0;padding:11px 18px;border:0;border-radius:24px;background:#173e69;color:#fff;text-decoration:none;font-size:10px;font-weight:800}
-#discovery-page .discovery-footer{display:none}
-@media(max-width:900px){#discovery-page .discovery-gateway{padding:32px 22px 65px}#discovery-page .gateway-shell{grid-template-columns:1fr}#discovery-page .gateway-copy{grid-column:1;grid-row:1;padding-top:18px}#discovery-page .gateway-visual{grid-column:1;grid-row:2;min-height:300px;margin:0 -22px;background-position:center right}#discovery-page .gateway-search-card{grid-column:1;grid-row:3;margin-top:-25px}#discovery-page .discovery-categories{grid-template-columns:repeat(4,1fr)}#discovery-page .ecosystem-path-grid{grid-template-columns:repeat(2,1fr)}#discovery-page .ecosystem-close{align-items:flex-start;flex-direction:column}}
-@media(max-width:560px){#discovery-page .discovery-gateway{padding:24px 14px 48px}#discovery-page .gateway-copy h1{font-size:44px}#discovery-page .gateway-lead{font-size:13px}#discovery-page .gateway-visual{min-height:240px;margin:0 -14px}#discovery-page .gateway-search{height:auto;min-height:60px;grid-template-columns:auto 1fr;padding:8px 9px 8px 14px}#discovery-page .gateway-search button{grid-column:1/-1;width:100%}#discovery-page .discovery-categories{grid-template-columns:repeat(2,1fr);border-radius:18px}#discovery-page .discovery-categories button{border-right:1px solid #edf1f4;border-bottom:1px solid #edf1f4}#discovery-page .ecosystem-explore{padding:25px 12px 42px}#discovery-page .ecosystem-explore-shell{padding:24px 12px 18px;border-radius:18px}#discovery-page .ecosystem-path-grid{grid-template-columns:1fr}#discovery-page .ecosystem-path-card{min-height:240px}}
-
+#discovery-page .ecosystem-heading h2{margin:0}
+#discovery-page .ecosystem-path-grid{display:grid}
+#discovery-page .ecosystem-path-card{position:relative;display:block;text-decoration:none;overflow:hidden}
+#discovery-page .ecosystem-path-card:before{content:"";display:block}
+#discovery-page .path-icon{position:absolute;display:grid;place-items:center}
+#discovery-page .ecosystem-path-card strong{display:block}
+#discovery-page .ecosystem-path-card p{display:block}
+#discovery-page .ecosystem-path-card b{display:block}
+#discovery-page .ecosystem-close{display:flex;align-items:center;justify-content:space-between}
+#discovery-page .return-home{display:inline-block;text-decoration:none}
 
 /* DISCOVERY VISUAL REBUILD — reference-led composition — 2026-10-04 */
 #discovery-page{--d-navy:#123a63;--d-ink:#173a5d;--d-muted:#64798d;--d-gold:#c9a34b;background:#f4f8fb!important;color:var(--d-ink)!important;overflow:hidden}
@@ -160,6 +114,7 @@
 @media(prefers-reduced-motion:reduce){
 #discovery-page .ecosystem-path-card,#discovery-page .gateway-search button,#discovery-page .return-home{transition:none!important}
 }
+
 
 /* DISCOVERY FUNCTIONAL VISUAL PASS — search results remain part of the designed experience */
 #discovery-page .gateway-results{display:none;gap:10px;margin-top:14px}
