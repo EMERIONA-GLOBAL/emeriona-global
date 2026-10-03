@@ -57,21 +57,22 @@ jobs:
           grep -Fq 'id="market-center-title"' /tmp/homepage.html
           grep -Fq 'market-recommendations' /tmp/homepage.html
           grep -Fq 'market-commercial' /tmp/homepage.html
-          grep -Fq 'discovery-page.css?v=20261004-visual-rebuild-v1' <(curl -fsS "$BASE_URL/discovery.html?v=${GITHUB_SHA}")
-          grep -Fq 'Discovery Gateway' <(curl -fsS "$BASE_URL/discovery.html?v=${GITHUB_SHA}")
+
+          curl -fsS "$BASE_URL/discovery.html?v=${GITHUB_SHA}" -o /tmp/discovery.html
+          grep -Fq 'discovery-page.css?v=20261004-visual-rebuild-v1' /tmp/discovery.html
+          grep -Fq 'Discovery Gateway' /tmp/discovery.html
+
           curl -fsS -D /tmp/discovery-css.headers -o /tmp/discovery-page.css "$BASE_URL/discovery-page.css?v=${GITHUB_SHA}"
           grep -Eiq '^content-type: text/css(;|[[:space:]])' /tmp/discovery-css.headers
-          grep -Fq "DISCOVERY VISUAL REBUILD" /tmp/discovery-page.css
-
+          grep -Fq '.discovery-gateway' /tmp/discovery-page.css
+          grep -Fq '.ecosystem-path-card' /tmp/discovery-page.css
+          grep -Fq '.gateway-results' /tmp/discovery-page.css
 
           # Verify the official cover is an actual deployed static asset, not only a source reference.
           curl -fsSI "$BASE_URL/assets/covers/emeriona-global-cover-en.webp" | tee /tmp/cover.headers
           grep -Eiq '^content-type: image/webp' /tmp/cover.headers
 
-          # The homepage must reference the deployed Market Center stylesheet; the repository/deploy
-          # gate separately guarantees that the stylesheet is included in the Worker assets bundle.
-
           # The Market Center is data-driven: an empty catalog is a valid production state.
           # API lifecycle verification is covered by the dedicated commerce/catalog smoke suites.
 
-          echo "Production homepage and Market Center verification passed."
+          echo "Production homepage, Discovery, and Market Center verification passed."
