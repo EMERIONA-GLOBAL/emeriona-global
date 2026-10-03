@@ -59,8 +59,9 @@ jobs:
           grep -Fq 'market-commercial' /tmp/homepage.html
           grep -Fq 'discovery-page.css?v=20261004-visual-rebuild-v1' <(curl -fsS "$BASE_URL/discovery.html?v=${GITHUB_SHA}")
           grep -Fq 'Discovery Gateway' <(curl -fsS "$BASE_URL/discovery.html?v=${GITHUB_SHA}")
-          curl -fsSI "$BASE_URL/discovery-page.css?v=${GITHUB_SHA}" | tee /tmp/discovery-css.headers
-          grep -Eiq '^content-type: text/css' /tmp/discovery-css.headers
+          curl -fsS -D /tmp/discovery-css.headers -o /tmp/discovery-page.css "$BASE_URL/discovery-page.css?v=${GITHUB_SHA}"
+          grep -Eiq '^content-type: text/css(;|[[:space:]])' /tmp/discovery-css.headers
+          grep -Fq "DISCOVERY VISUAL REBUILD" /tmp/discovery-page.css
 
 
           # Verify the official cover is an actual deployed static asset, not only a source reference.
