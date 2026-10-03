@@ -114,3 +114,44 @@
 #discovery-page .ecosystem-explore{background:#f8fafc!important}
 #discovery-page .ecosystem-path-grid{display:grid!important}
 #discovery-page .ecosystem-path-card{display:block!important;visibility:visible!important;opacity:1!important}
+
+
+/* DISCOVERY VISUAL RESTORATION — approved symbolic pathway imagery — 2026-10-03 */
+#discovery-page .gateway-visual{
+  background-image:linear-gradient(90deg,rgba(248,251,253,.98) 0%,rgba(248,251,253,.42) 28%,rgba(248,251,253,0) 52%),url("./assets/covers/emeriona-global-cover-en.webp")!important;
+}
+#discovery-page .digital-globe{
+  display:block!important;
+  position:absolute;
+  right:28px;
+  top:50%;
+  width:min(410px,82%);
+  transform:translateY(-50%);
+  opacity:.98;
+  filter:drop-shadow(0 20px 34px rgba(17,55,91,.13));
+  z-index:2;
+}
+#discovery-page .digital-globe svg{display:block;width:100%;height:auto}
+#discovery-page .gateway-orbit-note{
+  display:block!important;
+  z-index:3;
+}
+#discovery-page .ecosystem-path-card:before{
+  background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(4,26,50,.16)),url("./assets/discovery/products.svg")!important;
+  background-color:#eef4f8;
+  background-size:cover,88px 88px!important;
+  background-repeat:no-repeat!important;
+  background-position:center,center!important;
+}
+#discovery-page .ecosystem-path-card:nth-child(2):before{background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(4,26,50,.16)),url("./assets/discovery/services.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(3):before{background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(4,26,50,.16)),url("./assets/discovery/solutions.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(4):before{background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(4,26,50,.16)),url("./assets/discovery/projects.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(5):before{background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(4,26,50,.16)),url("./assets/discovery/opportunities.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(6):before{background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(4,26,50,.16)),url("./assets/discovery/knowledge.svg")!important}
+#discovery-page .ecosystem-path-card:before{height:155px!important;background-color:#edf4f8!important}
+@media(max-width:900px){
+  #discovery-page .digital-globe{right:5%;width:min(360px,76%)}
+}
+@media(max-width:560px){
+  #discovery-page .digital-globe{right:0;width:92%}
+}
