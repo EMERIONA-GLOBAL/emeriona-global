@@ -160,3 +160,55 @@
 @media(prefers-reduced-motion:reduce){
 #discovery-page .ecosystem-path-card,#discovery-page .gateway-search button,#discovery-page .return-home{transition:none!important}
 }
+
+/* DISCOVERY FUNCTIONAL VISUAL PASS — search results remain part of the designed experience */
+#discovery-page .gateway-results{display:none;gap:10px;margin-top:14px}
+#discovery-page .gateway-results:has(.gateway-result),#discovery-page .gateway-results:has(.gateway-loading){display:grid}
+#discovery-page .gateway-result{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  padding:14px 16px;
+  border:1px solid #dce5ec;
+  border-radius:16px;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 8px 22px rgba(20,54,87,.055);
+}
+#discovery-page .gateway-result>span{
+  display:inline-grid;
+  place-items:center;
+  min-width:76px;
+  min-height:30px;
+  padding:0 10px;
+  border-radius:999px;
+  background:#eef5f9;
+  color:#315f82;
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+#discovery-page .gateway-result div{min-width:0}
+#discovery-page .gateway-result strong{display:block;color:#173a5d;font-size:13px}
+#discovery-page .gateway-result small{display:block;margin-top:3px;color:#718398;font-size:10px;line-height:1.45}
+#discovery-page .gateway-result a{
+  white-space:nowrap;
+  color:#a77d21;
+  font-size:10px;
+  font-weight:850;
+  text-decoration:none;
+}
+#discovery-page .gateway-result a:hover{text-decoration:underline}
+#discovery-page .gateway-loading{
+  padding:14px 16px;
+  border:1px solid #dce5ec;
+  border-radius:16px;
+  background:rgba(255,255,255,.94);
+  color:#64798d;
+  font-size:11px;
+}
+@media(max-width:560px){
+  #discovery-page .gateway-result{grid-template-columns:1fr;gap:8px}
+  #discovery-page .gateway-result a{justify-self:start}
+}
