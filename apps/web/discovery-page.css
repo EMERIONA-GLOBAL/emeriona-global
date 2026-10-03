@@ -73,180 +73,90 @@
 @media(max-width:560px){#discovery-page .discovery-gateway{padding:24px 14px 48px}#discovery-page .gateway-copy h1{font-size:44px}#discovery-page .gateway-lead{font-size:13px}#discovery-page .gateway-visual{min-height:240px;margin:0 -14px}#discovery-page .gateway-search{height:auto;min-height:60px;grid-template-columns:auto 1fr;padding:8px 9px 8px 14px}#discovery-page .gateway-search button{grid-column:1/-1;width:100%}#discovery-page .discovery-categories{grid-template-columns:repeat(2,1fr);border-radius:18px}#discovery-page .discovery-categories button{border-right:1px solid #edf1f4;border-bottom:1px solid #edf1f4}#discovery-page .ecosystem-explore{padding:25px 12px 42px}#discovery-page .ecosystem-explore-shell{padding:24px 12px 18px;border-radius:18px}#discovery-page .ecosystem-path-grid{grid-template-columns:1fr}#discovery-page .ecosystem-path-card{min-height:240px}}
 
 
-/* FINAL REFERENCE FIDELITY PASS — homepage/discovery scope only — 2026-10-01 */
-#discovery-page .discovery-gateway{min-height:0;padding:54px 42px 76px;background:linear-gradient(135deg,#fbfcfd 0%,#f1f6fa 58%,#f9fbfc 100%)}
-#discovery-page .gateway-shell{width:min(1240px,100%);grid-template-columns:minmax(0,1fr) minmax(430px,.9fr);gap:18px 28px}
-#discovery-page .gateway-copy{padding:42px 0 18px}
-#discovery-page .gateway-copy h1{font-size:clamp(52px,5.2vw,78px);letter-spacing:-.06em}
-#discovery-page .gateway-subtitle{font-size:clamp(22px,2vw,29px);color:#315270}
-#discovery-page .gateway-lead{font-size:16px;max-width:610px}
-#discovery-page .gateway-visual{min-height:400px;margin:-54px -42px 0 0;background-image:linear-gradient(90deg,#f8fbfd 0%,rgba(248,251,253,.35) 24%,rgba(248,251,253,0) 58%),url("./assets/covers/emeriona-global-cover-en.webp");background-position:center right}
-#discovery-page .digital-globe{display:block;position:absolute;right:28px;top:50%;width:min(410px,82%);transform:translateY(-50%);opacity:.98;filter:drop-shadow(0 20px 34px rgba(17,55,91,.13))}
+/* DISCOVERY VISUAL REBUILD — reference-led composition — 2026-10-04 */
+#discovery-page{--d-navy:#123a63;--d-ink:#173a5d;--d-muted:#64798d;--d-gold:#c9a34b;background:#f4f8fb!important;color:var(--d-ink)!important;overflow:hidden}
+#discovery-page .discovery-gateway{min-height:0!important;padding:42px 42px 70px!important;position:relative;isolation:isolate;background:radial-gradient(700px 360px at 82% 8%,rgba(73,169,209,.12),transparent 68%),radial-gradient(520px 300px at 20% 58%,rgba(201,163,75,.08),transparent 70%),linear-gradient(135deg,#fbfdfe 0%,#eef5f9 57%,#f9fbfd 100%)!important}
+#discovery-page .discovery-gateway:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(118deg,transparent 0 47%,rgba(29,111,174,.035) 47.1%,transparent 47.3%),linear-gradient(157deg,transparent 0 67%,rgba(201,163,75,.045) 67.1%,transparent 67.3%)}
+#discovery-page .gateway-shell{width:min(1240px,100%)!important;grid-template-columns:minmax(0,1fr) minmax(430px,.9fr)!important;grid-template-rows:auto auto;gap:18px 34px!important}
+#discovery-page .gateway-copy{padding:34px 0 28px!important}
+#discovery-page .discovery-kicker{gap:12px;color:#b0872e;font-size:11px;letter-spacing:.19em;font-weight:850}
+#discovery-page .discovery-kicker i{display:block;width:34px;height:1px;background:var(--d-gold)}
+#discovery-page .gateway-copy h1{max-width:650px;margin:15px 0 9px;color:var(--d-navy)!important;font-size:clamp(52px,5.5vw,78px)!important;line-height:.94;letter-spacing:-.06em;font-weight:850}
+#discovery-page .gateway-copy h1:after{width:48px;height:2px;margin-top:19px;background:var(--d-gold)}
+#discovery-page .gateway-subtitle{margin:0 0 17px;color:#315574;font-size:clamp(21px,2vw,29px);line-height:1.18;font-weight:520}
+#discovery-page .gateway-lead{max-width:600px;margin:0;color:var(--d-muted);font-size:15px;line-height:1.72}
+#discovery-page .gateway-visual{min-height:390px!important;margin:-42px -42px 0 0!important;overflow:hidden;isolation:isolate;background:linear-gradient(90deg,rgba(248,251,253,.99) 0%,rgba(248,251,253,.70) 18%,rgba(248,251,253,.12) 55%,rgba(248,251,253,0) 100%),url("./assets/covers/emeriona-global-cover-en.webp")!important;background-size:cover!important;background-position:center right!important;border-radius:0 0 0 42%}
+#discovery-page .gateway-visual:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(300px 220px at 72% 32%,rgba(78,206,225,.13),transparent 72%),linear-gradient(135deg,rgba(255,255,255,.18),transparent 55%)}
+#discovery-page .gateway-visual:after{content:"";position:absolute;right:5%;bottom:8%;width:150px;height:150px;border:1px solid rgba(201,163,75,.28);border-radius:50%;box-shadow:0 0 0 18px rgba(201,163,75,.035),0 0 0 42px rgba(29,111,174,.025)}
+#discovery-page .digital-globe{display:block!important;position:absolute;z-index:2;right:8%;top:50%;width:min(410px,82%);transform:translateY(-50%);opacity:.96;filter:drop-shadow(0 24px 38px rgba(17,55,91,.16))}
 #discovery-page .digital-globe svg{display:block;width:100%;height:auto}
-#discovery-page .gateway-orbit-note{display:block;position:absolute;padding:7px 11px;border:1px solid rgba(208,171,76,.5);border-radius:999px;background:rgba(255,255,255,.82);color:#315b7e;font-size:9px;font-weight:800;letter-spacing:.12em;box-shadow:0 7px 18px rgba(21,54,87,.08)}
-#discovery-page .note-one{right:17%;top:17%}.note-two{right:2%;top:53%}.note-three{right:22%;bottom:13%}
-#discovery-page .gateway-search-card{margin:4px 0 0}
-#discovery-page .gateway-search{height:70px;border-radius:38px;padding-left:23px;box-shadow:0 14px 34px rgba(20,54,87,.09)}
-#discovery-page .gateway-search button{height:54px;padding:0 29px}
-#discovery-page .discovery-categories{margin-top:25px}
-#discovery-page .ecosystem-explore{padding:48px 30px 70px}
-#discovery-page .ecosystem-explore-shell{max-width:1180px;padding:34px 34px 30px;border-radius:26px}
-#discovery-page .ecosystem-heading-grid{display:grid;grid-template-columns:1fr .82fr;gap:30px;align-items:end}
-#discovery-page .ecosystem-heading h2{font-size:clamp(42px,4.8vw,64px)}
-#discovery-page .ecosystem-heading-grid>p{margin:0;max-width:none}
-#discovery-page .ecosystem-path-grid{gap:16px}
-#discovery-page .ecosystem-path-card{min-height:315px;border-radius:18px;box-shadow:0 10px 26px rgba(20,54,87,.055)}
-#discovery-page .ecosystem-path-card:before{height:155px}
-#discovery-page .path-icon{top:130px;width:48px;height:48px}
-#discovery-page .ecosystem-path-card strong{margin-top:24px;font-size:21px}
-#discovery-page .ecosystem-path-card p{font-size:13px;line-height:1.55}
-#discovery-page .ecosystem-path-card b{font-size:12px}
-#discovery-page .ecosystem-close{margin-top:28px;padding-top:22px}
-@media(max-width:900px){#discovery-page .discovery-gateway{padding:38px 22px 62px}#discovery-page .gateway-shell{grid-template-columns:1fr;gap:0}#discovery-page .gateway-copy{padding-top:18px}#discovery-page .gateway-visual{min-height:330px;margin:0 -22px;background-position:center right}#discovery-page .digital-globe{right:5%;width:min(360px,76%)}#discovery-page .note-one{right:20%;top:12%}.note-two{right:3%;top:52%}.note-three{right:20%;bottom:10%}#discovery-page .gateway-search-card{margin-top:-22px;position:relative;z-index:4}#discovery-page .ecosystem-heading-grid{grid-template-columns:1fr}#discovery-page .ecosystem-explore-shell{padding:30px 24px}}
-@media(max-width:560px){#discovery-page .discovery-gateway{padding:25px 14px 48px}#discovery-page .gateway-copy h1{font-size:44px}#discovery-page .gateway-subtitle{font-size:20px}#discovery-page .gateway-lead{font-size:13px}#discovery-page .gateway-visual{min-height:255px;margin:0 -14px}#discovery-page .digital-globe{right:0;width:92%}#discovery-page .gateway-orbit-note{font-size:8px;padding:6px 8px}.note-one{right:18%;top:8%}.note-two{right:1%;top:52%}.note-three{right:18%;bottom:6%}#discovery-page .gateway-search{height:auto;min-height:62px}#discovery-page .ecosystem-explore{padding:28px 12px 46px}#discovery-page .ecosystem-explore-shell{padding:24px 14px 18px}#discovery-page .ecosystem-path-card{min-height:270px}}
-
-
-/* FINAL APPROVED DISCOVERY REFERENCE — cache-safe visual lock — 2026-10-01 */
-#discovery-page{background:#f3f7fa!important;color:#173557!important}
-#discovery-page .discovery-gateway{background:linear-gradient(135deg,#f8fbfd 0%,#eef4f8 54%,#f8fbfd 100%)!important}
-#discovery-page .gateway-visual{background-image:linear-gradient(90deg,rgba(248,251,253,.98) 0%,rgba(248,251,253,.42) 28%,rgba(248,251,253,0) 52%),url("./assets/covers/emeriona-global-cover-en.webp")!important;background-size:cover!important;background-position:center right!important}
-#discovery-page .digital-globe,#discovery-page .gateway-orbit-note{display:none!important}
-#discovery-page .ecosystem-explore{background:#f8fafc!important}
-#discovery-page .ecosystem-path-grid{display:grid!important}
-#discovery-page .ecosystem-path-card{display:block!important;visibility:visible!important;opacity:1!important}
-
-
-/* DISCOVERY VISUAL RESTORATION — approved symbolic pathway imagery — 2026-10-03 */
-#discovery-page .gateway-visual{
-  background-image:linear-gradient(90deg,rgba(248,251,253,.98) 0%,rgba(248,251,253,.42) 28%,rgba(248,251,253,0) 52%),url("./assets/covers/emeriona-global-cover-en.webp")!important;
-}
-#discovery-page .digital-globe{
-  display:block!important;
-  position:absolute;
-  right:28px;
-  top:50%;
-  width:min(410px,82%);
-  transform:translateY(-50%);
-  opacity:.98;
-  filter:drop-shadow(0 20px 34px rgba(17,55,91,.13));
-  z-index:2;
-}
-#discovery-page .digital-globe svg{display:block;width:100%;height:auto}
-#discovery-page .gateway-orbit-note{
-  display:block!important;
-  z-index:3;
-}
-#discovery-page .ecosystem-path-card:before{
-  background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(4,26,50,.16)),url("./assets/discovery/products.svg")!important;
-  background-color:#eef4f8;
-  background-size:cover,88px 88px!important;
-  background-repeat:no-repeat!important;
-  background-position:center,center!important;
-}
-#discovery-page .ecosystem-path-card:nth-child(2):before{background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(4,26,50,.16)),url("./assets/discovery/services.svg")!important}
-#discovery-page .ecosystem-path-card:nth-child(3):before{background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(4,26,50,.16)),url("./assets/discovery/solutions.svg")!important}
-#discovery-page .ecosystem-path-card:nth-child(4):before{background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(4,26,50,.16)),url("./assets/discovery/projects.svg")!important}
-#discovery-page .ecosystem-path-card:nth-child(5):before{background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(4,26,50,.16)),url("./assets/discovery/opportunities.svg")!important}
-#discovery-page .ecosystem-path-card:nth-child(6):before{background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(4,26,50,.16)),url("./assets/discovery/knowledge.svg")!important}
-#discovery-page .ecosystem-path-card:before{height:155px!important;background-color:#edf4f8!important}
+#discovery-page .gateway-orbit-note{display:block!important;position:absolute;z-index:3;padding:7px 11px;border:1px solid rgba(201,163,75,.46);border-radius:999px;background:rgba(255,255,255,.84);color:#315b7e;font-size:9px;line-height:1;font-weight:850;letter-spacing:.13em;box-shadow:0 9px 22px rgba(21,54,87,.09);backdrop-filter:blur(8px)}
+#discovery-page .note-one{right:21%;top:15%}#discovery-page .note-two{right:2%;top:51%}#discovery-page .note-three{right:23%;bottom:12%}
+#discovery-page .gateway-search-card{margin:4px 0 0!important;position:relative;z-index:5}
+#discovery-page .gateway-search{min-height:68px;height:auto!important;padding:7px 8px 7px 21px!important;border:1px solid #d9e3ea;border-radius:38px;background:rgba(255,255,255,.96);box-shadow:0 15px 36px rgba(20,54,87,.09)}
+#discovery-page .gateway-search button{height:52px;padding:0 28px;border:1px solid #d1a13b;border-radius:28px;background:linear-gradient(135deg,#d7b25b,#bf8e25);font-weight:850;box-shadow:0 7px 15px rgba(180,137,42,.17)}
+#discovery-page .discovery-categories{margin-top:22px;border:1px solid #dbe5ec;border-radius:30px;background:#fff;box-shadow:0 8px 24px rgba(20,54,87,.055)}
+#discovery-page .discovery-categories button{min-height:50px;background:#fff;color:#2b4d6a;font-size:11px;font-weight:700}
+#discovery-page .discovery-categories button:hover{background:#f0f6fa}
+#discovery-page .discovery-categories button.active{background:var(--d-navy);color:#fff}
+#discovery-page .ecosystem-explore{padding:50px 30px 68px!important;background:radial-gradient(600px 300px at 91% 8%,rgba(201,163,75,.10),transparent 70%),radial-gradient(500px 300px at 7% 90%,rgba(50,139,184,.065),transparent 70%),#f8fafc!important}
+#discovery-page .ecosystem-explore-shell{max-width:1180px!important;padding:34px 34px 30px!important;border-radius:26px!important;background:rgba(255,255,255,.72);box-shadow:0 16px 44px rgba(20,54,87,.06);backdrop-filter:blur(8px)}
+#discovery-page .ecosystem-heading-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.82fr);gap:34px;align-items:end}
+#discovery-page .ecosystem-heading h2{color:var(--d-navy);font-size:clamp(42px,4.8vw,64px);line-height:.98;letter-spacing:-.055em}
+#discovery-page .ecosystem-heading h2:before{content:"TURN DISCOVERY INTO ACTION";display:block;margin-bottom:12px;color:#ae862b;font-size:10px;line-height:1;font-weight:850;letter-spacing:.18em}
+#discovery-page .ecosystem-heading h2 em{color:#315f82;font-style:normal}
+#discovery-page .ecosystem-heading-grid>p{margin:0;max-width:none;color:#64798d;font-size:13px;line-height:1.7}
+#discovery-page .ecosystem-path-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+#discovery-page .ecosystem-path-card{min-height:315px!important;border:1px solid rgba(29,75,104,.13)!important;border-radius:20px!important;background:linear-gradient(180deg,#fff 0%,#f8fbfc 100%)!important;box-shadow:0 12px 30px rgba(18,53,80,.065)!important;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+#discovery-page .ecosystem-path-card:before{height:158px!important;background-size:cover!important;background-position:center!important;filter:saturate(.96) contrast(1.02)}
+#discovery-page .ecosystem-path-card:after{content:"";display:block!important;position:absolute;top:0;left:0;right:0;height:158px;background:linear-gradient(180deg,rgba(4,26,50,0) 43%,rgba(4,26,50,.17) 100%);pointer-events:none}
+#discovery-page .ecosystem-path-card:nth-child(1):before{background-image:url("./assets/discovery/products.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(2):before{background-image:url("./assets/discovery/services.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(3):before{background-image:url("./assets/discovery/solutions.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(4):before{background-image:url("./assets/discovery/projects.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(5):before{background-image:url("./assets/discovery/opportunities.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(6):before{background-image:url("./assets/discovery/knowledge.svg")!important}
+#discovery-page .ecosystem-path-card:hover{transform:translateY(-5px)!important;border-color:rgba(201,162,63,.48)!important;box-shadow:0 21px 42px rgba(18,53,80,.12)!important}
+#discovery-page .path-icon{top:134px!important;width:46px!important;height:46px!important;z-index:3;border:2px solid rgba(255,255,255,.96)!important;box-shadow:0 7px 18px rgba(10,38,66,.22)!important}
+#discovery-page .ecosystem-path-card strong,#discovery-page .ecosystem-path-card p,#discovery-page .ecosystem-path-card b{position:relative;z-index:2}
+#discovery-page .ecosystem-path-card strong{margin:25px 17px 0;font-size:20px}
+#discovery-page .ecosystem-path-card p{margin:8px 17px 0;font-size:12px;line-height:1.55}
+#discovery-page .ecosystem-path-card b{margin:16px 17px 0;font-size:11px}
+#discovery-page .ecosystem-close{margin-top:28px;padding-top:21px}
+#discovery-page .return-home{background:var(--d-navy)}
 @media(max-width:900px){
-  #discovery-page .digital-globe{right:5%;width:min(360px,76%)}
+#discovery-page .discovery-gateway{padding:34px 22px 60px!important}
+#discovery-page .gateway-shell{grid-template-columns:1fr!important;grid-template-rows:auto auto auto;gap:0!important}
+#discovery-page .gateway-copy{grid-column:1;grid-row:1;padding:22px 0 18px!important}
+#discovery-page .gateway-visual{grid-column:1;grid-row:2;min-height:325px!important;margin:0 -22px!important;border-radius:0 0 0 28%}
+#discovery-page .digital-globe{right:5%;width:min(360px,76%)}
+#discovery-page .gateway-search-card{grid-column:1;grid-row:3;margin-top:-21px!important}
+#discovery-page .ecosystem-heading-grid{grid-template-columns:1fr;gap:14px}
+#discovery-page .ecosystem-explore-shell{padding:30px 24px!important}
+}
+@media(max-width:700px){
+#discovery-page .ecosystem-path-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+#discovery-page .ecosystem-close{grid-template-columns:1fr}
+#discovery-page .return-home{justify-self:start}
 }
 @media(max-width:560px){
-  #discovery-page .digital-globe{right:0;width:92%}
-}
-
-
-/* DISCOVERY — CONTEMPORARY EMERIONA VISUAL ALIGNMENT — 2026-10-03 */
-#discovery-page .gateway-visual{
-  position:relative;
-  isolation:isolate;
-  overflow:hidden;
-  background:
-    radial-gradient(520px 300px at 76% 22%,rgba(44,201,232,.18),transparent 62%),
-    radial-gradient(430px 280px at 82% 78%,rgba(215,181,109,.13),transparent 64%),
-    linear-gradient(135deg,#071a28 0%,#0b3042 48%,#0a5260 100%)!important;
-}
-#discovery-page .gateway-visual:before{
-  content:"";
-  position:absolute;
-  inset:-20%;
-  z-index:-1;
-  opacity:.42;
-  background:
-    linear-gradient(118deg,transparent 0 31%,rgba(92,225,235,.18) 31.2%,transparent 31.45%),
-    linear-gradient(147deg,transparent 0 57%,rgba(215,181,109,.18) 57.2%,transparent 57.45%),
-    repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 58px),
-    repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 1px,transparent 1px 58px);
-  transform:rotate(-3deg) scale(1.08);
-}
-#discovery-page .gateway-visual:after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 24% 26%,rgba(255,255,255,.24) 0 2px,transparent 3px),
-    radial-gradient(circle at 63% 18%,rgba(215,181,109,.65) 0 2px,transparent 3px),
-    radial-gradient(circle at 77% 62%,rgba(92,225,235,.55) 0 2px,transparent 3px),
-    radial-gradient(circle at 47% 82%,rgba(255,255,255,.18) 0 1px,transparent 2px),
-    linear-gradient(90deg,rgba(248,251,253,.08),transparent 42%,rgba(2,18,29,.08));
-  background-size:auto,auto,auto,auto,100% 100%;
-  pointer-events:none;
-}
-#discovery-page .gateway-visual .digital-globe,
-#discovery-page .gateway-visual .gateway-orbit-note{
-  display:none!important;
-}
-
-#discovery-page .ecosystem-path-card{
-  min-height:315px!important;
-  border:1px solid rgba(29,75,104,.13)!important;
-  border-radius:20px!important;
-  background:linear-gradient(180deg,#fff 0%,#f8fbfc 100%)!important;
-  box-shadow:0 14px 34px rgba(18,53,80,.075)!important;
-}
-#discovery-page .ecosystem-path-card:before{
-  height:158px!important;
-  background-size:cover!important;
-  background-position:center!important;
-  filter:saturate(.96) contrast(1.02);
-}
-#discovery-page .ecosystem-path-card:after{
-  content:"";
-  display:block!important;
-  position:absolute;
-  left:0;
-  right:0;
-  top:0;
-  height:158px;
-  background:linear-gradient(180deg,rgba(4,26,50,0) 45%,rgba(4,26,50,.14) 100%);
-  pointer-events:none;
-}
-#discovery-page .path-icon{
-  z-index:2;
-  width:46px!important;
-  height:46px!important;
-  top:134px!important;
-  border:2px solid rgba(255,255,255,.96)!important;
-  box-shadow:0 7px 18px rgba(10,38,66,.22)!important;
-}
-#discovery-page .ecosystem-path-card strong,
-#discovery-page .ecosystem-path-card p,
-#discovery-page .ecosystem-path-card b{position:relative;z-index:2}
-#discovery-page .ecosystem-path-card:hover{
-  transform:translateY(-5px)!important;
-  border-color:rgba(201,162,63,.45)!important;
-  box-shadow:0 20px 42px rgba(18,53,80,.12)!important;
-}
-@media(max-width:900px){
-  #discovery-page .gateway-visual{min-height:330px!important}
-}
-@media(max-width:560px){
-  #discovery-page .gateway-visual{min-height:255px!important}
-  #discovery-page .ecosystem-path-card:before,
-  #discovery-page .ecosystem-path-card:after{height:145px!important}
-  #discovery-page .path-icon{top:121px!important}
+#discovery-page .discovery-gateway{padding:25px 14px 48px!important}
+#discovery-page .gateway-copy h1{font-size:44px!important}
+#discovery-page .gateway-subtitle{font-size:20px}
+#discovery-page .gateway-lead{font-size:13px}
+#discovery-page .gateway-visual{min-height:255px!important;margin:0 -14px!important;border-radius:0 0 0 22%}
+#discovery-page .digital-globe{right:0;width:92%}
+#discovery-page .gateway-orbit-note{font-size:8px;padding:6px 8px}
+#discovery-page .gateway-search{grid-template-columns:auto minmax(0,1fr);min-height:62px}
+#discovery-page .gateway-search button{grid-column:1/-1;width:100%}
+#discovery-page .discovery-categories{grid-template-columns:repeat(2,1fr);border-radius:18px}
+#discovery-page .ecosystem-explore{padding:28px 12px 46px!important}
+#discovery-page .ecosystem-explore-shell{padding:24px 14px 18px!important;border-radius:20px}
+#discovery-page .ecosystem-path-grid{grid-template-columns:1fr;gap:13px}
+#discovery-page .ecosystem-path-card{min-height:270px!important}
+#discovery-page .ecosystem-path-card:before,#discovery-page .ecosystem-path-card:after{height:145px!important}
+#discovery-page .path-icon{top:121px!important}
 }
 @media(prefers-reduced-motion:reduce){
-  #discovery-page .ecosystem-path-card{transition:none!important}
+#discovery-page .ecosystem-path-card,#discovery-page .gateway-search button,#discovery-page .return-home{transition:none!important}
 }
