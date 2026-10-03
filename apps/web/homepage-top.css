@@ -83,3 +83,38 @@
 .hero-reference .hero-copy-band{position:relative!important;z-index:3!important;background:transparent!important}
 #ecosystem-portals{position:relative!important;z-index:4!important;display:block!important;clear:both!important;margin:0!important}
 @media(max-width:700px){.hero-reference{min-height:720px!important}.hero-reference .hero-cover-gradient{background:linear-gradient(90deg,rgba(3,12,26,.62),rgba(3,12,26,.24)),linear-gradient(0deg,rgba(3,12,26,.18),rgba(3,12,26,.02))!important}}
+
+/* HOMEPAGE ECOSYSTEM PORTALS — FINAL POSITION LOCK — 2026-10-03 */
+/* The six portals are the final section of the homepage, immediately before the footer. */
+#ecosystem-portals{
+  position:relative!important;
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  clear:both!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:46px 34px 62px!important;
+  transform:none!important;
+  float:none!important;
+  z-index:4!important;
+}
+#ecosystem-portals .ecosystem-portals-inner{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  max-width:1280px!important;
+  margin:0 auto!important;
+  transform:none!important;
+}
+#ecosystem-portals .portal-grid{
+  display:grid!important;
+  width:100%!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+@media(max-width:1050px){#ecosystem-portals{padding:32px 16px 46px!important}}
+@media(max-width:700px){#ecosystem-portals{padding:32px 16px 46px!important}}
+@media(max-width:420px){#ecosystem-portals{padding:32px 16px 46px!important}}
