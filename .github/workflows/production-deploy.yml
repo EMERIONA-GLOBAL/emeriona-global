@@ -55,7 +55,7 @@ jobs:
             grep -Fq "$marker" /tmp/homepage.html || { echo "Homepage verification failed: $marker"; exit 1; }
           done
 
-          curl -fsS "$BASE_URL/discovery.html?v=${GITHUB_SHA}" -o /tmp/discovery.html
+          curl -fsSL "$BASE_URL/discovery.html?v=${GITHUB_SHA}" -o /tmp/discovery.html
           for marker in 'discovery-page-clean.css?v=20261004-clean-v2' 'Discovery Gateway'; do
             grep -Fq "$marker" /tmp/discovery.html || { echo "Discovery HTML verification failed: $marker"; exit 1; }
           done
