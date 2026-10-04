@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 source "$(dirname "$0")/production-auth-fixture.sh"
-Bprovision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "partner-product-update-smoke"
-COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: partner-product-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')ASE='https://emeriona-global.emerionaglobal.workers.dev'
+BASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="partner-product-update-smoke-${GITHUB_RUN_ID}"; T2="partner-product-update-isolation-${GITHUB_RUN_ID}"; P="partner-product-${GITHUB_RUN_ID}"; PTR="partner-product-owner-${GITHUB_RUN_ID}"; OWNER="partner-owner-${GITHUB_RUN_ID}"
-cleanup() { npx wrangler d1 execute emeriona-global-db --remote --command="DELETE FROM products WHERE id='${P}'; DELETE FROM partners WHERE id='${PTR}'; DELETE FROM tenants WHERE id IN ('${T}','${T2}');" >/dev/null 2>&1 || true; }
+cleanup() { provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "partner-product-update-smoke"
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: partner-product-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+npx wrangler d1 execute emeriona-global-db --remote --command="DELETE FROM products WHERE id='${P}'; DELETE FROM partners WHERE id='${PTR}'; DELETE FROM tenants WHERE id IN ('${T}','${T2}');" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','Partner Product Update Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','Partner Product Update Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${PTR}','${T}','Partner Product Update Smoke','VERIFIED'); INSERT INTO products (id,tenant_id,owner_id,partner_id,name,status) VALUES ('${P}','${T}','${OWNER}','${PTR}','Original Partner Product','DRAFT');"
 
