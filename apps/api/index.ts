@@ -1,4 +1,4 @@
-import { createFoundationRuntime } from "../../packages/infrastructure/src/index.js";
+import { createFoundationRuntime, D1IdentityAuthorizationAdapter } from "../../packages/infrastructure/src/index.js";
 import type { D1DatabaseLike } from "../../packages/infrastructure/src/index.js";
 import type { UseCaseId, UseCaseRequest } from "../../packages/application/src/index.js";
 import { API_VERSION, createApiError, hasApiPath, resolveApiRoute, createRuntimeHttpContext, validateRuntimeHttpPolicy, RUNTIME_HTTP_VERSION } from "../../packages/runtime/src/index.js";
@@ -8,6 +8,16 @@ interface Env { DB: D1DatabaseLike; ASSETS: AssetsBinding }
 function json(data: unknown, status = 200, headers?: HeadersInit): Response { return new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", ...headers } }); }
 function errorResponse(code: Parameters<typeof createApiError>[0], message: string, status: number, context?: { requestId?: string; correlationId?: string }): Response { return json(createApiError(code, message, context), status); }
 function validCurrency(value: string | null): value is string { return value !== null && /^[A-Z]{3}$/.test(value.trim()); }
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+function bearerToken(request: Request): string | undefined {
+  const value = request.headers.get("authorization")?.trim();
+  if (!value) return undefined;
+  const match = /^Bearer\s+(.+)$/i.exec(value);
+  return match?.[1]?.trim() || undefined;
+}
 async function checkDatabase(db: D1DatabaseLike): Promise<{ status: "ok"; latencyMs: number }> { const started = Date.now(); await db.prepare("SELECT 1 AS ok").all<{ ok: number }>(); return { status: "ok", latencyMs: Date.now() - started }; }
 async function checkActiveTenant(db: D1DatabaseLike, tenantId: string): Promise<boolean> {
   const result = await db.prepare("SELECT id FROM tenants WHERE id = ? AND status = 'ACTIVE' LIMIT 1").bind(tenantId).all<{ id: string }>();
@@ -18,7 +28,7 @@ if (path === "/api/health") { if (!route) return errorResponse("method_not_allow
 if (path === "/api/health/ready") { if (request.method !== "GET") return errorResponse("method_not_allowed", "Method not allowed", 405); try { const database = await checkDatabase(env.DB); return json({ service: "emeriona-global", status: "ready", dependencies: { database }, apiVersion: API_VERSION, runtimeVersion: RUNTIME_HTTP_VERSION }); } catch (error) { return json({ service: "emeriona-global", status: "not_ready", dependencies: { database: { status: "error", message: error instanceof Error ? error.message : "Database readiness check failed" } }, apiVersion: API_VERSION, runtimeVersion: RUNTIME_HTTP_VERSION }, 503); } }
 if (!hasApiPath(path)) return errorResponse("not_found", "API route not found", 404); if (!route || route.route.kind !== "USE_CASE" || !route.route.useCaseId) return errorResponse("method_not_allowed", "Method not allowed", 405);
 const useCaseId = route.route.useCaseId as UseCaseId; let runtimeContext; try { runtimeContext = createRuntimeHttpContext({ request, service: "emeriona-global-api", environment: "PRODUCTION", version: RUNTIME_HTTP_VERSION, defaultTenantId: request.method === "GET" && (path === "/api/v1/market/catalog" || path === "/api/v1/catalog/categories") ? "emeriona-global" : undefined }); validateRuntimeHttpPolicy(request); } catch (error) { return errorResponse("invalid_runtime_context", error instanceof Error ? error.message : "Invalid runtime context", 400); }
-const actorId = runtimeContext.actorId; const requestContext = { requestId: runtimeContext.requestId, correlationId: runtimeContext.correlationId };
+const requestContext = { requestId: runtimeContext.requestId, correlationId: runtimeContext.correlationId };
 if (request.method === "GET" && (path === "/api/v1/products/query" || path === "/api/v1/services/query")) {
   const id = url.searchParams.get("id")?.trim();
   if (!id) return errorResponse("use_case_failed", "Catalog entity id is required", 400, requestContext);
@@ -55,9 +65,20 @@ if (request.method === "GET" && (path === "/api/v1/market/catalog" || path === "
     return errorResponse("use_case_failed", error instanceof Error ? error.message : "Market catalog query failed", 400, requestContext);
   }
 }
-if (!actorId) return errorResponse("tenant_and_actor_context_required", "Tenant and actor context are required", 400, requestContext);
+const token = bearerToken(request);
+if (!token) return errorResponse("authentication_required", "A valid Bearer session token is required", 401, requestContext);
+const identityAuthorization = new D1IdentityAuthorizationAdapter(env.DB);
+const tokenHash = await sha256Hex(token);
+const session = await identityAuthorization.validateSession(runtimeContext.tenantId as UseCaseRequest<unknown>["context"]["tenantId"], tokenHash, new Date().toISOString());
+if (!session) return errorResponse("authentication_required", "Session is missing, expired, revoked, or inactive", 401, requestContext);
+const identity = await identityAuthorization.findIdentityById(runtimeContext.tenantId as UseCaseRequest<unknown>["context"]["tenantId"], session.identityId);
+const principal = identity ? await identityAuthorization.findPrincipal(runtimeContext.tenantId as UseCaseRequest<unknown>["context"]["tenantId"], identity.principalId) : undefined;
+const actorId = principal?.id;
+if (!actorId || principal?.status !== "ACTIVE") return errorResponse("authentication_required", "Authenticated principal is not active", 401, requestContext);
+if (runtimeContext.actorId && runtimeContext.actorId !== actorId) return errorResponse("forbidden", "Declared actor does not match the authenticated principal", 403, requestContext);
+if (!(await identityAuthorization.authorizePermission(runtimeContext.tenantId as UseCaseRequest<unknown>["context"]["tenantId"], actorId, useCaseId))) return errorResponse("forbidden", "Authenticated principal is not authorized for this operation", 403, requestContext);
 const currency = request.headers.get("x-currency"); if (!validCurrency(currency)) return errorResponse("valid_currency_required", "A valid ISO 4217 currency code is required", 400, requestContext);
 let input: unknown; try { input = await request.json(); } catch { return errorResponse("invalid_json", "Request body must be valid JSON", 400, requestContext); }
-const idempotencyKey = request.headers.get("idempotency-key")?.trim() || undefined; const foundation = createFoundationRuntime(env.DB, { tenantId: runtimeContext.tenantId, currency: currency.trim(), correlationId: runtimeContext.correlationId, authorize: async (requestedUseCase) => requestedUseCase === useCaseId && actorId.length > 0 });
+const idempotencyKey = request.headers.get("idempotency-key")?.trim() || undefined; const foundation = createFoundationRuntime(env.DB, { tenantId: runtimeContext.tenantId, currency: currency.trim(), correlationId: runtimeContext.correlationId, authorize: async (requestedUseCase) => requestedUseCase === useCaseId && await identityAuthorization.authorizePermission(runtimeContext.tenantId as UseCaseRequest<unknown>["context"]["tenantId"], actorId, requestedUseCase) });
 const envelope: UseCaseRequest<unknown> = { useCaseId, context: { tenantId: runtimeContext.tenantId as UseCaseRequest<unknown>["context"]["tenantId"], correlationId: runtimeContext.correlationId as UseCaseRequest<unknown>["context"]["correlationId"], actorId, requestId: runtimeContext.requestId, locale: runtimeContext.locale, timezone: runtimeContext.timezone, metadata: { transport: "cloudflare-worker", runtimeVersion: RUNTIME_HTTP_VERSION, apiVersion: API_VERSION, workflow: "emeriona-core-workflow", currency: currency.trim() } }, input, idempotencyKey };
 try { const result = await foundation.execute<unknown, unknown>(envelope); return json({ data: result.output, meta: { useCaseId: result.useCaseId, correlationId: result.correlationId, requestId: runtimeContext.requestId, apiVersion: API_VERSION } }); } catch (error) { return errorResponse("use_case_failed", error instanceof Error ? error.message : "Use case execution failed", 400, requestContext); } } };
