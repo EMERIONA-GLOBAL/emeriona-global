@@ -56,11 +56,11 @@ jobs:
           done
 
           curl -fsSL "$BASE_URL/discovery.html?v=${GITHUB_SHA}" -o /tmp/discovery.html
-          for marker in 'discovery-page-clean.css?v=20261004-clean-v2' 'Discovery Gateway'; do
+          for marker in 'discovery-page-final.css?v=20261004-final-v1' 'Discovery Gateway'; do
             grep -Fq "$marker" /tmp/discovery.html || { echo "Discovery HTML verification failed: $marker"; exit 1; }
           done
 
-          curl -fsS -D /tmp/discovery-css.headers -o /tmp/discovery-page.css "$BASE_URL/discovery-page-clean.css?v=${GITHUB_SHA}"
+          curl -fsS -D /tmp/discovery-css.headers -o /tmp/discovery-page.css "$BASE_URL/discovery-page-final.css?v=${GITHUB_SHA}"
           echo "Discovery CSS response headers:"
           cat /tmp/discovery-css.headers
           grep -Eiq '^content-type: text/css(;|[[:space:]])' /tmp/discovery-css.headers || { echo "Discovery CSS verification failed: unexpected Content-Type"; exit 1; }
