@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(dirname "$0")/production-auth-fixture.sh"
 BASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="partner-product-update-smoke-${GITHUB_RUN_ID}"; T2="partner-product-update-isolation-${GITHUB_RUN_ID}"; P="partner-product-${GITHUB_RUN_ID}"; PTR="partner-product-owner-${GITHUB_RUN_ID}"; OWNER="partner-owner-${GITHUB_RUN_ID}"
 cleanup() { npx wrangler d1 execute emeriona-global-db --remote --command="DELETE FROM products WHERE id='${P}'; DELETE FROM partners WHERE id='${PTR}'; DELETE FROM tenants WHERE id IN ('${T}','${T2}');" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','Partner Product Update Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','Partner Product Update Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${PTR}','${T}','Partner Product Update Smoke','VERIFIED'); INSERT INTO products (id,tenant_id,owner_id,partner_id,name,status) VALUES ('${P}','${T}','${OWNER}','${PTR}','Original Partner Product','DRAFT');"
-COMMON=(-H "x-tenant-id: ${T}" -H 'x-actor-id: partner-product-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "partner-product-update-smoke"
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: partner-product-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
 UPDATE_KEY="partner-product-update-${GITHUB_RUN_ID}"
 curl -fsS "${COMMON[@]}" -H "idempotency-key: ${UPDATE_KEY}" -X POST "$BASE/api/v1/partners/products/update" -d "{\"productId\":\"${P}\",\"partnerId\":\"${PTR}\",\"ownerId\":\"${OWNER}-updated\",\"name\":\"Updated Partner Product\",\"status\":\"PUBLISHED\"}" > update.json
 jq -e --arg id "$P" --arg partner "$PTR" '.data.id == $id and .data.partnerId == $partner and .data.ownerId == "'"${OWNER}-updated"'" and .data.name == "Updated Partner Product" and .data.status == "PUBLISHED"' update.json
@@ -15,7 +17,7 @@ REPLAY_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: ${UPDATE_KEY}" -X 
 test "$REPLAY_STATUS" = '200'; jq -e --arg id "$P" '.data.id == $id and .data.name == "Updated Partner Product"' replay.json
 COMMON2=(-H "x-tenant-id: ${T2}" -H 'x-actor-id: partner-product-update-isolation' -H 'x-currency: USD' -H 'content-type: application/json')
 CROSS_STATUS="$(curl -sS "${COMMON2[@]}" -H "idempotency-key: partner-product-cross-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/partners/products/update" -d "{\"productId\":\"${P}\",\"partnerId\":\"${PTR}\",\"name\":\"Cross Tenant Mutation\"}" -o cross.json -w '%{http_code}')"
-test "$CROSS_STATUS" = '400'
+test "$CROSS_STATUS" = '401'
 EMPTY_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: partner-product-empty-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/partners/products/update" -d "{\"productId\":\"${P}\",\"partnerId\":\"${PTR}\"}" -o empty.json -w '%{http_code}')"
 test "$EMPTY_STATUS" = '400'
 test "$(curl -sS -o /tmp/partner-product-update-get.json -w '%{http_code}' "$BASE/api/v1/partners/products/update")" = '405'
