@@ -16,9 +16,9 @@ provision_verification_auth() {
   token_hash="$(printf '%s' "$AUTH_TOKEN" | sha256sum | cut -d' ' -f1)"
 
   local principal_id="${actor_id}"
-  local identity_id="verify-identity-${run_id}"
-  local role_id="verify-role-${run_id}"
-  local session_id="verify-session-${run_id}"
+  local identity_id="verify-identity-${key_suffix}"
+  local role_id="verify-role-${key_suffix}"
+  local session_id="verify-session-${key_suffix}"
 
   local use_cases=(
     "customer.create" "customer.update" "catalog.product.create" "catalog.product.update"
@@ -40,7 +40,7 @@ provision_verification_auth() {
   local permissions_sql=""
   local use_case permission_id
   for use_case in "${use_cases[@]}"; do
-    permission_id="verify-perm-${use_case//./-}"
+    permission_id="verify-perm-${key_suffix}-${use_case//./-}"
     permissions_sql+="INSERT OR IGNORE INTO auth_permissions (id,tenant_id,permission,description) VALUES ('${permission_id}','${tenant_id}','${use_case}','Production verification permission');"
     permissions_sql+="INSERT OR IGNORE INTO auth_role_permissions (tenant_id,role_id,permission_id) VALUES ('${tenant_id}','${role_id}','${permission_id}');"
   done
