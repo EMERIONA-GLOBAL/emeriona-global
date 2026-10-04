@@ -15,7 +15,7 @@ provision_verification_auth() {
   local token_hash
   token_hash="$(printf '%s' "$AUTH_TOKEN" | sha256sum | cut -d' ' -f1)"
 
-  local principal_id="verify-principal-${run_id}"
+  local principal_id="${actor_id}"
   local identity_id="verify-identity-${run_id}"
   local role_id="verify-role-${run_id}"
   local session_id="verify-session-${run_id}"
