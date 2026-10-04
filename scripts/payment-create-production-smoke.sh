@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 source "$(dirname "$0")/production-auth-fixture.sh"
-provision_verification_auth "${TENANT_ID}" "${GITHUB_RUN_ID:-manual}" "payment-verify-actor"
 COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: payment-verify-actor" -H 'x-currency: USD' -H 'content-type: application/json')BASE='https://emeriona-global.emerionaglobal.workers.dev'
 RUN_ID="${GITHUB_RUN_ID:-manual}"
 TENANT_ID="payment-verify-${RUN_ID}"
 OTHER_TENANT_ID="payment-other-${RUN_ID}"
 
+provision_verification_auth "${TENANT_ID}" "${GITHUB_RUN_ID:-manual}" "payment-verify-actor"
+COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: payment-verify-actor" -H 'x-currency: USD' -H 'content-type: application/json')
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${TENANT_ID}','Payment Verification ${RUN_ID}','ACTIVE'),('${OTHER_TENANT_ID}','Payment Other ${RUN_ID}','ACTIVE');" >/dev/null
 curl -fsS "${COMMON[@]}" -H "idempotency-key: payment-customer-${RUN_ID}" -X POST "$BASE/api/v1/customers" -d '{"displayName":"Payment Verification Customer"}' | tee /tmp/payment-customer.json
 CUSTOMER_ID=$(jq -r '.data.id' /tmp/payment-customer.json)
