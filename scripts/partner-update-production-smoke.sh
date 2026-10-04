@@ -4,11 +4,11 @@ source "$(dirname "$0")/production-auth-fixture.sh"
 BASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="partner-update-smoke-${GITHUB_RUN_ID}"; T2="partner-update-isolation-${GITHUB_RUN_ID}"; P="partner-update-${GITHUB_RUN_ID}"
 cleanup() {
-  provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "partner-update-smoke"
-COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: partner-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
 npx wrangler d1 execute emeriona-global-db --remote --command="DELETE FROM partners WHERE id='${P}'; DELETE FROM tenants WHERE id IN ('${T}','${T2}');" >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
+provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "partner-update-smoke"
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: partner-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','Partner Update Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','Partner Update Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','Original Partner','PENDING');"
 
 UPDATE_KEY="partner-update-${GITHUB_RUN_ID}"
