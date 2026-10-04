@@ -46,6 +46,7 @@ provision_verification_auth() {
   done
 
   npx wrangler d1 execute emeriona-global-db --remote --command="
+    INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${tenant_id}','Production Verification ${run_id}','ACTIVE');
     INSERT OR IGNORE INTO auth_principals (id,tenant_id,principal_type,subject_id,status)
       VALUES ('${principal_id}','${tenant_id}','STAFF','${actor_id}','ACTIVE');
     INSERT OR IGNORE INTO auth_identities (id,tenant_id,principal_id,login,login_normalized,status)
