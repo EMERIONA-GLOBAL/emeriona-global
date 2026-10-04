@@ -15,7 +15,7 @@ async function sha256Hex(value: string): Promise<string> {
 function bearerToken(request: Request): string | undefined {
   const value = request.headers.get("authorization")?.trim();
   if (!value) return undefined;
-  const match = /^Bearer\\s+(.+)$/i.exec(value);
+  const match = /^Bearer\s+(.+)$/i.exec(value);
   return match?.[1]?.trim() || undefined;
 }
 async function checkDatabase(db: D1DatabaseLike): Promise<{ status: "ok"; latencyMs: number }> { const started = Date.now(); await db.prepare("SELECT 1 AS ok").all<{ ok: number }>(); return { status: "ok", latencyMs: Date.now() - started }; }
