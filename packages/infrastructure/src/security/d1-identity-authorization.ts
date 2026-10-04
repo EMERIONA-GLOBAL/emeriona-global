@@ -14,6 +14,11 @@ export class D1IdentityAuthorizationAdapter implements IdentityAuthorizationPort
     return result.results[0];
   }
 
+  async findIdentityById(tenantId: TenantId, identityId: string): Promise<AuthIdentity | undefined> {
+    const result = await this.db.prepare("SELECT id,tenant_id AS tenantId,principal_id AS principalId,login,login_normalized AS loginNormalized,status FROM auth_identities WHERE tenant_id=? AND id=? LIMIT 1").bind(tenantId, identityId).all<IdentityRow>();
+    return result.results[0];
+  }
+
   async findPrincipal(tenantId: TenantId, principalId: string): Promise<AuthPrincipal | undefined> {
     const result = await this.db.prepare("SELECT id,tenant_id AS tenantId,principal_type AS principalType,subject_id AS subjectId,status FROM auth_principals WHERE tenant_id=? AND id=? LIMIT 1").bind(tenantId, principalId).all<PrincipalRow>();
     return result.results[0];
