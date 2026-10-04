@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(dirname "$0")/production-auth-fixture.sh"
 BASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="cart-item-add-smoke-${GITHUB_RUN_ID:-manual}"
 T2="cart-item-add-isolation-${GITHUB_RUN_ID:-manual}"
@@ -13,7 +14,8 @@ cleanup() {
 }
 trap cleanup EXIT
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','Cart Item Smoke','ACTIVE'),('${T2}','Cart Item Isolation','ACTIVE'); INSERT INTO customers (id,tenant_id,display_name,status,locale,timezone) VALUES ('${CUS}','${T}','Cart Item Customer','ACTIVE','en','UTC'),('${CUS2}','${T2}','Cart Item Cross Customer','ACTIVE','en','UTC'); INSERT INTO carts (id,tenant_id,customer_id,status,currency) VALUES ('${C}','${T}','${CUS}','OPEN','USD'),('${C2}','${T2}','${CUS2}','OPEN','USD'); INSERT INTO products (id,tenant_id,owner_id,name,status) VALUES ('${P}','${T}','${CUS}','Cart Item Product','PUBLISHED');"
-COMMON=(-H "x-tenant-id: ${T}" -H 'x-actor-id: cart-item-add-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "cart-item-add-smoke"
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: cart-item-add-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
 KEY="cart-item-add-${GITHUB_RUN_ID:-manual}"
 PAYLOAD="{\"cartId\":\"${C}\",\"productId\":\"${P}\",\"quantity\":2,\"unitAmount\":{\"amount\":25,\"currency\":\"USD\"}}"
 curl -fsS "${COMMON[@]}" -H "idempotency-key: ${KEY}" -X POST "$BASE/api/v1/cart-items" -d "$PAYLOAD" > add.json
@@ -26,7 +28,7 @@ jq -e --arg cart "${C}" --arg product "${P}" '.data.cartId == $cart and .data.pr
 COMMON2=(-H "x-tenant-id: ${T2}" -H 'x-actor-id: cart-item-add-isolation' -H 'x-currency: USD' -H 'content-type: application/json')
 CROSS="{\"cartId\":\"${C}\",\"productId\":\"${P}\",\"quantity\":1,\"unitAmount\":{\"amount\":25,\"currency\":\"USD\"}}"
 CROSS_STATUS="$(curl -sS "${COMMON2[@]}" -H "idempotency-key: cart-item-cross-${GITHUB_RUN_ID:-manual}" -X POST "$BASE/api/v1/cart-items" -d "$CROSS" -o cross.json -w '%{http_code}')"
-test "$CROSS_STATUS" = '400'
+test "$CROSS_STATUS" = '401'
 BAD="{\"cartId\":\"${C}\",\"productId\":\"${P}\",\"quantity\":1,\"unitAmount\":{\"amount\":25,\"currency\":\"EUR\"}}"
 BAD_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: cart-item-currency-${GITHUB_RUN_ID:-manual}" -X POST "$BASE/api/v1/cart-items" -d "$BAD" -o bad.json -w '%{http_code}')"
 test "$BAD_STATUS" = '400'
