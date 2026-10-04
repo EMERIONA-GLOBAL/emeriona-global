@@ -9,6 +9,6 @@
   "assets": {
     "directory": "./apps/web",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*", "/discovery.html", "/discovery-current.html", "/discovery-page-clean.css"]
+    "run_worker_first": ["/api/*", "/discovery.html", "/discovery-current.html", "/discovery-live-20261004.html", "/discovery-final-20261004.html", "/discovery-page-clean.css", "/discovery-page-final.css"]
   }
 }
