@@ -33,6 +33,7 @@ export interface AuthSession {
 
 export interface IdentityAuthorizationPort {
   findIdentityByLogin(tenantId: TenantId, loginNormalized: string): Promise<AuthIdentity | undefined>;
+  findIdentityById(tenantId: TenantId, identityId: string): Promise<AuthIdentity | undefined>;
   findPrincipal(tenantId: TenantId, principalId: string): Promise<AuthPrincipal | undefined>;
   validateSession(tenantId: TenantId, tokenHash: string, nowIso: string): Promise<AuthSession | undefined>;
   authorizePermission(tenantId: TenantId, principalId: string, permission: string): Promise<boolean>;
