@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 source "$(dirname "$0")/production-auth-fixture.sh"
-BASE='https://emeriona-global.emerionaglobal.workers.dev'
+Bprovision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "catalog-service-update-smoke"
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: catalog-service-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')ASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="catalog-service-update-${GITHUB_RUN_ID:-manual}"
 T2="catalog-service-update-isolation-${GITHUB_RUN_ID:-manual}"
 UPDATED="Updated Service ${GITHUB_RUN_ID:-manual}"
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','Catalog Service Update Smoke','ACTIVE'),('${T2}','Catalog Service Update Isolation','ACTIVE');"
-provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "catalog-service-update-smoke"
-COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: catalog-service-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+
 curl -fsS "${COMMON[@]}" -H "idempotency-key: catalog-service-create-${GITHUB_RUN_ID:-manual}" -X POST "$BASE/api/v1/services" -d "{\"ownerId\":\"catalog-service-owner\",\"name\":\"Original Service ${GITHUB_RUN_ID:-manual}\"}" > service-create.json
 S="$(jq -r '.data.id // .data.service.id' service-create.json)"
 test -n "$S" && test "$S" != 'null'
