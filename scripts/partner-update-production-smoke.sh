@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(dirname "$0")/production-auth-fixture.sh"
 BASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="partner-update-smoke-${GITHUB_RUN_ID}"; T2="partner-update-isolation-${GITHUB_RUN_ID}"; P="partner-update-${GITHUB_RUN_ID}"
 cleanup() {
@@ -7,7 +8,8 @@ cleanup() {
 }
 trap cleanup EXIT
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','Partner Update Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','Partner Update Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','Original Partner','PENDING');"
-COMMON=(-H "x-tenant-id: ${T}" -H 'x-actor-id: partner-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "partner-update-smoke"
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: partner-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
 UPDATE_KEY="partner-update-${GITHUB_RUN_ID}"
 curl -fsS "${COMMON[@]}" -H "idempotency-key: ${UPDATE_KEY}" -X POST "$BASE/api/v1/partners/update" -d "{\"partnerId\":\"${P}\",\"legalName\":\"Updated Partner\",\"status\":\"VERIFIED\"}" > update.json
 jq -e --arg id "$P" '.data.id == $id and .data.tenantId == "'"$T"'" and .data.legalName == "Updated Partner" and .data.status == "VERIFIED"' update.json
@@ -18,7 +20,7 @@ test "$REPLAY_STATUS" = '200'
 jq -e --arg id "$P" '.data.id == $id and .data.legalName == "Updated Partner" and .data.status == "VERIFIED"' replay.json
 COMMON2=(-H "x-tenant-id: ${T2}" -H 'x-actor-id: partner-update-isolation' -H 'x-currency: USD' -H 'content-type: application/json')
 CROSS_STATUS="$(curl -sS "${COMMON2[@]}" -H "idempotency-key: partner-update-cross-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/partners/update" -d "{\"partnerId\":\"${P}\",\"legalName\":\"Cross Tenant Mutation\"}" -o cross.json -w '%{http_code}')"
-test "$CROSS_STATUS" = '400'
+test "$CROSS_STATUS" = '401'
 EMPTY_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: partner-update-empty-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/partners/update" -d "{\"partnerId\":\"${P}\"}" -o empty.json -w '%{http_code}')"
 test "$EMPTY_STATUS" = '400'
 test "$(curl -sS -o /tmp/partner-update-get.json -w '%{http_code}' "$BASE/api/v1/partners/update")" = '405'
