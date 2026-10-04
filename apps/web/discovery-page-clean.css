@@ -1,0 +1,169 @@
+/* EMERIONA DISCOVERY — clean visual architecture foundation — 2026-10-04 */
+#discovery-page{color:#173a5d;overflow-x:hidden}
+#discovery-page .discovery-gateway{position:relative;overflow:hidden}
+#discovery-page .gateway-shell{position:relative;z-index:2;margin:0 auto;display:grid;align-items:center}
+#discovery-page .gateway-copy{grid-column:1;grid-row:1}
+#discovery-page .discovery-kicker{display:flex;align-items:center;text-transform:uppercase}
+#discovery-page .gateway-copy h1{max-width:650px}
+#discovery-page .gateway-lead{max-width:600px}
+#discovery-page .gateway-visual{grid-column:2;grid-row:1;position:relative;display:block;overflow:hidden}
+#discovery-page .gateway-search-card{grid-column:1 / -1;grid-row:2}
+#discovery-page .gateway-search{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
+#discovery-page .gateway-search input{min-width:0;outline:0;background:transparent}
+#discovery-page .gateway-search button{cursor:pointer}
+#discovery-page .discovery-categories{display:grid;grid-template-columns:repeat(7,1fr);overflow:hidden}
+#discovery-page .discovery-categories button{border:0;cursor:pointer}
+#discovery-page .ecosystem-explore{position:relative;overflow:hidden}
+#discovery-page .ecosystem-explore-shell{position:relative;z-index:2;margin:auto}
+#discovery-page .ecosystem-heading{margin-bottom:27px}
+#discovery-page .ecosystem-heading h2{margin:0}
+#discovery-page .ecosystem-path-grid{display:grid}
+#discovery-page .ecosystem-path-card{position:relative;display:block;text-decoration:none;overflow:hidden}
+#discovery-page .ecosystem-path-card:before{content:"";display:block}
+#discovery-page .path-icon{position:absolute;display:grid;place-items:center}
+#discovery-page .ecosystem-path-card strong{display:block}
+#discovery-page .ecosystem-path-card p{display:block}
+#discovery-page .ecosystem-path-card b{display:block}
+#discovery-page .ecosystem-close{display:flex;align-items:center;justify-content:space-between}
+#discovery-page .return-home{display:inline-block;text-decoration:none}
+
+/* DISCOVERY VISUAL REBUILD — reference-led composition — 2026-10-04 */
+#discovery-page{--d-navy:#123a63;--d-ink:#173a5d;--d-muted:#64798d;--d-gold:#c9a34b;background:#f4f8fb!important;color:var(--d-ink)!important;overflow:hidden}
+#discovery-page .discovery-gateway{min-height:0!important;padding:42px 42px 70px!important;position:relative;isolation:isolate;background:radial-gradient(700px 360px at 82% 8%,rgba(73,169,209,.12),transparent 68%),radial-gradient(520px 300px at 20% 58%,rgba(201,163,75,.08),transparent 70%),linear-gradient(135deg,#fbfdfe 0%,#eef5f9 57%,#f9fbfd 100%)!important}
+#discovery-page .discovery-gateway:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(118deg,transparent 0 47%,rgba(29,111,174,.035) 47.1%,transparent 47.3%),linear-gradient(157deg,transparent 0 67%,rgba(201,163,75,.045) 67.1%,transparent 67.3%)}
+#discovery-page .gateway-shell{width:min(1240px,100%)!important;grid-template-columns:minmax(0,1fr) minmax(430px,.9fr)!important;grid-template-rows:auto auto;gap:18px 34px!important}
+#discovery-page .gateway-copy{padding:34px 0 28px!important}
+#discovery-page .discovery-kicker{gap:12px;color:#b0872e;font-size:11px;letter-spacing:.19em;font-weight:850}
+#discovery-page .discovery-kicker i{display:block;width:34px;height:1px;background:var(--d-gold)}
+#discovery-page .gateway-copy h1{max-width:650px;margin:15px 0 9px;color:var(--d-navy)!important;font-size:clamp(52px,5.5vw,78px)!important;line-height:.94;letter-spacing:-.06em;font-weight:850}
+#discovery-page .gateway-copy h1:after{width:48px;height:2px;margin-top:19px;background:var(--d-gold)}
+#discovery-page .gateway-subtitle{margin:0 0 17px;color:#315574;font-size:clamp(21px,2vw,29px);line-height:1.18;font-weight:520}
+#discovery-page .gateway-lead{max-width:600px;margin:0;color:var(--d-muted);font-size:15px;line-height:1.72}
+#discovery-page .gateway-visual{min-height:390px!important;margin:-42px -42px 0 0!important;overflow:hidden;isolation:isolate;background:linear-gradient(90deg,rgba(248,251,253,.99) 0%,rgba(248,251,253,.70) 18%,rgba(248,251,253,.12) 55%,rgba(248,251,253,0) 100%),url("./assets/covers/emeriona-global-cover-en.webp")!important;background-size:cover!important;background-position:center right!important;border-radius:0 0 0 42%}
+#discovery-page .gateway-visual:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(300px 220px at 72% 32%,rgba(78,206,225,.13),transparent 72%),linear-gradient(135deg,rgba(255,255,255,.18),transparent 55%)}
+#discovery-page .gateway-visual:after{content:"";position:absolute;right:5%;bottom:8%;width:150px;height:150px;border:1px solid rgba(201,163,75,.28);border-radius:50%;box-shadow:0 0 0 18px rgba(201,163,75,.035),0 0 0 42px rgba(29,111,174,.025)}
+#discovery-page .digital-globe{display:block!important;position:absolute;z-index:2;right:8%;top:50%;width:min(410px,82%);transform:translateY(-50%);opacity:.96;filter:drop-shadow(0 24px 38px rgba(17,55,91,.16))}
+#discovery-page .digital-globe svg{display:block;width:100%;height:auto}
+#discovery-page .gateway-orbit-note{display:block!important;position:absolute;z-index:3;padding:7px 11px;border:1px solid rgba(201,163,75,.46);border-radius:999px;background:rgba(255,255,255,.84);color:#315b7e;font-size:9px;line-height:1;font-weight:850;letter-spacing:.13em;box-shadow:0 9px 22px rgba(21,54,87,.09);backdrop-filter:blur(8px)}
+#discovery-page .note-one{right:21%;top:15%}#discovery-page .note-two{right:2%;top:51%}#discovery-page .note-three{right:23%;bottom:12%}
+#discovery-page .gateway-search-card{margin:4px 0 0!important;position:relative;z-index:5}
+#discovery-page .gateway-search{min-height:68px;height:auto!important;padding:7px 8px 7px 21px!important;border:1px solid #d9e3ea;border-radius:38px;background:rgba(255,255,255,.96);box-shadow:0 15px 36px rgba(20,54,87,.09)}
+#discovery-page .gateway-search button{height:52px;padding:0 28px;border:1px solid #d1a13b;border-radius:28px;background:linear-gradient(135deg,#d7b25b,#bf8e25);font-weight:850;box-shadow:0 7px 15px rgba(180,137,42,.17)}
+#discovery-page .discovery-categories{margin-top:22px;border:1px solid #dbe5ec;border-radius:30px;background:#fff;box-shadow:0 8px 24px rgba(20,54,87,.055)}
+#discovery-page .discovery-categories button{min-height:50px;background:#fff;color:#2b4d6a;font-size:11px;font-weight:700}
+#discovery-page .discovery-categories button:hover{background:#f0f6fa}
+#discovery-page .discovery-categories button.active{background:var(--d-navy);color:#fff}
+#discovery-page .ecosystem-explore{padding:50px 30px 68px!important;background:radial-gradient(600px 300px at 91% 8%,rgba(201,163,75,.10),transparent 70%),radial-gradient(500px 300px at 7% 90%,rgba(50,139,184,.065),transparent 70%),#f8fafc!important}
+#discovery-page .ecosystem-explore-shell{max-width:1180px!important;padding:34px 34px 30px!important;border-radius:26px!important;background:rgba(255,255,255,.72);box-shadow:0 16px 44px rgba(20,54,87,.06);backdrop-filter:blur(8px)}
+#discovery-page .ecosystem-heading-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.82fr);gap:34px;align-items:end}
+#discovery-page .ecosystem-heading h2{color:var(--d-navy);font-size:clamp(42px,4.8vw,64px);line-height:.98;letter-spacing:-.055em}
+#discovery-page .ecosystem-heading h2:before{content:"TURN DISCOVERY INTO ACTION";display:block;margin-bottom:12px;color:#ae862b;font-size:10px;line-height:1;font-weight:850;letter-spacing:.18em}
+#discovery-page .ecosystem-heading h2 em{color:#315f82;font-style:normal}
+#discovery-page .ecosystem-heading-grid>p{margin:0;max-width:none;color:#64798d;font-size:13px;line-height:1.7}
+#discovery-page .ecosystem-path-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+#discovery-page .ecosystem-path-card{min-height:315px!important;border:1px solid rgba(29,75,104,.13)!important;border-radius:20px!important;background:linear-gradient(180deg,#fff 0%,#f8fbfc 100%)!important;box-shadow:0 12px 30px rgba(18,53,80,.065)!important;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+#discovery-page .ecosystem-path-card:before{height:158px!important;background-size:cover!important;background-position:center!important;filter:saturate(.96) contrast(1.02)}
+#discovery-page .ecosystem-path-card:after{content:"";display:block!important;position:absolute;top:0;left:0;right:0;height:158px;background:linear-gradient(180deg,rgba(4,26,50,0) 43%,rgba(4,26,50,.17) 100%);pointer-events:none}
+#discovery-page .ecosystem-path-card:nth-child(1):before{background-image:url("./assets/discovery/products.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(2):before{background-image:url("./assets/discovery/services.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(3):before{background-image:url("./assets/discovery/solutions.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(4):before{background-image:url("./assets/discovery/projects.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(5):before{background-image:url("./assets/discovery/opportunities.svg")!important}
+#discovery-page .ecosystem-path-card:nth-child(6):before{background-image:url("./assets/discovery/knowledge.svg")!important}
+#discovery-page .ecosystem-path-card:hover{transform:translateY(-5px)!important;border-color:rgba(201,162,63,.48)!important;box-shadow:0 21px 42px rgba(18,53,80,.12)!important}
+#discovery-page .path-icon{top:134px!important;width:46px!important;height:46px!important;z-index:3;border:2px solid rgba(255,255,255,.96)!important;box-shadow:0 7px 18px rgba(10,38,66,.22)!important}
+#discovery-page .ecosystem-path-card strong,#discovery-page .ecosystem-path-card p,#discovery-page .ecosystem-path-card b{position:relative;z-index:2}
+#discovery-page .ecosystem-path-card strong{margin:25px 17px 0;font-size:20px}
+#discovery-page .ecosystem-path-card p{margin:8px 17px 0;font-size:12px;line-height:1.55}
+#discovery-page .ecosystem-path-card b{margin:16px 17px 0;font-size:11px}
+#discovery-page .ecosystem-close{margin-top:28px;padding-top:21px}
+#discovery-page .return-home{background:var(--d-navy)}
+@media(max-width:900px){
+#discovery-page .discovery-gateway{padding:34px 22px 60px!important}
+#discovery-page .gateway-shell{grid-template-columns:1fr!important;grid-template-rows:auto auto auto;gap:0!important}
+#discovery-page .gateway-copy{grid-column:1;grid-row:1;padding:22px 0 18px!important}
+#discovery-page .gateway-visual{grid-column:1;grid-row:2;min-height:325px!important;margin:0 -22px!important;border-radius:0 0 0 28%}
+#discovery-page .digital-globe{right:5%;width:min(360px,76%)}
+#discovery-page .gateway-search-card{grid-column:1;grid-row:3;margin-top:-21px!important}
+#discovery-page .ecosystem-heading-grid{grid-template-columns:1fr;gap:14px}
+#discovery-page .ecosystem-explore-shell{padding:30px 24px!important}
+}
+@media(max-width:700px){
+#discovery-page .ecosystem-path-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+#discovery-page .ecosystem-close{grid-template-columns:1fr}
+#discovery-page .return-home{justify-self:start}
+}
+@media(max-width:560px){
+#discovery-page .discovery-gateway{padding:25px 14px 48px!important}
+#discovery-page .gateway-copy h1{font-size:44px!important}
+#discovery-page .gateway-subtitle{font-size:20px}
+#discovery-page .gateway-lead{font-size:13px}
+#discovery-page .gateway-visual{min-height:255px!important;margin:0 -14px!important;border-radius:0 0 0 22%}
+#discovery-page .digital-globe{right:0;width:92%}
+#discovery-page .gateway-orbit-note{font-size:8px;padding:6px 8px}
+#discovery-page .gateway-search{grid-template-columns:auto minmax(0,1fr);min-height:62px}
+#discovery-page .gateway-search button{grid-column:1/-1;width:100%}
+#discovery-page .discovery-categories{grid-template-columns:repeat(2,1fr);border-radius:18px}
+#discovery-page .ecosystem-explore{padding:28px 12px 46px!important}
+#discovery-page .ecosystem-explore-shell{padding:24px 14px 18px!important;border-radius:20px}
+#discovery-page .ecosystem-path-grid{grid-template-columns:1fr;gap:13px}
+#discovery-page .ecosystem-path-card{min-height:270px!important}
+#discovery-page .ecosystem-path-card:before,#discovery-page .ecosystem-path-card:after{height:145px!important}
+#discovery-page .path-icon{top:121px!important}
+}
+@media(prefers-reduced-motion:reduce){
+#discovery-page .ecosystem-path-card,#discovery-page .gateway-search button,#discovery-page .return-home{transition:none!important}
+}
+
+
+/* DISCOVERY FUNCTIONAL VISUAL PASS — search results remain part of the designed experience */
+#discovery-page .gateway-results{display:none;gap:10px;margin-top:14px}
+#discovery-page .gateway-results:has(.gateway-result),#discovery-page .gateway-results:has(.gateway-loading){display:grid}
+#discovery-page .gateway-result{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  padding:14px 16px;
+  border:1px solid #dce5ec;
+  border-radius:16px;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 8px 22px rgba(20,54,87,.055);
+}
+#discovery-page .gateway-result>span{
+  display:inline-grid;
+  place-items:center;
+  min-width:76px;
+  min-height:30px;
+  padding:0 10px;
+  border-radius:999px;
+  background:#eef5f9;
+  color:#315f82;
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+#discovery-page .gateway-result div{min-width:0}
+#discovery-page .gateway-result strong{display:block;color:#173a5d;font-size:13px}
+#discovery-page .gateway-result small{display:block;margin-top:3px;color:#718398;font-size:10px;line-height:1.45}
+#discovery-page .gateway-result a{
+  white-space:nowrap;
+  color:#a77d21;
+  font-size:10px;
+  font-weight:850;
+  text-decoration:none;
+}
+#discovery-page .gateway-result a:hover{text-decoration:underline}
+#discovery-page .gateway-loading{
+  padding:14px 16px;
+  border:1px solid #dce5ec;
+  border-radius:16px;
+  background:rgba(255,255,255,.94);
+  color:#64798d;
+  font-size:11px;
+}
+@media(max-width:560px){
+  #discovery-page .gateway-result{grid-template-columns:1fr;gap:8px}
+  #discovery-page .gateway-result a{justify-self:start}
+}
