@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(dirname "$0")/production-auth-fixture.sh"
 BASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="c6-smoke-${GITHUB_RUN_ID}"; C="c6-customer-${GITHUB_RUN_ID}"; O="c6-order-${GITHUB_RUN_ID}"; PAY="c6-payment-${GITHUB_RUN_ID}"
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','C6 Smoke ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO customers (id,tenant_id,display_name,status) VALUES ('${C}','${T}','C6 Customer','ACTIVE'); INSERT INTO orders (id,tenant_id,customer_id,status,total_amount,currency) VALUES ('${O}','${T}','${C}','FULFILLED',75,'USD'); INSERT INTO payment_intents (id,tenant_id,order_id,status,amount,currency) VALUES ('${PAY}','${T}','${O}','CAPTURED',75,'USD');"
-COMMON=(-H "x-tenant-id: ${T}" -H 'x-actor-id: c6-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "c6-smoke"
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: c6-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
 curl -fsS "${COMMON[@]}" -H "idempotency-key: c6-return-create-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/returns" -d "{\"orderId\":\"${O}\",\"reason\":\"C6 smoke return\"}" > return.json
 RID=$(jq -r '.data.id' return.json); test -n "$RID" && test "$RID" != null
 curl -fsS "${COMMON[@]}" -H "idempotency-key: c6-return-approved-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/returns/progress" -d "{\"returnId\":\"${RID}\",\"status\":\"APPROVED\"}" >/dev/null
