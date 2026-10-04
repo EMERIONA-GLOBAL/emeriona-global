@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 source "$(dirname "$0")/production-auth-fixture.sh"
-COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: payment-verify-actor" -H 'x-currency: USD' -H 'content-type: application/json')BASE='https://emeriona-global.emerionaglobal.workers.dev'
+BASE='https://emeriona-global.emerionaglobal.workers.dev'
 RUN_ID="${GITHUB_RUN_ID:-manual}"
 TENANT_ID="payment-verify-${RUN_ID}"
 OTHER_TENANT_ID="payment-other-${RUN_ID}"
