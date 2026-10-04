@@ -14,13 +14,18 @@ export class D1IdentityAuthorizationAdapter implements IdentityAuthorizationPort
     return result.results[0];
   }
 
+  async findIdentityById(tenantId: TenantId, identityId: string): Promise<AuthIdentity | undefined> {
+    const result = await this.db.prepare("SELECT id,tenant_id AS tenantId,principal_id AS principalId,login,login_normalized AS loginNormalized,status FROM auth_identities WHERE tenant_id=? AND id=? LIMIT 1").bind(tenantId, identityId).all<IdentityRow>();
+    return result.results[0];
+  }
+
   async findPrincipal(tenantId: TenantId, principalId: string): Promise<AuthPrincipal | undefined> {
     const result = await this.db.prepare("SELECT id,tenant_id AS tenantId,principal_type AS principalType,subject_id AS subjectId,status FROM auth_principals WHERE tenant_id=? AND id=? LIMIT 1").bind(tenantId, principalId).all<PrincipalRow>();
     return result.results[0];
   }
 
   async validateSession(tenantId: TenantId, tokenHash: string, nowIso: string): Promise<AuthSession | undefined> {
-    const result = await this.db.prepare("SELECT id,tenant_id AS tenantId,identity_id AS identityId,token_hash AS tokenHash,status,expires_at AS expiresAt FROM auth_sessions WHERE tenant_id=? AND token_hash=? AND status='ACTIVE' AND expires_at>? LIMIT 1").bind(tenantId, tokenHash, nowIso).all<SessionRow>();
+    const result = await this.db.prepare("SELECT s.id,s.tenant_id AS tenantId,s.identity_id AS identityId,s.token_hash AS tokenHash,s.status,s.expires_at AS expiresAt FROM auth_sessions s JOIN auth_identities i ON i.id=s.identity_id AND i.tenant_id=s.tenant_id AND i.status='ACTIVE' JOIN auth_principals p ON p.id=i.principal_id AND p.tenant_id=i.tenant_id AND p.status='ACTIVE' WHERE s.tenant_id=? AND s.token_hash=? AND s.status='ACTIVE' AND s.expires_at>? LIMIT 1").bind(tenantId, tokenHash, nowIso).all<SessionRow>();
     return result.results[0];
   }
 
