@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 source "$(dirname "$0")/production-auth-fixture.sh"
-BASE='https://emeriona-global.emerionaglobal.workers.dev'
+Bprovision_verification_auth "${TENANT_ID}" "${GITHUB_RUN_ID:-manual}" "order-update-verify-actor"
+COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: order-update-verify-actor" -H 'x-currency: USD' -H 'content-type: application/json')ASE='https://emeriona-global.emerionaglobal.workers.dev'
 RUN_ID="${GITHUB_RUN_ID:-manual}"
 TENANT_ID="order-update-verify-${RUN_ID}"
 OTHER_TENANT_ID="order-update-other-${RUN_ID}"
-COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: order-update-verify-actor" -H 'x-currency: USD' -H 'content-type: application/json')
+
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${TENANT_ID}','Order Update Verification ${RUN_ID}','ACTIVE'),('${OTHER_TENANT_ID}','Order Update Other ${RUN_ID}','ACTIVE');" >/dev/null
-provision_verification_auth "${TENANT_ID}" "${GITHUB_RUN_ID:-manual}" "order-update-verify-actor"
 curl -fsS "${COMMON[@]}" -H "idempotency-key: order-update-customer-${RUN_ID}" -X POST "$BASE/api/v1/customers" -d '{"displayName":"Order Update Verification Customer"}' | tee /tmp/order-update-customer.json
 CUSTOMER_ID=$(jq -r '.data.id' /tmp/order-update-customer.json)
 curl -fsS "${COMMON[@]}" -H "idempotency-key: order-update-order-${RUN_ID}" -X POST "$BASE/api/v1/orders" -d "{\"customerId\":\"${CUSTOMER_ID}\",\"total\":{\"amount\":80,\"currency\":\"USD\"}}" | tee /tmp/order-update-order.json
