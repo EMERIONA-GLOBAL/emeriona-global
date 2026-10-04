@@ -6,7 +6,7 @@ T="c11-smoke-${GITHUB_RUN_ID}"; T2="c11-isolation-${GITHUB_RUN_ID}"; P="c11-part
 printf 'C11 production diagnostic smoke revision: %s\n' "$GITHUB_SHA"
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','C11 Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','C11 Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','C11 Partner','VERIFIED');"
 provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "c11-smoke"
-COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: c11-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 for endpoint in analytics performance impact; do
   STATUS="$(curl -sS "${COMMON[@]}" -X POST "$BASE/api/v1/partners/${endpoint}" -d "{\"partnerId\":\"${P}\"}" -o "${endpoint}.json" -w '%{http_code}')"
   printf 'C11 %s HTTP %s\n' "$endpoint" "$STATUS"
@@ -18,7 +18,7 @@ done
 jq -e '.data.products == 0 and .data.services == 0 and .data.orders == 0' analytics.json
 jq -e '.data.fulfilledOrders == 0 and .data.settlementCount == 0' performance.json
 jq -e '.data.fulfilledRate == 0 and .data.settlementCoverageRate == 0' impact.json
-COMMON2=(-H "x-tenant-id: ${T2}" -H 'x-actor-id: c11-isolation' -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON2=(-H "x-tenant-id: ${T2}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 CROSS_STATUS="$(curl -sS "${COMMON2[@]}" -X POST "$BASE/api/v1/partners/analytics" -d "{\"partnerId\":\"${P}\"}" -o /tmp/c11-cross.json -w '%{http_code}')"
 test "$CROSS_STATUS" = '401'
 MIGRATION="$(npx wrangler d1 execute emeriona-global-db --remote --json --command="SELECT version FROM schema_migrations WHERE version='0009_partner_intelligence_foundation';")"
