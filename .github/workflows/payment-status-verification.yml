@@ -34,7 +34,10 @@ jobs:
       - run: curl -fsS https://emeriona-global.emerionaglobal.workers.dev/api/health/ready | jq -e '.status == "ready"'
       - name: Payment status route activation
         run: |
-          code=$(curl -sS -o /tmp/status.json -w '%{http_code}' -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/status -H "x-tenant-id: status-verification-tenant" -H "x-actor-id: status-verifier" -H "x-currency: USD" -H "content-type: application/json" -d '{"paymentId":"missing"}')
+          set -euo pipefail
+          source scripts/production-auth-fixture.sh
+          provision_verification_auth "status-verification-tenant" "status-route-${GITHUB_RUN_ID}" "status-verifier"
+          code=$(curl -sS -o /tmp/status.json -w '%{http_code}' -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/status -H "x-tenant-id: status-verification-tenant" -H "x-actor-id: status-verifier" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-currency: USD" -H "content-type: application/json" -d '{"paymentId":"missing"}')
           test "$code" = "400"
           jq -e '.error.code == "use_case_failed"' /tmp/status.json
       - name: Payment status production smoke
@@ -44,8 +47,10 @@ jobs:
         run: |
           set -euo pipefail
           npx wrangler d1 execute emeriona-global-db --remote --file scripts/payment-status-verification-seed.sql
+          source scripts/production-auth-fixture.sh
+          provision_verification_auth "status-verification-tenant" "status-smoke-${GITHUB_RUN_ID}" "status-verifier"
           body=$(curl -fsS -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/status -H "x-tenant-id: status-verification-tenant" -H "x-actor-id: status-verifier" -H "x-currency: USD" -H "content-type: application/json" -d '{"paymentId":"status-verification-payment"}')
           echo "$body" | jq -e '.data.id == "status-verification-payment" and .data.status == "CAPTURED" and .data.amount.amount == 125 and .data.amount.currency == "USD" and .meta.useCaseId == "payment.status"'
           other=$(curl -sS -o /tmp/status-cross.json -w '%{http_code}' -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/status -H "x-tenant-id: status-verification-other" -H "x-actor-id: status-verifier" -H "x-currency: USD" -H "content-type: application/json" -d '{"paymentId":"status-verification-payment"}')
-          test "$other" = "400"
-          jq -e '.error.code == "use_case_failed"' /tmp/status-cross.json
+          test "$other" = "401"
+          jq -e '.error.code == "authentication_required"' /tmp/status-cross.json
