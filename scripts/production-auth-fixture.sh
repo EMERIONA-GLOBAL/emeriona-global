@@ -43,7 +43,7 @@ provision_verification_auth() {
   local permissions_sql=""
   local use_case permission_id
   for use_case in "${use_cases[@]}"; do
-    permission_id="verify-perm-${key_suffix}-${use_case//./-}"
+    permission_id="verify-perm-${tenant_id}-${use_case//./-}"
     permissions_sql+="INSERT OR IGNORE INTO auth_permissions (id,tenant_id,permission,description) VALUES ('${permission_id}','${tenant_id}','${use_case}','Production verification permission');"
     permissions_sql+="INSERT OR IGNORE INTO auth_role_permissions (tenant_id,role_id,permission_id) VALUES ('${tenant_id}','${role_id}','${permission_id}');"
   done
@@ -51,11 +51,11 @@ provision_verification_auth() {
   npx wrangler d1 execute emeriona-global-db --remote --command="
     INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${tenant_id}','Production Verification ${run_id}','ACTIVE');
     INSERT OR IGNORE INTO auth_principals (id,tenant_id,principal_type,subject_id,status)
-      VALUES ('${principal_id}','${tenant_id}','STAFF','${actor_id}','ACTIVE');
+      VALUES ('${principal_id}','${tenant_id}','STAFF','${actor_id}-${run_id}','ACTIVE');
     INSERT OR IGNORE INTO auth_identities (id,tenant_id,principal_id,login,login_normalized,status)
       VALUES ('${identity_id}','${tenant_id}','${principal_id}','${identity_login}','${identity_login}','ACTIVE');
     INSERT OR IGNORE INTO auth_roles (id,tenant_id,name,description,status)
-      VALUES ('${role_id}','${tenant_id}','production-verifier','Ephemeral production verification role','ACTIVE');
+      VALUES ('${role_id}','${tenant_id}','production-verifier-${run_id}','Ephemeral production verification role','ACTIVE');
     INSERT OR IGNORE INTO auth_principal_roles (tenant_id,principal_id,role_id)
       VALUES ('${tenant_id}','${principal_id}','${role_id}');
     INSERT OR IGNORE INTO auth_sessions (id,tenant_id,identity_id,token_hash,status,expires_at)
