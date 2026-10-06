@@ -3,7 +3,7 @@ set -euo pipefail
 source "$(dirname "$0")/production-auth-fixture.sh"
 BASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="c9-smoke-${GITHUB_RUN_ID}"; T2="c9-isolation-${GITHUB_RUN_ID}"; P="c9-partner-${GITHUB_RUN_ID}"; C="c9-catalog-${GITHUB_RUN_ID}"; PC="c9-partner-catalog-${GITHUB_RUN_ID}"
-npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','C9 Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','C9 Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','C9 Partner','VERIFIED'); INSERT INTO catalogs (id,tenant_id,owner_id,partner_id,name,status) VALUES ('${C}','${T}','c9-owner',NULL,'C9 Catalog','DRAFT'),('${PC}','${T}','${P}','${P}','C9 Partner Catalog','DRAFT');"
+npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${T}','C9 Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','C9 Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','C9 Partner','VERIFIED'); INSERT INTO catalogs (id,tenant_id,owner_id,partner_id,name,status) VALUES ('${C}','${T}','c9-owner',NULL,'C9 Catalog','DRAFT'),('${PC}','${T}','${P}','${P}','C9 Partner Catalog','DRAFT');"
 provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "c9-smoke"
 COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: c9-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
 curl -fsS "${COMMON[@]}" -H "idempotency-key: c9-catalog-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/catalogs/publish" -d "{\"catalogId\":\"${C}\"}" > catalog.json
