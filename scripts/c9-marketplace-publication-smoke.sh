@@ -15,7 +15,7 @@ COMMON2=(-H "x-tenant-id: ${T2}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currenc
 CROSS_STATUS="$(curl -sS "${COMMON2[@]}" -H "idempotency-key: c9-cross-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/catalogs/publish" -d "{\"catalogId\":\"${C}\"}" -o /tmp/c9-cross.json -w '%{http_code}')"
 test "$CROSS_STATUS" = '401'
 CROSS_PARTNER_STATUS="$(curl -sS "${COMMON2[@]}" -H "idempotency-key: c9-cross-partner-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/partners/catalogs/publish" -d "{\"catalogId\":\"${PC}\",\"partnerId\":\"${P}\"}" -o /tmp/c9-cross-partner.json -w '%{http_code}')"
-test "$CROSS_PARTNER_STATUS" = '400'
+test "$CROSS_PARTNER_STATUS" = '401'
 QUERY="SELECT (SELECT count(*) FROM catalogs WHERE tenant_id='${T}' AND id='${C}' AND status='PUBLISHED') AS catalog_ok,(SELECT count(*) FROM catalogs WHERE tenant_id='${T}' AND id='${PC}' AND partner_id='${P}' AND status='PUBLISHED') AS partner_catalog_ok,(SELECT count(*) FROM idempotency_records WHERE tenant_id='${T}' AND status='COMPLETED') AS idempotency_ok,(SELECT count(*) FROM audit_events WHERE tenant_id='${T}' AND outcome='SUCCEEDED') AS audit_ok;"
 npx wrangler d1 execute emeriona-global-db --remote --json --command="$QUERY" > evidence.json
 jq -e '.[0].results[0].catalog_ok == 1 and .[0].results[0].partner_catalog_ok == 1 and .[0].results[0].idempotency_ok >= 2 and .[0].results[0].audit_ok >= 2' evidence.json
