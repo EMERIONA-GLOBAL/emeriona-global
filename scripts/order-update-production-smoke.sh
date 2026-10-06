@@ -17,7 +17,7 @@ curl -fsS "${COMMON[@]}" -H "idempotency-key: order-update-confirm-${RUN_ID}" -X
 test "$(jq -r '.meta.useCaseId' /tmp/order-update-result.json)" = 'order.update'
 test "$(jq -r '.data.id' /tmp/order-update-result.json)" = "$ORDER_ID"
 test "$(jq -r '.data.status' /tmp/order-update-result.json)" = 'CONFIRMED'
-curl -fsS "${COMMON[@]}" -H "idempotency-key: order-update-confirm-${RUN_ID}" -X POST "$BASE/api/v1/orders/update" -d "{"orderId":"${ORDER_ID}","status":"CONFIRMED"}" | tee /tmp/order-update-replay.json
+curl -fsS "${COMMON[@]}" -H "idempotency-key: order-update-confirm-${RUN_ID}" -X POST "$BASE/api/v1/orders/update" -d "{\"orderId\":\"${ORDER_ID}\",\"status\":\"CONFIRMED\"}" | tee /tmp/order-update-replay.json
 test "$(jq -r '.data.id' /tmp/order-update-replay.json)" = "$ORDER_ID"
 test "$(jq -r '.data.status' /tmp/order-update-replay.json)" = 'CONFIRMED'
 STATUS=$(curl -sS -o /tmp/order-update-invalid.json -w '%{http_code}' "${COMMON[@]}" -H "idempotency-key: order-update-invalid-${RUN_ID}" -X POST "$BASE/api/v1/orders/update" -d "{\"orderId\":\"${ORDER_ID}\",\"status\":\"PENDING\"}")
