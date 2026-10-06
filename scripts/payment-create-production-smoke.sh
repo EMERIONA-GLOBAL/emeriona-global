@@ -7,7 +7,7 @@ TENANT_ID="payment-verify-${RUN_ID}"
 OTHER_TENANT_ID="payment-other-${RUN_ID}"
 
 provision_verification_auth "${TENANT_ID}" "${GITHUB_RUN_ID:-manual}" "payment-verify-actor"
-COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: payment-verify-actor" -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${TENANT_ID}','Payment Verification ${RUN_ID}','ACTIVE'),('${OTHER_TENANT_ID}','Payment Other ${RUN_ID}','ACTIVE');" >/dev/null
 curl -fsS "${COMMON[@]}" -H "idempotency-key: payment-customer-${RUN_ID}" -X POST "$BASE/api/v1/customers" -d '{"displayName":"Payment Verification Customer"}' | tee /tmp/payment-customer.json
 CUSTOMER_ID=$(jq -r '.data.id' /tmp/payment-customer.json)
@@ -22,7 +22,7 @@ curl -fsS "${COMMON[@]}" -H "idempotency-key: payment-create-${RUN_ID}" -X POST 
 test "$(jq -r '.data.id' /tmp/payment-replay.json)" = "$PAYMENT_ID"
 STATUS=$(curl -sS -o /tmp/payment-mismatch.json -w '%{http_code}' "${COMMON[@]}" -H "idempotency-key: payment-mismatch-${RUN_ID}" -X POST "$BASE/api/v1/payments" -d "{\"orderId\":\"${ORDER_ID}\",\"amount\":{\"amount\":119,\"currency\":\"USD\"}}")
 test "$STATUS" = '400'
-STATUS=$(curl -sS -o /tmp/payment-cross.json -w '%{http_code}' -H "x-tenant-id: ${OTHER_TENANT_ID}" -H 'x-actor-id: payment-verify-actor' -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: payment-cross-${RUN_ID}" -X POST "$BASE/api/v1/payments" -d "{\"orderId\":\"${ORDER_ID}\",\"amount\":{\"amount\":120,\"currency\":\"USD\"}}")
+STATUS=$(curl -sS -o /tmp/payment-cross.json -w '%{http_code}' -H "x-tenant-id: ${OTHER_TENANT_ID}" -H 'x-actor-id: ${AUTH_ACTOR_ID}' -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: payment-cross-${RUN_ID}" -X POST "$BASE/api/v1/payments" -d "{\"orderId\":\"${ORDER_ID}\",\"amount\":{\"amount\":120,\"currency\":\"USD\"}}")
 test "$STATUS" = '400'
 SQL="SELECT (SELECT count(*) FROM payment_intents WHERE id='${PAYMENT_ID}' AND tenant_id='${TENANT_ID}' AND order_id='${ORDER_ID}' AND status='CREATED' AND amount=120 AND currency='USD') AS payment_ok, (SELECT count(*) FROM payment_intents WHERE order_id='${ORDER_ID}' AND tenant_id='${OTHER_TENANT_ID}') AS cross_tenant_rows, (SELECT count(*) FROM payment_events WHERE tenant_id='${TENANT_ID}' AND payment_intent_id='${PAYMENT_ID}' AND to_status='CREATED') AS event_ok, (SELECT count(*) FROM revenue_entries WHERE tenant_id='${TENANT_ID}' AND payment_intent_id='${PAYMENT_ID}' AND status='PENDING') AS revenue_ok, (SELECT count(*) FROM idempotency_records WHERE tenant_id='${TENANT_ID}' AND use_case_id='payment.create' AND idempotency_key='payment-create-${RUN_ID}' AND status='COMPLETED') AS idempotency_ok, (SELECT count(*) FROM audit_events WHERE tenant_id='${TENANT_ID}' AND use_case_id='payment.create' AND outcome='SUCCEEDED') AS audit_ok;"
 npx wrangler d1 execute emeriona-global-db --remote --command="$SQL" | tee /tmp/payment-persistence.txt
