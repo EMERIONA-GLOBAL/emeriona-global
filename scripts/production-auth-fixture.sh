@@ -9,6 +9,7 @@ provision_verification_auth() {
   local tenant_id="$1"
   local run_id="$2"
   local actor_id="$3"
+  local key_suffix="${tenant_id}-${run_id}"
 
   export AUTH_TOKEN
   AUTH_TOKEN="verify-${run_id}-$(openssl rand -hex 24)"
