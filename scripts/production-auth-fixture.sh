@@ -58,7 +58,7 @@ provision_verification_auth() {
     INSERT OR IGNORE INTO auth_principal_roles (tenant_id,principal_id,role_id)
       VALUES ('${tenant_id}','${principal_id}','${role_id}');
     INSERT OR IGNORE INTO auth_sessions (id,tenant_id,identity_id,token_hash,status,expires_at)
-      VALUES ('${session_id}','${tenant_id}','${identity_id}','${token_hash}','ACTIVE',datetime('now','+1 hour'));
+      VALUES ('${session_id}','${tenant_id}','${identity_id}','${token_hash}','ACTIVE',strftime('%Y-%m-%dT%H:%M:%fZ','now','+1 hour'));
     ${permissions_sql}
   " >/dev/null
 }
