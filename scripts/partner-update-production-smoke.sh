@@ -9,7 +9,7 @@ npx wrangler d1 execute emeriona-global-db --remote --command="DELETE FROM partn
 trap cleanup EXIT
 provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "partner-update-smoke"
 COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: partner-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
-npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','Partner Update Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','Partner Update Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','Original Partner','PENDING');"
+npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${T}','Partner Update Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','Partner Update Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','Original Partner','PENDING');"
 
 UPDATE_KEY="partner-update-${GITHUB_RUN_ID}"
 curl -fsS "${COMMON[@]}" -H "idempotency-key: ${UPDATE_KEY}" -X POST "$BASE/api/v1/partners/update" -d "{\"partnerId\":\"${P}\",\"legalName\":\"Updated Partner\",\"status\":\"VERIFIED\"}" > update.json
