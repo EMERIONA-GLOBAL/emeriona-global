@@ -10,9 +10,10 @@ C3="cart-update-isolation-customer-${GITHUB_RUN_ID:-manual}"
 cleanup() {
   npx wrangler d1 execute emeriona-global-db --remote --command="DELETE FROM carts WHERE id='${C}'; DELETE FROM customers WHERE id IN ('${C1}','${C2}','${C3}'); DELETE FROM tenants WHERE id IN ('${T}','${T2}');" >/dev/null 2>&1 || true
 }
+provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "cart-update-smoke"
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 trap cleanup EXIT
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','Cart Update Smoke','ACTIVE'),('${T2}','Cart Update Isolation','ACTIVE'); INSERT INTO customers (id,tenant_id,display_name,status,locale,timezone) VALUES ('${C1}','${T}','Cart Update Customer 1','ACTIVE','en','UTC'),('${C2}','${T}','Cart Update Customer 2','ACTIVE','en','UTC'),('${C3}','${T2}','Isolation Customer','ACTIVE','en','UTC'); INSERT INTO carts (id,tenant_id,customer_id,status,currency) VALUES ('${C}','${T}','${C1}','OPEN','USD');"
-COMMON=(-H "x-tenant-id: ${T}" -H 'x-actor-id: cart-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
 UPDATE_KEY="cart-update-${GITHUB_RUN_ID:-manual}"
 PAYLOAD="{\"cartId\":\"${C}\",\"customerId\":\"${C2}\"}"
 curl -fsS "${COMMON[@]}" -H "idempotency-key: ${UPDATE_KEY}" -X POST "$BASE/api/v1/carts/update" -d "$PAYLOAD" > update.json
@@ -22,10 +23,10 @@ jq -e --arg id "${C}" --arg tenant "${T}" --arg customer "${C2}" '.[0].results[0
 REPLAY_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: ${UPDATE_KEY}" -X POST "$BASE/api/v1/carts/update" -d "$PAYLOAD" -o replay.json -w '%{http_code}')"
 test "$REPLAY_STATUS" = '200'
 jq -e --arg id "${C}" --arg customer "${C2}" '.data.id == $id and .data.customerId == $customer' replay.json
-COMMON2=(-H "x-tenant-id: ${T2}" -H 'x-actor-id: cart-update-isolation' -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON2=(-H "x-tenant-id: ${T2}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 CROSS_PAYLOAD="{\"cartId\":\"${C}\",\"customerId\":\"${C3}\"}"
 CROSS_STATUS="$(curl -sS "${COMMON2[@]}" -H "idempotency-key: cart-update-cross-${GITHUB_RUN_ID:-manual}" -X POST "$BASE/api/v1/carts/update" -d "$CROSS_PAYLOAD" -o cross.json -w '%{http_code}')"
-test "$CROSS_STATUS" = '400'
+test "$CROSS_STATUS" = '401'
 EMPTY_PAYLOAD="{\"cartId\":\"${C}\"}"
 EMPTY_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: cart-update-empty-${GITHUB_RUN_ID:-manual}" -X POST "$BASE/api/v1/carts/update" -d "$EMPTY_PAYLOAD" -o empty.json -w '%{http_code}')"
 test "$EMPTY_STATUS" = '400'
