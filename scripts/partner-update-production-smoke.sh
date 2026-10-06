@@ -8,7 +8,7 @@ npx wrangler d1 execute emeriona-global-db --remote --command="DELETE FROM partn
 }
 trap cleanup EXIT
 provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "partner-update-smoke"
-COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: partner-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${T}','Partner Update Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','Partner Update Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','Original Partner','PENDING');"
 
 UPDATE_KEY="partner-update-${GITHUB_RUN_ID}"
@@ -19,7 +19,7 @@ jq -e --arg id "$P" --arg tenant "$T" '.[0].results[0].id == $id and .[0].result
 REPLAY_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: ${UPDATE_KEY}" -X POST "$BASE/api/v1/partners/update" -d "{\"partnerId\":\"${P}\",\"legalName\":\"Updated Partner\",\"status\":\"VERIFIED\"}" -o replay.json -w '%{http_code}')"
 test "$REPLAY_STATUS" = '200'
 jq -e --arg id "$P" '.data.id == $id and .data.legalName == "Updated Partner" and .data.status == "VERIFIED"' replay.json
-COMMON2=(-H "x-tenant-id: ${T2}" -H 'x-actor-id: partner-update-isolation' -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON2=(-H "x-tenant-id: ${T2}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 CROSS_STATUS="$(curl -sS "${COMMON2[@]}" -H "idempotency-key: partner-update-cross-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/partners/update" -d "{\"partnerId\":\"${P}\",\"legalName\":\"Cross Tenant Mutation\"}" -o cross.json -w '%{http_code}')"
 test "$CROSS_STATUS" = '401'
 EMPTY_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: partner-update-empty-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/partners/update" -d "{\"partnerId\":\"${P}\"}" -o empty.json -w '%{http_code}')"
