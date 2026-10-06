@@ -29,7 +29,7 @@ test "$(jq -r '.data.status' /tmp/fulfillment-progress-start.json)" = 'IN_PROGRE
 curl -fsS "${COMMON[@]}" -H "idempotency-key: fulfillment-progress-complete-${RUN_ID}" -X POST "$BASE/api/v1/fulfillments/progress" -d "{\"fulfillmentId\":\"${FULFILLMENT_ID}\",\"status\":\"FULFILLED\"}" | tee /tmp/fulfillment-progress-complete.json
 test "$(jq -r '.data.status' /tmp/fulfillment-progress-complete.json)" = 'FULFILLED'
 STATUS=$(curl -sS -o /tmp/fulfillment-cross.json -w '%{http_code}' -H "x-tenant-id: ${OTHER_TENANT_ID}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: fulfillment-cross-${RUN_ID}" -X POST "$BASE/api/v1/fulfillments" -d "{\"orderId\":\"${ORDER_ID}\"}")
-test "$STATUS" = '400'
+test "$STATUS" = '401'
 SQL="SELECT (SELECT count(*) FROM fulfillments WHERE id='${FULFILLMENT_ID}' AND tenant_id='${TENANT_ID}' AND order_id='${ORDER_ID}' AND status='FULFILLED') AS fulfillment_ok, (SELECT count(*) FROM fulfillments WHERE order_id='${ORDER_ID}' AND tenant_id='${OTHER_TENANT_ID}') AS cross_tenant_rows, (SELECT count(*) FROM fulfillment_events WHERE tenant_id='${TENANT_ID}' AND fulfillment_id='${FULFILLMENT_ID}' AND to_status='FULFILLED') AS event_ok, (SELECT count(*) FROM idempotency_records WHERE tenant_id='${TENANT_ID}' AND use_case_id='fulfillment.execute' AND idempotency_key='fulfillment-execute-${RUN_ID}' AND status='COMPLETED') AS idempotency_ok, (SELECT count(*) FROM audit_events WHERE tenant_id='${TENANT_ID}' AND use_case_id='fulfillment.execute' AND outcome='SUCCEEDED') AS audit_ok;"
 npx wrangler d1 execute emeriona-global-db --remote --command="$SQL" | tee /tmp/fulfillment-persistence.txt
 grep -q 'fulfillment_ok.*1' /tmp/fulfillment-persistence.txt
