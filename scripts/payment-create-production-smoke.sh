@@ -34,7 +34,7 @@ grep -q 'idempotency_ok.*1' /tmp/payment-persistence.txt
 grep -q 'audit_ok.*1' /tmp/payment-persistence.txt
 echo "payment.create production smoke: PASS"
 echo "Starting payment.authorize diagnostic..."
-AUTH_STATUS=$(curl -sS -o /tmp/payment-authorize.json -w '%{http_code}' -X POST "https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/authorize" -H "x-tenant-id: ${TENANT_ID}" -H "x-actor-id: payment-verify-actor" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: payment-authorize-${RUN_ID}" -d "{\"paymentId\":\"${PAYMENT_ID}\"}")
+AUTH_STATUS=$(curl -sS -o /tmp/payment-authorize.json -w '%{http_code}' -X POST "https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/authorize" -H "x-tenant-id: ${TENANT_ID}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: payment-authorize-${RUN_ID}" -d "{\"paymentId\":\"${PAYMENT_ID}\"}")
 cat /tmp/payment-authorize.json
 echo "payment.authorize HTTP status: $AUTH_STATUS"
 test "$AUTH_STATUS" = "200"
