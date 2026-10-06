@@ -11,7 +11,7 @@ CUS2="cart-item-add-cross-customer-${GITHUB_RUN_ID:-manual}"
 P="cart-item-add-product-${GITHUB_RUN_ID:-manual}"
 cleanup() {
   provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "cart-item-add-smoke"
-COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: cart-item-add-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 npx wrangler d1 execute emeriona-global-db --remote --command="DELETE FROM cart_items WHERE cart_id IN ('${C}','${C2}'); DELETE FROM carts WHERE id IN ('${C}','${C2}'); DELETE FROM products WHERE id='${P}'; DELETE FROM customers WHERE id IN ('${CUS}','${CUS2}'); DELETE FROM tenants WHERE id IN ('${T}','${T2}');" >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
@@ -26,7 +26,7 @@ jq -e --arg cart "${C}" --arg product "${P}" '.[0].results[0].cart_id == $cart a
 REPLAY_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: ${KEY}" -X POST "$BASE/api/v1/cart-items" -d "$PAYLOAD" -o replay.json -w '%{http_code}')"
 test "$REPLAY_STATUS" = '200'
 jq -e --arg cart "${C}" --arg product "${P}" '.data.cartId == $cart and .data.productId == $product' replay.json
-COMMON2=(-H "x-tenant-id: ${T2}" -H 'x-actor-id: cart-item-add-isolation' -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON2=(-H "x-tenant-id: ${T2}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 CROSS="{\"cartId\":\"${C}\",\"productId\":\"${P}\",\"quantity\":1,\"unitAmount\":{\"amount\":25,\"currency\":\"USD\"}}"
 CROSS_STATUS="$(curl -sS "${COMMON2[@]}" -H "idempotency-key: cart-item-cross-${GITHUB_RUN_ID:-manual}" -X POST "$BASE/api/v1/cart-items" -d "$CROSS" -o cross.json -w '%{http_code}')"
 test "$CROSS_STATUS" = '401'
