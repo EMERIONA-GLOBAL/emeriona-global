@@ -10,10 +10,10 @@ CUS="cart-item-add-customer-${GITHUB_RUN_ID:-manual}"
 CUS2="cart-item-add-cross-customer-${GITHUB_RUN_ID:-manual}"
 P="cart-item-add-product-${GITHUB_RUN_ID:-manual}"
 cleanup() {
-  provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "cart-item-add-smoke"
 COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 npx wrangler d1 execute emeriona-global-db --remote --command="DELETE FROM cart_items WHERE cart_id IN ('${C}','${C2}'); DELETE FROM carts WHERE id IN ('${C}','${C2}'); DELETE FROM products WHERE id='${P}'; DELETE FROM customers WHERE id IN ('${CUS}','${CUS2}'); DELETE FROM tenants WHERE id IN ('${T}','${T2}');" >/dev/null 2>&1 || true
 }
+provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "cart-item-add-smoke"
 trap cleanup EXIT
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${T}','Cart Item Smoke','ACTIVE'),('${T2}','Cart Item Isolation','ACTIVE'); INSERT INTO customers (id,tenant_id,display_name,status,locale,timezone) VALUES ('${CUS}','${T}','Cart Item Customer','ACTIVE','en','UTC'),('${CUS2}','${T2}','Cart Item Cross Customer','ACTIVE','en','UTC'); INSERT INTO carts (id,tenant_id,customer_id,status,currency) VALUES ('${C}','${T}','${CUS}','OPEN','USD'),('${C2}','${T2}','${CUS2}','OPEN','USD'); INSERT INTO products (id,tenant_id,owner_id,name,status) VALUES ('${P}','${T}','${CUS}','Cart Item Product','PUBLISHED');"
 
