@@ -7,7 +7,7 @@ T2="catalog-service-update-isolation-${GITHUB_RUN_ID:-manual}"
 UPDATED="Updated Service ${GITHUB_RUN_ID:-manual}"
 provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "catalog-service-update-smoke"
 COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: catalog-service-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
-npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','Catalog Service Update Smoke','ACTIVE'),('${T2}','Catalog Service Update Isolation','ACTIVE');"
+npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${T}','Catalog Service Update Smoke','ACTIVE'),('${T2}','Catalog Service Update Isolation','ACTIVE');"
 
 curl -fsS "${COMMON[@]}" -H "idempotency-key: catalog-service-create-${GITHUB_RUN_ID:-manual}" -X POST "$BASE/api/v1/services" -d "{\"ownerId\":\"catalog-service-owner\",\"name\":\"Original Service ${GITHUB_RUN_ID:-manual}\"}" > service-create.json
 S="$(jq -r '.data.id // .data.service.id' service-create.json)"
