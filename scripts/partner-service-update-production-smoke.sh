@@ -4,7 +4,7 @@ source "$(dirname "$0")/production-auth-fixture.sh"
 BASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="partner-service-update-smoke-${GITHUB_RUN_ID}"; T2="partner-service-update-isolation-${GITHUB_RUN_ID}"; S="partner-service-${GITHUB_RUN_ID}"; PTR="partner-service-owner-${GITHUB_RUN_ID}"; PTR2="partner-service-other-${GITHUB_RUN_ID}"; OWNER="partner-service-owner-${GITHUB_RUN_ID}"
 cleanup() { provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "partner-service-update-smoke"
-COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: partner-service-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 npx wrangler d1 execute emeriona-global-db --remote --command="DELETE FROM services WHERE id='${S}'; DELETE FROM partners WHERE id IN ('${PTR}','${PTR2}'); DELETE FROM tenants WHERE id IN ('${T}','${T2}');" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${T}','Partner Service Update Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','Partner Service Update Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${PTR}','${T}','Partner Service Update Smoke','VERIFIED'),('${PTR2}','${T}','Partner Service Update Other Partner','VERIFIED'); INSERT INTO services (id,tenant_id,owner_id,partner_id,name,status) VALUES ('${S}','${T}','${OWNER}','${PTR}','Original Partner Service','DRAFT');"
@@ -18,7 +18,7 @@ REPLAY_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: ${UPDATE_KEY}" -X 
 test "$REPLAY_STATUS" = '200'; jq -e --arg id "$S" '.data.id == $id and .data.name == "Updated Partner Service"' replay.json
 PARTNER_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: partner-service-partner-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/partners/services/update" -d "{\"serviceId\":\"${S}\",\"partnerId\":\"${PTR2}\",\"name\":\"Cross Partner Mutation\"}" -o partner.json -w '%{http_code}')"
 test "$PARTNER_STATUS" = '400'
-COMMON2=(-H "x-tenant-id: ${T2}" -H 'x-actor-id: partner-service-update-isolation' -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON2=(-H "x-tenant-id: ${T2}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 CROSS_STATUS="$(curl -sS "${COMMON2[@]}" -H "idempotency-key: partner-service-cross-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/partners/services/update" -d "{\"serviceId\":\"${S}\",\"partnerId\":\"${PTR}\",\"name\":\"Cross Tenant Mutation\"}" -o cross.json -w '%{http_code}')"
 test "$CROSS_STATUS" = '401'
 EMPTY_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: partner-service-empty-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/partners/services/update" -d "{\"serviceId\":\"${S}\",\"partnerId\":\"${PTR}\"}" -o empty.json -w '%{http_code}')"
