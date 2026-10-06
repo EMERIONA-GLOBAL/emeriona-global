@@ -16,7 +16,8 @@ provision_verification_auth() {
   local token_hash
   token_hash="$(printf '%s' "$AUTH_TOKEN" | sha256sum | cut -d' ' -f1)"
 
-  local principal_id="${actor_id}"
+  local principal_id="verify-principal-${key_suffix}"
+  export AUTH_ACTOR_ID="$principal_id"
   local identity_id="verify-identity-${key_suffix}"
   local role_id="verify-role-${key_suffix}"
   local session_id="verify-session-${key_suffix}"
