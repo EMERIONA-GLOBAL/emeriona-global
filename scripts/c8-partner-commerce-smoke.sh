@@ -3,7 +3,7 @@ set -euo pipefail
 source "$(dirname "$0")/production-auth-fixture.sh"
 BASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="c8-smoke-${GITHUB_RUN_ID}"; T2="c8-isolation-${GITHUB_RUN_ID}"; P="c8-partner-${GITHUB_RUN_ID}"
-npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','C8 Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','C8 Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','C8 Partner','PENDING');"
+npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${T}','C8 Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','C8 Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','C8 Partner','PENDING');"
 provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "c8-smoke"
 COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: c8-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
 curl -fsS "${COMMON[@]}" -H "idempotency-key: c8-verify-${GITHUB_RUN_ID}" -X POST "$BASE/api/v1/partners/verify" -d "{\"partnerId\":\"${P}\"}" > verify.json
