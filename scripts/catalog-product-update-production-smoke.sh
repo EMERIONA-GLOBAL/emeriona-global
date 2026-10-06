@@ -8,7 +8,7 @@ C="catalog-update-catalog-${GITHUB_RUN_ID:-manual}"
 P="catalog-update-product-${GITHUB_RUN_ID:-manual}"
 UPDATED="Updated Product ${GITHUB_RUN_ID:-manual}"
 provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "catalog-update-smoke"
-COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: catalog-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${T}','Catalog Update Smoke','ACTIVE'),('${T2}','Catalog Update Isolation','ACTIVE'); INSERT INTO catalogs (id,tenant_id,owner_id,partner_id,name,status) VALUES ('${C}','${T}','catalog-update-owner',NULL,'Catalog Update Smoke','DRAFT');"
 
 curl -fsS "${COMMON[@]}" -H "idempotency-key: catalog-product-create-${GITHUB_RUN_ID:-manual}" -X POST "$BASE/api/v1/products" -d "{\"ownerId\":\"catalog-update-owner\",\"catalogId\":\"${C}\",\"name\":\"Original Product ${GITHUB_RUN_ID:-manual}\"}" > product-create.json
@@ -18,7 +18,7 @@ curl -fsS "${COMMON[@]}" -H "idempotency-key: catalog-product-update-${GITHUB_RU
 jq -e --arg p "$P" --arg n "$UPDATED" '.data.id == $p and .data.name == $n and .meta.useCaseId == "catalog.product.update"' product-update.json
 STATUS="$(curl -sS -o /tmp/catalog-product-update-get.json -w '%{http_code}' "$BASE/api/v1/products/update")"
 test "$STATUS" = '405'
-COMMON2=(-H "x-tenant-id: ${T2}" -H 'x-actor-id: catalog-update-isolation' -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON2=(-H "x-tenant-id: ${T2}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 CROSS_STATUS="$(curl -sS "${COMMON2[@]}" -H "idempotency-key: catalog-product-update-cross-${GITHUB_RUN_ID:-manual}" -X POST "$BASE/api/v1/products/update" -d "{\"productId\":\"${P}\",\"name\":\"Cross Tenant Attempt\"}" -o /tmp/catalog-product-update-cross.json -w '%{http_code}')"
 test "$CROSS_STATUS" = '401'
 QUERY="SELECT count(*) AS product_ok FROM products WHERE id='${P}' AND tenant_id='${T}' AND name='${UPDATED}';"
