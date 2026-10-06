@@ -9,7 +9,7 @@ P="catalog-update-product-${GITHUB_RUN_ID:-manual}"
 UPDATED="Updated Product ${GITHUB_RUN_ID:-manual}"
 provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "catalog-update-smoke"
 COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-actor-id: catalog-update-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
-npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','Catalog Update Smoke','ACTIVE'),('${T2}','Catalog Update Isolation','ACTIVE'); INSERT INTO catalogs (id,tenant_id,owner_id,partner_id,name,status) VALUES ('${C}','${T}','catalog-update-owner',NULL,'Catalog Update Smoke','DRAFT');"
+npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${T}','Catalog Update Smoke','ACTIVE'),('${T2}','Catalog Update Isolation','ACTIVE'); INSERT INTO catalogs (id,tenant_id,owner_id,partner_id,name,status) VALUES ('${C}','${T}','catalog-update-owner',NULL,'Catalog Update Smoke','DRAFT');"
 
 curl -fsS "${COMMON[@]}" -H "idempotency-key: catalog-product-create-${GITHUB_RUN_ID:-manual}" -X POST "$BASE/api/v1/products" -d "{\"ownerId\":\"catalog-update-owner\",\"catalogId\":\"${C}\",\"name\":\"Original Product ${GITHUB_RUN_ID:-manual}\"}" > product-create.json
 P="$(jq -r '.data.id // .data.product.id' product-create.json)"
