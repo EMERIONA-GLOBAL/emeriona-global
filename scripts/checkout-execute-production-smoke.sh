@@ -6,7 +6,7 @@ RUN_ID="${GITHUB_RUN_ID:-manual}"
 TENANT_ID="checkout-verify-${RUN_ID}"
 
 provision_verification_auth "${TENANT_ID}" "${GITHUB_RUN_ID:-manual}" "checkout-verify-actor"
-COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: checkout-verify-actor" -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${TENANT_ID}','Checkout Verification ${RUN_ID}','ACTIVE');" >/dev/null
 curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-customer-${RUN_ID}" -X POST "$BASE/api/v1/customers" -d '{"displayName":"Checkout Verification Customer"}' | tee /tmp/checkout-customer.json
 CUSTOMER_ID=$(jq -r '.data.id' /tmp/checkout-customer.json)
