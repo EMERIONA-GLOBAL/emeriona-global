@@ -7,7 +7,7 @@ TENANT_ID="fulfillment-verify-${RUN_ID}"
 OTHER_TENANT_ID="fulfillment-other-${RUN_ID}"
 
 provision_verification_auth "${TENANT_ID}" "${GITHUB_RUN_ID:-manual}" "fulfillment-verify-actor"
-COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: fulfillment-verify-actor" -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${TENANT_ID}','Fulfillment Verification ${RUN_ID}','ACTIVE'),('${OTHER_TENANT_ID}','Fulfillment Other ${RUN_ID}','ACTIVE');" >/dev/null
 curl -fsS "${COMMON[@]}" -H "idempotency-key: fulfillment-customer-${RUN_ID}" -X POST "$BASE/api/v1/customers" -d '{"displayName":"Fulfillment Verification Customer"}' | tee /tmp/fulfillment-customer.json
 CUSTOMER_ID=$(jq -r '.data.id' /tmp/fulfillment-customer.json)
