@@ -17,6 +17,7 @@ provision_verification_auth() {
   token_hash="$(printf '%s' "$AUTH_TOKEN" | sha256sum | cut -d' ' -f1)"
 
   local principal_id="verify-principal-${key_suffix}"
+  local identity_login="${actor_id}-${run_id}"
   export AUTH_ACTOR_ID="$principal_id"
   local identity_id="verify-identity-${key_suffix}"
   local role_id="verify-role-${key_suffix}"
@@ -52,7 +53,7 @@ provision_verification_auth() {
     INSERT OR IGNORE INTO auth_principals (id,tenant_id,principal_type,subject_id,status)
       VALUES ('${principal_id}','${tenant_id}','STAFF','${actor_id}','ACTIVE');
     INSERT OR IGNORE INTO auth_identities (id,tenant_id,principal_id,login,login_normalized,status)
-      VALUES ('${identity_id}','${tenant_id}','${principal_id}','${actor_id}','${actor_id}','ACTIVE');
+      VALUES ('${identity_id}','${tenant_id}','${principal_id}','${identity_login}','${identity_login}','ACTIVE');
     INSERT OR IGNORE INTO auth_roles (id,tenant_id,name,description,status)
       VALUES ('${role_id}','${tenant_id}','production-verifier','Ephemeral production verification role','ACTIVE');
     INSERT OR IGNORE INTO auth_principal_roles (tenant_id,principal_id,role_id)
