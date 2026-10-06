@@ -8,7 +8,7 @@ OTHER_TENANT_ID="order-create-other-${RUN_ID}"
 
 provision_verification_auth "${TENANT_ID}" "${GITHUB_RUN_ID:-manual}" "order-create-verify-actor"
 COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: order-create-verify-actor" -H 'x-currency: USD' -H 'content-type: application/json')
-npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${TENANT_ID}','Order Create Verification ${RUN_ID}','ACTIVE'),('${OTHER_TENANT_ID}','Order Create Other ${RUN_ID}','ACTIVE');" >/dev/null
+npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${TENANT_ID}','Order Create Verification ${RUN_ID}','ACTIVE'),('${OTHER_TENANT_ID}','Order Create Other ${RUN_ID}','ACTIVE');" >/dev/null
 curl -fsS "${COMMON[@]}" -H "idempotency-key: order-customer-${RUN_ID}" -X POST "$BASE/api/v1/customers" -d '{"displayName":"Order Create Verification Customer"}' | tee /tmp/order-customer.json
 CUSTOMER_ID=$(jq -r '.data.id' /tmp/order-customer.json)
 curl -fsS "${COMMON[@]}" -H "idempotency-key: order-create-${RUN_ID}" -X POST "$BASE/api/v1/orders" -d "{\"customerId\":\"${CUSTOMER_ID}\",\"total\":{\"amount\":75,\"currency\":\"USD\"}}" | tee /tmp/order-create.json
