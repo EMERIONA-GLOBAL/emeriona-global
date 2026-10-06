@@ -20,7 +20,7 @@ test "$(jq -r '.data.status' /tmp/order-create.json)" = 'PENDING'
 curl -fsS "${COMMON[@]}" -H "idempotency-key: order-create-${RUN_ID}" -X POST "$BASE/api/v1/orders" -d "{\"customerId\":\"${CUSTOMER_ID}\",\"total\":{\"amount\":75,\"currency\":\"USD\"}}" | tee /tmp/order-replay.json
 test "$(jq -r '.data.id' /tmp/order-replay.json)" = "$ORDER_ID"
 STATUS=$(curl -sS -o /tmp/order-cross-tenant.json -w '%{http_code}' -H "x-tenant-id: ${OTHER_TENANT_ID}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: order-cross-${RUN_ID}" -X POST "$BASE/api/v1/orders" -d "{\"customerId\":\"${CUSTOMER_ID}\",\"total\":{\"amount\":75,\"currency\":\"USD\"}}")
-test "$STATUS" = '400'
+test "$STATUS" = '401'
 STATUS=$(curl -sS -o /tmp/order-negative.json -w '%{http_code}' "${COMMON[@]}" -H "idempotency-key: order-negative-${RUN_ID}" -X POST "$BASE/api/v1/orders" -d "{\"customerId\":\"${CUSTOMER_ID}\",\"total\":{\"amount\":-1,\"currency\":\"USD\"}}")
 test "$STATUS" = '400'
 SQL="SELECT (SELECT count(*) FROM orders WHERE id='${ORDER_ID}' AND tenant_id='${TENANT_ID}' AND customer_id='${CUSTOMER_ID}' AND total_amount=75 AND currency='USD' AND status='PENDING') AS order_ok, (SELECT count(*) FROM orders WHERE customer_id='${CUSTOMER_ID}' AND tenant_id='${OTHER_TENANT_ID}') AS cross_tenant_rows, (SELECT count(*) FROM idempotency_records WHERE tenant_id='${TENANT_ID}' AND use_case_id='order.create' AND idempotency_key='order-create-${RUN_ID}' AND status='COMPLETED') AS idempotency_ok, (SELECT count(*) FROM audit_events WHERE tenant_id='${TENANT_ID}' AND use_case_id='order.create' AND outcome='SUCCEEDED') AS audit_ok;"
