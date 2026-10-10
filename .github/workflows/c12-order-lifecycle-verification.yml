@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   verify-c12:
-    if: ${{ inputs.confirm_production_write == 'yes' }}
+    if: ${{ inputs.confirm_production_write == 'yes' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Wait for Quality Gates on this exact head
