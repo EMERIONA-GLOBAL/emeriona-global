@@ -1,18 +1,15 @@
 name: EMERIONA GLOBAL Partner Update Production Verification
 on:
-  push:
-    branches:
-      - commercial-partner-update
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/partner-update-production-verification.yml'
-      - 'packages/application/**'
-      - 'packages/infrastructure/**'
-      - 'packages/runtime/**'
-      - 'scripts/partner-update-production-smoke.sh'
   workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize D1 migration, Worker deployment, and production partner smoke writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 concurrency:
@@ -20,6 +17,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   verify:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
