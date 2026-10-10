@@ -1,11 +1,16 @@
 name: EMERIONA GLOBAL Cover Alias Deploy
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
-
+    inputs:
+      confirm_production_deploy:
+        description: 'Explicitly authorize cover alias Worker deployment, including production operations'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 
@@ -15,6 +20,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: ${{ inputs.confirm_production_deploy == 'yes' }}
     name: Deploy current site to alias Worker
     runs-on: ubuntu-latest
     steps:
