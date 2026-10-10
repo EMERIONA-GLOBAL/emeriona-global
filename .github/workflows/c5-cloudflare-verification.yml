@@ -1,13 +1,20 @@
 name: EMERIONA GLOBAL C5 Cloudflare Verification
 on:
-  push:
-    branches:
-      - architecture/c5-fulfillment-lifecycle
   workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize C5 Cloudflare production verification, including production writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 jobs:
   verify-c5:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
