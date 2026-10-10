@@ -1,6 +1,9 @@
 name: EMERIONA GLOBAL Isolated Partner Product Update Checks
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - fix/partner-product-update-smoke-safe
 permissions:
   contents: read
 concurrency:
