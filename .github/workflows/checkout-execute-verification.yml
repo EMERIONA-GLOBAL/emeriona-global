@@ -1,11 +1,10 @@
 name: Checkout Execute Production Verification
-
 on:
-  push:
-    branches: [commercial-checkout-execute-verification]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
+concurrency:
+  group: emeriona-production-verification
+  cancel-in-progress: false
 permissions:
   contents: read
 
