@@ -1,10 +1,16 @@
 name: EMERIONA GLOBAL Production Deploy
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
+    inputs:
+      confirm_production_deploy:
+        description: 'Explicitly authorize deployment of the production Worker and static assets'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 
 permissions:
   contents: read
@@ -15,6 +21,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: ${{ inputs.confirm_production_deploy == 'yes' }}
     name: Deploy production Worker and static assets
     runs-on: ubuntu-latest
     steps:
