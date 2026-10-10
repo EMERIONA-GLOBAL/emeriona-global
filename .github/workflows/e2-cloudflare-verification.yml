@@ -1,17 +1,22 @@
 name: EMERIONA GLOBAL E2 Cloudflare Verification
 
 on:
-  push:
-    branches:
-      - 'architecture/e2-api-gateway'
-      - 'architecture/ha-1-availability'
   workflow_dispatch:
-
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize E2 Cloudflare production verification, including production writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 
 jobs:
   verify-cloudflare:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
