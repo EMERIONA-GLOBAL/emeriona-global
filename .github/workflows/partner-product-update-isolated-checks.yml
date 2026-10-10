@@ -1,0 +1,37 @@
+name: EMERIONA GLOBAL Isolated Partner Product Update Checks
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: isolated-partner-product-update-checks
+  cancel-in-progress: false
+jobs:
+  isolated-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Assert verification head
+        run: test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+      - name: Verify smoke script syntax only
+        run: bash -n scripts/partner-product-update-production-smoke.sh
+      - name: Verify production access is not configured
+        run: |
+          test -z "${CLOUDFLARE_API_TOKEN:-}"
+          test -z "${CLOUDFLARE_ACCOUNT_ID:-}"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test
+        run: npm test
+      - name: Platform Build
+        run: npm run build
+      - name: Web Build
+        run: npm run build --workspace apps/web
