@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   verify-c1-cloudflare:
-    if: ${{ inputs.confirm_production_write == 'yes' }}
+    if: ${{ inputs.confirm_production_write == 'yes' && github.ref == 'refs/heads/main' }}
     name: Verify C1 runtime and D1
     runs-on: ubuntu-latest
     steps:
