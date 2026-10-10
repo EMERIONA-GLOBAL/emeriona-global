@@ -1,7 +1,20 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { D1IdentityAuthorizationAdapter } from "../packages/infrastructure/src/security/d1-identity-authorization.ts";
-import { decideAuthorization } from "../packages/security/src/index.ts";
+import { readFile } from "node:fs/promises";
+import ts from "typescript";
+
+async function loadTypeScriptModule(relativePath) {
+  const source = await readFile(new URL(relativePath, import.meta.url), "utf8");
+  const output = ts.transpileModule(source, {
+    compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext },
+  }).outputText;
+  return import("data:text/javascript;base64," + Buffer.from(output).toString("base64"));
+}
+
+const [{ D1IdentityAuthorizationAdapter }, { decideAuthorization }] = await Promise.all([
+  loadTypeScriptModule("../packages/infrastructure/src/security/d1-identity-authorization.ts"),
+  loadTypeScriptModule("../packages/security/src/index.ts"),
+]);
 
 function fakeD1(rows = []) {
   const calls = [];
