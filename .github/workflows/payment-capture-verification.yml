@@ -1,16 +1,22 @@
 name: Payment Capture Production Verification
 
 on:
-  push:
-    branches: [commercial-payment-capture]
-  pull_request:
-    branches: [main]
-
+  workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize payment capture production verification, including production data writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 
 jobs:
   verify:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

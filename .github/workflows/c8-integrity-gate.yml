@@ -1,9 +1,15 @@
 name: EMERIONA GLOBAL C8 Integrity Gate
 on:
-  push:
-    branches:
-      - architecture/c8-partner-commerce
   workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize C8 integrity gate, including production writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 concurrency:
@@ -11,6 +17,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   integrity:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,16 +1,22 @@
 name: Order Create Production Verification
 
 on:
-  push:
-    branches: [commercial-order-create-verification]
-  pull_request:
-    branches: [main]
-
+  workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize order create production verification, including production data writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 
 jobs:
   verify:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

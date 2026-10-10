@@ -1,13 +1,20 @@
 name: EMERIONA GLOBAL C7 Production Smoke
 on:
-  push:
-    branches:
-      - architecture/c7-pricing-promotions
   workflow_dispatch:
+    inputs:
+      confirm_production_smoke:
+        description: 'Explicitly authorize C7 production smoke, including production data writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 jobs:
   smoke-c7:
+    if: ${{ inputs.confirm_production_smoke == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,13 +1,20 @@
 name: EMERIONA GLOBAL C7 Cloudflare Verification
 on:
-  push:
-    branches:
-      - architecture/c7-pricing-promotions
   workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize C7 remote D1 migration, Worker deployment, and production verification'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 jobs:
   verify-c7:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,24 +1,22 @@
 name: Partner Service Update Production Verification
 
 on:
-  push:
-    branches: [commercial-partner-service-update]
-  pull_request:
-    branches: [main]
-    paths:
-      - 'packages/application/src/**'
-      - 'packages/domains/src/**'
-      - 'packages/infrastructure/src/**'
-      - 'packages/runtime/src/**'
-      - 'scripts/partner-service-update-production-smoke.sh'
-      - '.github/workflows/partner-service-update-verification.yml'
-
+  workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize partner service update production verification, including production data writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 
 jobs:
   verify:
-    if: github.event_name == 'push' || github.event.pull_request.number == 33
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR head

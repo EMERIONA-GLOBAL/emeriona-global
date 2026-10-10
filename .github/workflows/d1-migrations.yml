@@ -2,12 +2,22 @@ name: EMERIONA GLOBAL D1 Migrations
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm_remote_migration:
+        description: 'Explicitly authorize applying D1 migrations to the remote production database'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 
 permissions:
   contents: read
 
 jobs:
   migrate-d1:
+    if: ${{ inputs.confirm_remote_migration == 'yes' }}
     name: Apply D1 migrations remotely
     runs-on: ubuntu-latest
 

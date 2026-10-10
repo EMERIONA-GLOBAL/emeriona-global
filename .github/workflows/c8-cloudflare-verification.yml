@@ -1,13 +1,20 @@
 name: EMERIONA GLOBAL C8 Cloudflare Verification
 on:
-  push:
-    branches:
-      - architecture/c8-partner-commerce
   workflow_dispatch:
+    inputs:
+      confirm_production_deploy:
+        description: 'Explicitly authorize C8 Worker deployment and production verification'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 jobs:
   verify-c8:
+    if: ${{ inputs.confirm_production_deploy == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

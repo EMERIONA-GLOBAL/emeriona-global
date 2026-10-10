@@ -1,13 +1,15 @@
 name: EMERIONA GLOBAL Catalog Product Update Verification
 on:
-  push:
-    branches:
-      - main
-      - commercial-catalog-product-update-production
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize D1 migration, Worker deployment, and production catalog smoke writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 concurrency:
@@ -15,6 +17,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   verify:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -2,16 +2,22 @@ name: EMERIONA GLOBAL C12 Order Lifecycle Verification
 # v1.0.4 — activated on default branch for post-merge production verification
 
 on:
-  push:
-    branches:
-      - main
-      - architecture/c12-order-lifecycle
-
+  workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize C12 order lifecycle verification, including production writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 
 jobs:
   verify-c12:
+    if: ${{ inputs.confirm_production_write == 'yes' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Wait for Quality Gates on this exact head

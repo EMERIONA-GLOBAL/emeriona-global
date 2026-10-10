@@ -1,13 +1,20 @@
 name: EMERIONA GLOBAL C4 Production Smoke
 on:
-  push:
-    branches:
-      - architecture/c4-billing-settlement-clean
   workflow_dispatch:
+    inputs:
+      confirm_production_smoke:
+        description: 'Explicitly authorize the C4 production smoke test'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 jobs:
   smoke:
+    if: ${{ inputs.confirm_production_smoke == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,16 +1,22 @@
 name: EMERIONA GLOBAL C1 Cloudflare Verification
 
 on:
-  push:
-    branches:
-      - 'architecture/c1-commerce-core'
   workflow_dispatch:
-
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize C1 Cloudflare production verification, including production writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 
 jobs:
   verify-c1-cloudflare:
+    if: ${{ inputs.confirm_production_write == 'yes' && github.ref == 'refs/heads/main' }}
     name: Verify C1 runtime and D1
     runs-on: ubuntu-latest
     steps:

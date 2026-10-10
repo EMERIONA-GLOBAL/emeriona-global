@@ -1,23 +1,22 @@
 name: Cart Item Add Production Verification
 
 on:
-  push:
-    branches: [commercial-cart-item-add-verification]
-  pull_request:
-    branches: [main]
-    paths:
-      - 'packages/application/src/**'
-      - 'packages/infrastructure/src/**'
-      - 'packages/runtime/src/**'
-      - 'scripts/cart-item-add-production-smoke.sh'
-      - '.github/workflows/cart-item-add-verification.yml'
-
+  workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize cart item add production verification, including production writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 
 jobs:
   verify:
-    if: github.event_name == 'push' || github.event.pull_request.number != ''
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout verification head
