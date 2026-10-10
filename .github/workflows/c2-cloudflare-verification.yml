@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   verify-c2-commerce:
-    if: ${{ inputs.confirm_production_write == 'yes' }}
+    if: ${{ inputs.confirm_production_write == 'yes' && github.ref == 'refs/heads/main' }}
     name: Verify C2 production commerce flow
     runs-on: ubuntu-latest
     steps:
