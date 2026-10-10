@@ -6,15 +6,6 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      confirm_production_write:
-        description: 'Explicitly authorize C11 D1 migration, Worker deployment, and production smoke writes'
-        type: choice
-        required: true
-        default: 'no'
-        options:
-          - 'no'
-          - 'yes'
 
 permissions:
   contents: read
