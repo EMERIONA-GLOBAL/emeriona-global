@@ -41,7 +41,7 @@ jq -e --arg id "$P" --arg tenant "$T" --arg partner "$PTR" --arg owner "${OWNER}
 REPLAY_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: ${UPDATE_KEY}" -X POST "$BASE/api/v1/partners/products/update" -d "{\"productId\":\"${P}\",\"partnerId\":\"${PTR}\",\"ownerId\":\"${OWNER}-updated\",\"name\":\"Updated Partner Product\",\"status\":\"PUBLISHED\"}" -o replay.json -w '%{http_code}')"
 test "$REPLAY_STATUS" = '200'
 jq -e --arg id "$P" '.data.id == $id and .data.name == "Updated Partner Product"' replay.json
-COMMON2=(-H "x-tenant-id: ${T2}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON2=(-H "x-tenant-id: ${T2}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 CROSS_STATUS="$(curl -sS "${COMMON2[@]}" -H "idempotency-key: partner-product-cross-${RUN_ID}" -X POST "$BASE/api/v1/partners/products/update" -d "{\"productId\":\"${P}\",\"partnerId\":\"${PTR}\",\"name\":\"Cross Tenant Mutation\"}" -o cross.json -w '%{http_code}')"
 test "$CROSS_STATUS" = '401'
 EMPTY_STATUS="$(curl -sS "${COMMON[@]}" -H "idempotency-key: partner-product-empty-${RUN_ID}" -X POST "$BASE/api/v1/partners/products/update" -d "{\"productId\":\"${P}\",\"partnerId\":\"${PTR}\"}" -o empty.json -w '%{http_code}')"
