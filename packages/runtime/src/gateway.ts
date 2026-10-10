@@ -4,7 +4,7 @@ export type ApiMethod = 'GET' | 'POST';
 export type ApiRouteKind = 'HEALTH' | 'USE_CASE';
 export interface ApiRouteDefinition { method: ApiMethod; path: string; version: typeof API_VERSION; kind: ApiRouteKind; useCaseId?: UseCaseId; }
 export interface ApiRouteMatch { route: ApiRouteDefinition; path: string; method: ApiMethod; }
-export type ApiErrorCode = 'method_not_allowed' | 'not_found' | 'invalid_runtime_context' | 'tenant_and_actor_context_required' | 'valid_currency_required' | 'invalid_json' | 'use_case_failed';
+export type ApiErrorCode = 'method_not_allowed' | 'not_found' | 'invalid_runtime_context' | 'tenant_and_actor_context_required' | 'authentication_required' | 'forbidden' | 'valid_currency_required' | 'invalid_json' | 'use_case_failed';
 export interface ApiErrorBody { code: ApiErrorCode; message: string; requestId?: string; correlationId?: string; }
 export interface ApiErrorEnvelope { error: ApiErrorBody; }
 const USE_CASE_ROUTES: ReadonlyArray<ApiRouteDefinition> = [

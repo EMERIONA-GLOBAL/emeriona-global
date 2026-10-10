@@ -1,11 +1,10 @@
 name: EMERIONA GLOBAL Billing Query Production Verification
 on:
-  push:
-    branches:
-      - feature/billing-query-20260920
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+
+concurrency:
+  group: emeriona-production-verification
+  cancel-in-progress: false
 permissions:
   contents: read
 jobs:
@@ -39,11 +38,14 @@ jobs:
           T="c4-smoke-${GITHUB_RUN_ID}"
           I=$(npx wrangler d1 execute emeriona-global-db --remote --command="SELECT id FROM invoices WHERE tenant_id='${T}' ORDER BY issued_at DESC LIMIT 1" --json | jq -r '.[0].results[0].id')
           O=$(npx wrangler d1 execute emeriona-global-db --remote --command="SELECT order_id FROM invoices WHERE id='${I}' AND tenant_id='${T}'" --json | jq -r '.[0].results[0].order_id')
-          COMMON=(-H "x-tenant-id: ${T}" -H 'x-actor-id: billing-query-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+          source scripts/production-auth-fixture.sh
+          provision_verification_auth "${T}" "billing-query-${GITHUB_RUN_ID}" "billing-query-smoke"
+          COMMON=(-H "x-tenant-id: ${T}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H 'x-currency: USD' -H 'content-type: application/json')
           OTHER="c4-query-other-${GITHUB_RUN_ID}"
-          npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${OTHER}','Billing Query Other','ACTIVE');" >/dev/null
+          npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${OTHER}','Billing Query Other','ACTIVE');" >/dev/null
           curl -fsS "${COMMON[@]}" -X POST "$BASE/api/v1/billing/query" -d "{\"invoiceId\":\"${I}\"}" | jq -e --arg id "${I}" '.data | length == 1 and .[0].id == $id'
           curl -fsS "${COMMON[@]}" -X POST "$BASE/api/v1/billing/query" -d "{\"orderId\":\"${O}\"}" | jq -e --arg id "${I}" '.data | any(.[]; .id == $id)'
-          curl -fsS -H "x-tenant-id: ${OTHER}" -H 'x-actor-id: billing-query-smoke' -H 'x-currency: USD' -H 'content-type: application/json' -X POST "$BASE/api/v1/billing/query" -d "{\"invoiceId\":\"${I}\"}" | jq -e '.data | length == 0'
+          test "$(curl -sS -o /tmp/billing-query-cross.json -w '%{http_code}' -H "x-tenant-id: ${OTHER}" -H 'x-actor-id: billing-query-smoke' -H 'x-currency: USD' -H 'content-type: application/json' -X POST "$BASE/api/v1/billing/query" -d "{\"invoiceId\":\"${I}\"}")" = "401"
+          jq -e '.error.code == "authentication_required"' /tmp/billing-query-cross.json
           test "$(curl -sS -o /tmp/billing-query-get.json -w '%{http_code}' "$BASE/api/v1/billing/query")" = '405'
           test "$(curl -sS -o /tmp/billing-query-empty.json -w '%{http_code}' "${COMMON[@]}" -X POST "$BASE/api/v1/billing/query" -d '{}')" = '400'

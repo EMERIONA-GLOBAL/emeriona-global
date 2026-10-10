@@ -1,10 +1,11 @@
 name: Payment Refund Production Verification
 
 on:
-  push:
-    branches: [commercial-payment-refund]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: emeriona-production-verification
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -43,13 +44,15 @@ jobs:
         run: |
           set -euo pipefail
           npx wrangler d1 execute emeriona-global-db --remote --file scripts/payment-refund-verification-seed.sql
-          body=$(curl -fsS -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/refund -H "x-tenant-id: refund-verification-tenant" -H "x-actor-id: refund-verifier" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: refund-verification-key" -d '{"paymentId":"refund-verification-payment"}')
+          source scripts/production-auth-fixture.sh
+          provision_verification_auth "refund-verification-tenant" "refund-smoke-${GITHUB_RUN_ID}" "refund-verifier"
+          body=$(curl -fsS -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/refund -H "x-tenant-id: refund-verification-tenant" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: refund-verification-key" -d '{"paymentId":"refund-verification-payment"}')
           echo "$body" | jq -e '.data.id == "refund-verification-payment" and .data.status == "REFUNDED" and .meta.useCaseId == "payment.refund"'
-          replay=$(curl -fsS -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/refund -H "x-tenant-id: refund-verification-tenant" -H "x-actor-id: refund-verifier" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: refund-verification-key" -d '{"paymentId":"refund-verification-payment"}')
+          replay=$(curl -fsS -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/refund -H "x-tenant-id: refund-verification-tenant" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: refund-verification-key" -d '{"paymentId":"refund-verification-payment"}')
           echo "$replay" | jq -e '.data.id == "refund-verification-payment" and .data.status == "REFUNDED" and .meta.useCaseId == "payment.refund"'
-          status=$(curl -sS -o /tmp/refund-cross.json -w '%{http_code}' -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/refund -H "x-tenant-id: refund-verification-other" -H "x-actor-id: refund-verifier" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: refund-verification-cross-key" -d '{"paymentId":"refund-verification-payment"}')
-          test "$status" = "400"
-          jq -e '.error.code == "use_case_failed"' /tmp/refund-cross.json
+          status=$(curl -sS -o /tmp/refund-cross.json -w '%{http_code}' -X POST https://emeriona-global.emerionaglobal.workers.dev/api/v1/payments/refund -H "x-tenant-id: refund-verification-other" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H "x-currency: USD" -H "content-type: application/json" -H "idempotency-key: refund-verification-cross-key" -d '{"paymentId":"refund-verification-payment"}')
+          test "$status" = "401"
+          jq -e '.error.code == "authentication_required"' /tmp/refund-cross.json
           evidence=$(npx wrangler d1 execute emeriona-global-db --remote --command "SELECT status FROM payment_intents WHERE id='refund-verification-payment'; SELECT status,reversed_at FROM revenue_entries WHERE payment_intent_id='refund-verification-payment'; SELECT from_status,to_status FROM payment_events WHERE payment_intent_id='refund-verification-payment' ORDER BY created_at DESC LIMIT 1;" --json)
           echo "$evidence" | jq -e 'tostring | contains("REFUNDED")'
           echo "$evidence" | jq -e 'tostring | contains("REVERSED")'

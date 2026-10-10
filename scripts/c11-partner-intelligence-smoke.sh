@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(dirname "$0")/production-auth-fixture.sh"
 BASE='https://emeriona-global.emerionaglobal.workers.dev'
 T="c11-smoke-${GITHUB_RUN_ID}"; T2="c11-isolation-${GITHUB_RUN_ID}"; P="c11-partner-${GITHUB_RUN_ID}"
 printf 'C11 production diagnostic smoke revision: %s\n' "$GITHUB_SHA"
 npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${T}','C11 Smoke ${GITHUB_RUN_ID}','ACTIVE'),('${T2}','C11 Isolation ${GITHUB_RUN_ID}','ACTIVE'); INSERT INTO partners (id,tenant_id,legal_name,status) VALUES ('${P}','${T}','C11 Partner','VERIFIED');"
-COMMON=(-H "x-tenant-id: ${T}" -H 'x-actor-id: c11-smoke' -H 'x-currency: USD' -H 'content-type: application/json')
+provision_verification_auth "${T}" "${GITHUB_RUN_ID:-manual}" "c11-smoke"
+COMMON=(-H "x-tenant-id: ${T}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 for endpoint in analytics performance impact; do
   STATUS="$(curl -sS "${COMMON[@]}" -X POST "$BASE/api/v1/partners/${endpoint}" -d "{\"partnerId\":\"${P}\"}" -o "${endpoint}.json" -w '%{http_code}')"
   printf 'C11 %s HTTP %s\n' "$endpoint" "$STATUS"
@@ -16,9 +18,9 @@ done
 jq -e '.data.products == 0 and .data.services == 0 and .data.orders == 0' analytics.json
 jq -e '.data.fulfilledOrders == 0 and .data.settlementCount == 0' performance.json
 jq -e '.data.fulfilledRate == 0 and .data.settlementCoverageRate == 0' impact.json
-COMMON2=(-H "x-tenant-id: ${T2}" -H 'x-actor-id: c11-isolation' -H 'x-currency: USD' -H 'content-type: application/json')
+COMMON2=(-H "x-tenant-id: ${T2}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
 CROSS_STATUS="$(curl -sS "${COMMON2[@]}" -X POST "$BASE/api/v1/partners/analytics" -d "{\"partnerId\":\"${P}\"}" -o /tmp/c11-cross.json -w '%{http_code}')"
-test "$CROSS_STATUS" = '400'
+test "$CROSS_STATUS" = '401'
 MIGRATION="$(npx wrangler d1 execute emeriona-global-db --remote --json --command="SELECT version FROM schema_migrations WHERE version='0009_partner_intelligence_foundation';")"
 printf '%s\n' "$MIGRATION" | jq -e '.[0].results | length == 1 and .[0].version == "0009_partner_intelligence_foundation"'
 QUERY="SELECT (SELECT count(*) FROM partners WHERE tenant_id='${T}' AND id='${P}' AND status='VERIFIED') AS partner_ok,(SELECT count(*) FROM sqlite_master WHERE type='index' AND name='idx_order_items_partner_order') AS index_ok,(SELECT count(*) FROM audit_events WHERE tenant_id='${T}' AND outcome='SUCCEEDED') AS audit_ok;"

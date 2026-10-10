@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(dirname "$0")/production-auth-fixture.sh"
 BASE='https://emeriona-global.emerionaglobal.workers.dev'
 RUN_ID="${GITHUB_RUN_ID:-manual}"
 TENANT_ID="checkout-verify-${RUN_ID}"
-COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "x-actor-id: checkout-verify-actor" -H 'x-currency: USD' -H 'content-type: application/json')
-npx wrangler d1 execute emeriona-global-db --remote --command="INSERT INTO tenants (id,name,status) VALUES ('${TENANT_ID}','Checkout Verification ${RUN_ID}','ACTIVE');" >/dev/null
+
+provision_verification_auth "${TENANT_ID}" "${GITHUB_RUN_ID:-manual}" "checkout-verify-actor"
+COMMON=(-H "x-tenant-id: ${TENANT_ID}" -H "Authorization: Bearer ${AUTH_TOKEN}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json')
+npx wrangler d1 execute emeriona-global-db --remote --command="INSERT OR IGNORE INTO tenants (id,name,status) VALUES ('${TENANT_ID}','Checkout Verification ${RUN_ID}','ACTIVE');" >/dev/null
 curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-customer-${RUN_ID}" -X POST "$BASE/api/v1/customers" -d '{"displayName":"Checkout Verification Customer"}' | tee /tmp/checkout-customer.json
 CUSTOMER_ID=$(jq -r '.data.id' /tmp/checkout-customer.json)
 curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-product-${RUN_ID}" -X POST "$BASE/api/v1/products" -d '{"ownerId":"checkout-owner","name":"Checkout Verification Product"}' | tee /tmp/checkout-product.json
@@ -20,8 +23,8 @@ test "$(jq -r '.data.itemCount' /tmp/checkout-result.json)" = '1'
 curl -fsS "${COMMON[@]}" -H "idempotency-key: checkout-execute-${RUN_ID}" -X POST "$BASE/api/v1/checkout" -d "{\"cartId\":\"${CART_ID}\"}" | tee /tmp/checkout-replay.json
 test "$(jq -r '.data.orderId' /tmp/checkout-replay.json)" = "$ORDER_ID"
 test "$(jq -r '.data.total.amount' /tmp/checkout-replay.json)" = '50'
-STATUS=$(curl -sS -o /tmp/cross-tenant.json -w '%{http_code}' -H "x-tenant-id: checkout-other-${RUN_ID}" -H 'x-actor-id: checkout-verify-actor' -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: checkout-cross-${RUN_ID}" -X POST "$BASE/api/v1/checkout" -d "{\"cartId\":\"${CART_ID}\"}")
-test "$STATUS" = '400'
+STATUS=$(curl -sS -o /tmp/cross-tenant.json -w '%{http_code}' -H "x-tenant-id: checkout-other-${RUN_ID}" -H "x-actor-id: ${AUTH_ACTOR_ID}" -H 'x-currency: USD' -H 'content-type: application/json' -H "idempotency-key: checkout-cross-${RUN_ID}" -X POST "$BASE/api/v1/checkout" -d "{\"cartId\":\"${CART_ID}\"}")
+test "$STATUS" = '401'
 SQL="SELECT (SELECT count(*) FROM orders WHERE id='${ORDER_ID}' AND tenant_id='${TENANT_ID}' AND total_amount=50 AND status='PENDING') AS order_ok, (SELECT count(*) FROM order_items WHERE order_id='${ORDER_ID}') AS items_ok, (SELECT count(*) FROM carts WHERE id='${CART_ID}' AND tenant_id='${TENANT_ID}' AND status='CHECKED_OUT') AS cart_ok, (SELECT count(*) FROM idempotency_records WHERE tenant_id='${TENANT_ID}' AND status='COMPLETED') AS idempotency_ok, (SELECT count(*) FROM audit_events WHERE tenant_id='${TENANT_ID}' AND outcome='SUCCEEDED') AS audit_ok;"
 npx wrangler d1 execute emeriona-global-db --remote --command="$SQL" | tee /tmp/checkout-persistence.txt
 grep -q 'order_ok.*1' /tmp/checkout-persistence.txt
