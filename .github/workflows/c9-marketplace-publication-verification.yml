@@ -1,12 +1,10 @@
 name: EMERIONA GLOBAL C9 Marketplace Publication Verification
 on:
-  push:
-    branches:
-      - architecture/c9-marketplace-publication
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
+
+concurrency:
+  group: emeriona-production-verification
+  cancel-in-progress: false
 permissions:
   contents: read
 concurrency:
