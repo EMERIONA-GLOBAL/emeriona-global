@@ -1,16 +1,22 @@
 name: EMERIONA GLOBAL C3 Cloudflare Verification
 
 on:
-  push:
-    branches:
-      - 'architecture/c3-payments-revenue'
   workflow_dispatch:
-
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize C3 Cloudflare production verification, including production writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 
 jobs:
   verify-c3-payments:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     name: Verify C3 production payment intent and revenue flow
     runs-on: ubuntu-latest
     steps:
