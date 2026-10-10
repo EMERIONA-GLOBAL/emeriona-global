@@ -1,10 +1,11 @@
 name: Payment Status Production Verification
 
 on:
-  push:
-    branches: [commercial-payment-status]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: emeriona-production-verification
+  cancel-in-progress: false
 
 permissions:
   contents: read
