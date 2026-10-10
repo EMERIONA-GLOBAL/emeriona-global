@@ -1,9 +1,15 @@
 name: EMERIONA GLOBAL HA-1 Runtime Deployment Verification
 on:
-  push:
-    branches:
-      - architecture/ha1-identity-authorization
   workflow_dispatch:
+    inputs:
+      confirm_production_deploy:
+        description: 'Explicitly authorize HA-1 remote D1 migration and Worker deployment'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 concurrency:
@@ -11,6 +17,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   deploy-verify:
+    if: ${{ inputs.confirm_production_deploy == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
