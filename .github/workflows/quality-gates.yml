@@ -2,7 +2,7 @@ name: EMERIONA GLOBAL Quality Gates
 
 on:
   push:
-    branches: [main, 'architecture/**']
+    branches: [main, 'architecture/**', 'security/**']
   pull_request:
     branches: [main]
   workflow_dispatch:
