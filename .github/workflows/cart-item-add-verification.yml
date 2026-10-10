@@ -1,17 +1,10 @@
 name: Cart Item Add Production Verification
-
 on:
-  push:
-    branches: [commercial-cart-item-add-verification]
-  pull_request:
-    branches: [main]
-    paths:
-      - 'packages/application/src/**'
-      - 'packages/infrastructure/src/**'
-      - 'packages/runtime/src/**'
-      - 'scripts/cart-item-add-production-smoke.sh'
-      - '.github/workflows/cart-item-add-verification.yml'
+  workflow_dispatch:
 
+concurrency:
+  group: emeriona-production-verification
+  cancel-in-progress: false
 permissions:
   contents: read
 
