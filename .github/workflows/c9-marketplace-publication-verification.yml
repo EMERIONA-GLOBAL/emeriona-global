@@ -1,12 +1,15 @@
 name: EMERIONA GLOBAL C9 Marketplace Publication Verification
 on:
-  push:
-    branches:
-      - architecture/c9-marketplace-publication
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize C9 marketplace publication verification, including production writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 concurrency:
@@ -14,6 +17,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   verify:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
