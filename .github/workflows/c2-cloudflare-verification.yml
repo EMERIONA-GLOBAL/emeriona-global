@@ -1,16 +1,22 @@
 name: EMERIONA GLOBAL C2 Cloudflare Verification
 
 on:
-  push:
-    branches:
-      - 'architecture/c2-commerce-operations'
   workflow_dispatch:
-
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize C2 Cloudflare production verification, including production writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 
 jobs:
   verify-c2-commerce:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     name: Verify C2 production commerce flow
     runs-on: ubuntu-latest
     steps:
