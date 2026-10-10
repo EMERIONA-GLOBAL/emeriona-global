@@ -17,7 +17,6 @@ permissions:
 jobs:
   verify:
     if: ${{ inputs.confirm_production_write == 'yes' }}
-    if: github.event_name == 'push' || github.event.pull_request.number != ''
     runs-on: ubuntu-latest
     steps:
       - name: Checkout verification head
