@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "typecheck": "tsc -b --pretty false",
-    "test": "npm run typecheck && node --experimental-strip-types --experimental-default-type=module --test tests/*.test.mjs",
+    "test": "npm run typecheck && node --test tests/*.test.mjs",
     "build": "npm run typecheck",
     "quality": "npm run typecheck && npm test && npm run build"
   },
