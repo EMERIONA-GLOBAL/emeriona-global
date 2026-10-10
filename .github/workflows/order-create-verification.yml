@@ -1,11 +1,10 @@
 name: Order Create Production Verification
-
 on:
-  push:
-    branches: [commercial-order-create-verification]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
+concurrency:
+  group: emeriona-production-verification
+  cancel-in-progress: false
 permissions:
   contents: read
 
