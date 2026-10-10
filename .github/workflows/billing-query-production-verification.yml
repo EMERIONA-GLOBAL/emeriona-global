@@ -1,15 +1,20 @@
 name: EMERIONA GLOBAL Billing Query Production Verification
 on:
-  push:
-    branches:
-      - feature/billing-query-20260920
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize billing query production verification, including production writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 jobs:
   verify:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
