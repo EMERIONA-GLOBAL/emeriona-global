@@ -1,6 +1,15 @@
 name: EMERIONA GLOBAL Partner Product Update Production Verification
 on:
   workflow_dispatch:
+    inputs:
+      confirm_production_write:
+        description: 'Explicitly authorize D1 migration, Worker deployment, and production smoke writes'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
 permissions:
   contents: read
 concurrency:
@@ -8,6 +17,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   verify:
+    if: ${{ inputs.confirm_production_write == 'yes' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
