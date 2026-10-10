@@ -1,24 +1,11 @@
 name: EMERIONA GLOBAL Partner Product Update Production Verification
 on:
-  push:
-    branches:
-      - commercial-partner-product-update
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/partner-product-update-production-verification.yml'
-      - 'packages/application/**'
-      - 'packages/domains/**'
-      - 'packages/infrastructure/**'
-      - 'packages/runtime/**'
-      - 'scripts/partner-product-update-production-smoke.sh'
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: partner-product-update-production-${{ github.ref }}
-  cancel-in-progress: true
+  group: partner-product-update-production-verification
+  cancel-in-progress: false
 jobs:
   verify:
     runs-on: ubuntu-latest
